@@ -15,3 +15,18 @@
   max-width: 1200px;
   margin: 0 auto;
 }
+
+.container {
+  display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    text-align: left;
+}
+
+.test-monials-section {
+  background: var(--primary-color);
+  color: #fff;
+}

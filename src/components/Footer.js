@@ -9,6 +9,7 @@ const Footer = () => {
   const { i18n } = useTranslation();
   const { t } = useTranslation();
 
+
   const languageOptions = [
     {
       value: "en",

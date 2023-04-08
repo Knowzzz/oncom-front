@@ -1,11 +1,13 @@
 import React, { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useTranslation } from 'react-i18next';
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import Modal from "react-modal";
 import "aos/dist/aos.css";
 import AOS from "aos";
 
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import ModalContent from "../../components/ModalContent";
 import "./home.css";
 
 function isAuthenticated() {
@@ -14,9 +16,14 @@ function isAuthenticated() {
   return false;
 }
 
-function Home() {
+function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const location = useLocation();
+
+  const toggleModal = () => {
+    setModalIsOpen(!modalIsOpen);
+  };
 
   useEffect(() => {
     if (isAuthenticated()) {
@@ -25,7 +32,22 @@ function Home() {
     AOS.init({
       duration: 1000,
     });
-  }, []);
+    if (location.pathname === "/cookies") {
+      setModalContent("cookies");
+      setModalIsOpen(true);
+    } else if (location.pathname === "/confidentiality") {
+      setModalContent("confidentiality");
+      setModalIsOpen(true);
+    } else {
+      setModalContent(null);
+      setModalIsOpen(false);
+    }
+  }, [location.pathname, setModalContent, setModalIsOpen]);
+
+  const closeModal = () => {
+    toggleModal(null);
+    navigate("/");
+  };
 
   return (
     <div className="page-container">
@@ -37,13 +59,13 @@ function Home() {
               className="text-white text-3xl md:text-5xl font-bold mb-4 text-left"
               data-aos="fade-left"
             >
-              {t('empowering_daos')}
+              {t("empowering_daos")}
             </h1>
             <p
               className="text-white text-xl md:text-2xl text-left"
               data-aos="fade-left"
             >
-              {t('similar_streamlines')}
+              {t("similar_streamlines")}
             </p>
             <div className="mt-8" data-aos="fade-right">
               <Link
@@ -72,7 +94,9 @@ function Home() {
           alt="Image"
         />
         <div className="w-full md:w-3/6 pb-20 flex flex-col items-center md:items-start mt-8 md:mt-20 text-center md:text-left">
-          <h2 className="text-3xl md:text-4xl font-bold mb-5">{t("web3_aspects")}</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-5">
+            {t("web3_aspects")}
+          </h2>
           <p className="text-lg text-gray-700 w-full md:w-3/6">
             {t("web3_aspects_desc")}
           </p>
@@ -97,9 +121,7 @@ function Home() {
       </div>
       <div className="flex flex-col items-center m-20" data-aos="fade-up">
         <h2 className="text-4xl font-bold mb-5"> {t("team")} </h2>
-        <p className="text-lg text-gray-700 mb-8">
-          {t("team_desc")}
-        </p>
+        <p className="text-lg text-gray-700 mb-8">{t("team_desc")}</p>
 
         <div className="flex flex-wrap justify-center">
           <div className="flex items-center m-4">
@@ -184,6 +206,21 @@ function Home() {
       </div>
 
       <Footer />
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        className="relative bg-white p-5 rounded-lg w-full max-w-md mx-auto max-h-[90%] overflow-auto"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+        contentLabel="Confidentiality and Cookies"
+      >
+        <button
+          onClick={closeModal}
+          className="absolute top-2 right-2 bg-transparent border-none text-2xl cursor-pointer"
+        >
+          &times;
+        </button>
+        <ModalContent contentType={modalContent} />
+      </Modal>
     </div>
   );
 }

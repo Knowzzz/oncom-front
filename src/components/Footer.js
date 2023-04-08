@@ -2,8 +2,13 @@ import React, { useState } from "react";
 import { FaTwitter, FaGithub, FaEthereum } from "react-icons/fa";
 import { US, FR, ES } from "country-flag-icons/react/3x2";
 import Select from "react-select";
+import { useTranslation } from 'react-i18next';
 
 const Footer = () => {
+
+  const { i18n } = useTranslation();
+  const { t } = useTranslation();
+
   const languageOptions = [
     {
       value: "en",
@@ -38,6 +43,7 @@ const Footer = () => {
 
   const handleLanguageChange = (option) => {
     setSelectedOption(option);
+    i18n.changeLanguage(option.value);
   };
 
   return (
@@ -46,42 +52,42 @@ const Footer = () => {
         <div className="flex flex-col mb-6 md:mb-0">
           <h2 className="text-3xl mb-3">Similar</h2>
           <Select
-      value={selectedOption}
-      onChange={handleLanguageChange}
-      options={languageOptions}
-      className="text-black"
-      styles={{
-        control: (provided) => ({
-          ...provided,
-          backgroundColor: "#213B74",
-          borderColor: "#213B74",
-          minHeight: "48px",
-          borderRadius: "4px",
-        }),
-        singleValue: (provided) => ({
-          ...provided,
-          color: "white",
-        }),
-        menu: (provided) => ({
-          ...provided,
-          zIndex: 1000,
-          marginTop: 0,
-          backgroundColor: "#213B74",
-        }),
-        menuList: (provided) => ({
-          ...provided,
-          paddingTop: 0,
-          paddingBottom: "1rem",
-          backgroundColor: "#213B74",
-        }),
-        option: (provided, state) => ({
-          ...provided,
-          color: state.isSelected || state.isFocused ? "black" : "white",
-          backgroundColor: state.isFocused ? "#5360A6" : "#213B74",
-        }),
-      }}
-      menuPlacement="top"
-    />
+            value={selectedOption}
+            onChange={handleLanguageChange}
+            options={languageOptions}
+            className="text-black"
+            styles={{
+              control: (provided) => ({
+                ...provided,
+                backgroundColor: "#213B74",
+                borderColor: "#213B74",
+                minHeight: "48px",
+                borderRadius: "4px",
+              }),
+              singleValue: (provided) => ({
+                ...provided,
+                color: "white",
+              }),
+              menu: (provided) => ({
+                ...provided,
+                zIndex: 1000,
+                marginTop: 0,
+                backgroundColor: "#213B74",
+              }),
+              menuList: (provided) => ({
+                ...provided,
+                paddingTop: 0,
+                paddingBottom: "1rem",
+                backgroundColor: "#213B74",
+              }),
+              option: (provided, state) => ({
+                ...provided,
+                color: state.isSelected || state.isFocused ? "black" : "white",
+                backgroundColor: state.isFocused ? "#5360A6" : "#213B74",
+              }),
+            }}
+            menuPlacement="top"
+          />
 
           <div className="flex mt-4 space-x-4">
             <FaTwitter />
@@ -95,23 +101,23 @@ const Footer = () => {
           <ul>
             <li>
               <a href="/about" className="block mb-2">
-                About
+              {t("about")}
               </a>
             </li>
             <li>
               <a href="/help" className="block">
-                Help
+              {t("help")}
               </a>
             </li>
           </ul>
         </div>
 
         <div className="flex flex-col mb-6 md:mb-0">
-          <h3 className="text-xl mb-3 font-bold">Charters</h3>
+          <h3 className="text-xl mb-3 font-bold">{t("charters")}</h3>
           <ul>
             <li>
               <a href="/confidentiality" className="block mb-2">
-                Confidentiality
+              {t("confidentiality")}
               </a>
             </li>
             <li>
@@ -128,11 +134,11 @@ const Footer = () => {
         </div>
 
         <div className="flex flex-col mb-6 md:mb-0">
-          <h3 className="text-xl mb-3 font-bold">Produces</h3>
+          <h3 className="text-xl mb-3 font-bold">{t("produces")}</h3>
           <ul>
             <li>
               <a href="/download" className="block mb-2">
-                Download
+              {t("download")}
               </a>
             </li>
             <li>

@@ -1,75 +1,76 @@
-/******************************************************************************/
-/********************************** NAVBAR ************************************/
-/******************************************************************************/
-
 .underline-from-center {
-    position: relative;
-  }
-  
-  .underline-from-center::before {
-    content: "";
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: 0;
-    left: 50%;
-    background-color: currentColor;
-    transition: width 0.3s ease, left 0.3s ease;
-  }
-  
-  .underline-from-center:hover::before {
-    width: 100%;
-    left: 0;
+  position: relative;
+}
+
+.underline-from-center::before {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: 0;
+  left: 50%;
+  background-color: currentColor;
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+.underline-from-center:hover::before {
+  width: 100%;
+  left: 0;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 75%;
+  height: 100%;
+  background-color: #3182ce;
+  transition: right 0.4s;
+  padding-top: 4rem;
+}
+
+.sidebar.open {
+  right: 0;
+}
+
+.sidebar .ml-16 {
+  margin-left: 1rem;
+  margin-top: 1rem;
+}
+
+.close-icon {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+@media (min-width: 768px) {
+  .sidebar {
+    position: static;
+    background-color: transparent;
+    width: auto;
+    height: auto;
+    padding-top: 0;
   }
 
-  .sidebar {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    width: 75%;
-    height: 100%;
-    background-color: #3182ce;
-    transition: right 0.4s;
-    padding-top: 4rem;
-  }
-  
-  .sidebar.open {
-    right: 0;
-  }
-  
   .sidebar .ml-16 {
-    margin-left: 1rem;
+    margin-left: 4rem;
+    margin-top: 0;
+  }
+
+  .sidebar .ml-16 .underline-from-center {
+    display: inline-block;
+    align-self: center;
+  }
+
+  .close-icon {
+    display: none;
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 767px) {
+  .nav-menu .mt-4 {
     margin-top: 1rem;
   }
-  
-  .close-icon {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-  }
-  
-  @media (min-width: 768px) {
-    .sidebar {
-      position: static;
-      background-color: transparent;
-      width: auto;
-      height: auto;
-      padding-top: 0;
-    }
-  
-    .sidebar .ml-16 {
-      margin-left: 4rem;
-      margin-top: 0;
-    }
-  
-    .sidebar .ml-16 .underline-from-center {
-      display: inline-block;
-      align-self: center;
-    }
-  
-    .close-icon {
-      display: none;
-    }
-  }
-  
-  
+}

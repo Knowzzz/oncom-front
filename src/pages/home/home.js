@@ -151,7 +151,7 @@ function Home() {
       </div>
       <div className="bg-white">
         <div
-          className="bg-gray-100 w-screen h-screen flex items-center justify-center"
+          className="bg-gray-100 w-full h-screen flex items-center justify-center"
           data-aos="fade-up"
         >
           <div className="w-full md:w-1/2 rounded-lg p-8">

@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Modal from "react-modal";
 import "aos/dist/aos.css";
+import axios from "axios";
 import AOS from "aos";
 
 import Navbar from "../../components/Navbar";
@@ -10,10 +11,23 @@ import Footer from "../../components/Footer";
 import ModalContent from "../../components/ModalContent";
 import "./home.css";
 
-function isAuthenticated() {
+const baseURL = "http://localhost:8080";
+
+
+async function isAuthenticated() {
   const accessToken = localStorage.getItem("accessToken");
-  if (!accessToken) return false;
-  return false;
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user || !accessToken) { return false }
+  const result = await axios.get(`${baseURL}/api/user/validToken`, {
+    params: {
+      userId: user.id,
+    },
+    headers: {
+      "x-access-token": accessToken,
+    },
+  });
+
+  return result.data;
 }
 
 function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {

@@ -13,6 +13,7 @@ const Signup = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [pseudo, setPseudo] = useState("");
   const [walletAddressPage, setWalletAddressPage] = useState("");
+  const [error, setError] = useState("");
 
   const dispatch = useDispatch();
 
@@ -38,6 +39,7 @@ const Signup = () => {
       }
     } else {
       console.log("No Ethereum provider found");
+      return;
     }
   };
 
@@ -45,7 +47,7 @@ const Signup = () => {
     if (typeof window.ethereum !== "undefined") {
       // Utilisez Web3Provider pour accéder au fournisseur MetaMask
       const provider = new ethers.BrowserProvider(window.ethereum);
-  
+
       try {
         if (!isConnected) {
           return;
@@ -69,28 +71,33 @@ const Signup = () => {
           messageId: message.data.messageId,
         });
         if (result.data.error) {
+          setError(result.data.error);
           return console.log(result.data.error);
         }
-  
+        setError("");
+
         localStorage.setItem("accessToken", result.data.accessToken);
-        const user = localStorage.setItem("user", JSON.stringify(result.data.user));
-  
+        const user = localStorage.setItem(
+          "user",
+          JSON.stringify(result.data.user)
+        );
+
         dispatch(updateUser(user));
         navigate("/main");
       } catch (err) {
         console.log(err);
+        setError("Error");
         return err;
       }
     }
   };
-  
 
   const login = async () => {
     try {
       if (typeof window.ethereum !== "undefined") {
         // Utilisez Web3Provider pour accéder au fournisseur MetaMask
         const provider = new ethers.BrowserProvider(window.ethereum);
-    
+
         try {
           if (!isConnected) {
             return;
@@ -113,16 +120,23 @@ const Signup = () => {
             messageId: message.data.messageId,
           });
           if (result.data.error) {
+            setError(result.data.error);
             return console.log(result.data.error);
           }
-    
+          setError("");
+
           localStorage.setItem("accessToken", result.data.accessToken);
-          const user = localStorage.setItem("user", JSON.stringify(result.data.user));
-    
+          const user = localStorage.setItem(
+            "user",
+            JSON.stringify(result.data.user)
+          );
+
           dispatch(updateUser(user));
+
           navigate("/main");
         } catch (err) {
           console.log(err);
+          setError("Error");
           return err;
         }
       }
@@ -154,7 +168,7 @@ const Signup = () => {
       "Spirited",
       "Persistent",
     ];
-    
+
     const nouns = [
       "User",
       "Person",
@@ -177,7 +191,7 @@ const Signup = () => {
       "Storyteller",
       "Trailblazer",
     ];
-    
+
     const randomAdjective =
       adjectives[Math.floor(Math.random() * adjectives.length)];
     const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
@@ -193,11 +207,13 @@ const Signup = () => {
           <>
             <input
               type="text"
-              className="border-2 border-gray-300 p-2 mb-5 rounded w-64 focus:outline-none focus:border-blue-500"
+              className="border-2 border-gray-300 p-2 mb-2 rounded w-64 focus:outline-none focus:border-blue-500"
               value={pseudo}
               onChange={(e) => setPseudo(e.target.value)}
               placeholder={generateRandomPseudo()}
             />
+            {error && <p className="text-s text-red-500">{error}</p>}
+
             <button
               type="button"
               className="bg-green-500 text-white px-4 py-2 rounded w-64 focus:outline-none transition duration-300 ease-in-out transform hover:scale-105 mt-4"
@@ -210,7 +226,7 @@ const Signup = () => {
           <button
             type="button"
             className="bg-blue-500 text-white px-4 py-2 rounded w-64 focus:outline-none transition duration-300 ease-in-out transform hover:scale-105"
-            onClick={() => connectWallet()}
+            onClick={connectWallet}
           >
             Connect Wallet
           </button>

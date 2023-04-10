@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { HiOutlineDotsVertical } from "react-icons/hi";
+import { toast } from "react-toastify";
 
 const baseURL = "http://localhost:8080";
 
 const SearchModal = ({ isOpen, closeModal }) => {
   const [walletAddress, setWalletAddress] = useState("");
   const [foundProfiles, setFoundProfiles] = useState(null);
+  const [activeContextMenu, setActiveContextMenu] = useState(null);
 
   useEffect(() => {
     return () => {
@@ -18,6 +21,35 @@ const SearchModal = ({ isOpen, closeModal }) => {
       }
     };
   }, [foundProfiles]);
+
+  const addFriend = async (friend_wallet_address) => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const user = JSON.parse(localStorage.getItem("user"));
+      console.log(accessToken)
+      const response = await axios.post(
+        `${baseURL}/api/friend/add`,
+        {
+          userId: user.id,
+          friend_wallet_address: friend_wallet_address,
+        },
+        {
+          headers: {
+            "x-access-token": accessToken,
+          },
+        }
+      );
+      if (response.status === 200) {
+        toast.success("Successfully added", {
+          position: toast.POSITION.BOTTOM_RIGHT,
+        });
+        closeModal();
+      }
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+  };
 
   const handleSearch = async (event) => {
     setWalletAddress(event);
@@ -60,6 +92,7 @@ const SearchModal = ({ isOpen, closeModal }) => {
       }
     }
     await getFriend();
+    setActiveContextMenu(null);
   };
 
   if (!isOpen) {
@@ -69,7 +102,7 @@ const SearchModal = ({ isOpen, closeModal }) => {
   return (
     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
       <div className="bg-gray-600 w-1/3 h-2/3 rounded-lg flex flex-col items-center p-6">
-        <        h2 className="text-white text-2xl font-semibold mb-4">
+        <h2 className="text-white text-2xl font-semibold mb-4">
           Recherchez un utilisateur par adresse de portefeuille
         </h2>
         <input
@@ -83,16 +116,41 @@ const SearchModal = ({ isOpen, closeModal }) => {
           foundProfiles.map((profile) => (
             <div
               key={profile.id}
-              className="bg-gray-500 w-full h-14 p-1 rounded-md flex items-center"
+              className="bg-gray-500 w-full h-14 p-1 rounded-md flex items-center justify-between"
             >
-              <img
-                src={profile.avatar ? profile.avatar : "/image.jpg"}
-                alt="Profile"
-                className="w-12 h-12 rounded-full cursor-pointer border-2 border-gray-600"
-              />
-              <p className="text-white font-semibold ml-6">{profile.pseudo}</p>
+              <div className="flex items-center">
+                <img
+                  src={profile.avatar ? profile.avatar : "/image.jpg"}
+                  alt="Profile"
+                  className="w-12 h-12 rounded-full cursor-pointer border-2 border-gray-600"
+                />
+                <p className="text-white font-semibold ml-6">
+                  {profile.pseudo}
+                </p>
+              </div>
+              <div className="relative">
+                <HiOutlineDotsVertical
+                  className="text-white cursor-pointer"
+                  onClick={() => {
+                    setActiveContextMenu(
+                      activeContextMenu === profile.id ? null : profile.id
+                    );
+                  }}
+                />
+                {activeContextMenu === profile.id && (
+                  <div className="bg-gray-600 rounded-lg p-2 absolute right-0">
+                    <button
+                      className="bg-gray-500 hover:bg-gray-400 text-green-500 w-full p-1 rounded-md"
+                      onClick={() => addFriend(profile.wallet_address)}
+                    >
+                      Add Friend
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           ))}
+
         <button
           className="bg-red-500 text-white px-4 py-2 mt-auto rounded-md"
           onClick={closeModal}
@@ -105,4 +163,3 @@ const SearchModal = ({ isOpen, closeModal }) => {
 };
 
 export default SearchModal;
-

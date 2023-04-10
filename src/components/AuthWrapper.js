@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import axios from "axios";
 
 const baseURL = "http://localhost:8080";
@@ -17,20 +16,24 @@ const isAuthenticated = async () => {
       "x-access-token": accessToken,
     },
   });
-
-  return result.data;
+  if (!result.data.success) return false;
+  return result.data.success;
 };
 
 const AuthWrapper = ({ children }) => {
   const navigate = useNavigate();
 
-  const state = useSelector((state) => state);
   const [isAuthenticatedStatus, setIsAuthenticatedStatus] = useState(null);
 
   useEffect(() => {
     const checkAuthentication = async () => {
-      const result = await isAuthenticated();
-      setIsAuthenticatedStatus(result);
+      try {
+        const result = await isAuthenticated();
+        setIsAuthenticatedStatus(result);
+      } catch (error) {
+        console.error('Error during authentication check:', error);
+        setIsAuthenticatedStatus(false);
+      }
     };
 
     checkAuthentication();
@@ -43,7 +46,7 @@ const AuthWrapper = ({ children }) => {
   }, [isAuthenticatedStatus, navigate]);
 
   return isAuthenticatedStatus
-    ? React.cloneElement(children, { walletAddress: state.user.address })
+    ? React.cloneElement(children)
     : null;
 };
 

@@ -4,19 +4,15 @@ import SidebarFriend from "../../components/SidebarFriend";
 import axios from "axios";
 import { BsSearch } from "react-icons/bs";
 import { HiOutlineDotsVertical } from "react-icons/hi";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import SearchModal from "./SearchModal";
-import { Menu, Transition } from "@headlessui/react";
 import UserProfile from "../../components/UserProfile";
-import { TbMessageCircle2Filled} from "react-icons/tb";
-
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { Menu, Transition } from "@headlessui/react";
 
 const baseURL = "http://localhost:8080";
 
 const MainPage = () => {
-  const [onlineFriends, setOnlineFriends] = useState([]);
+  const [pendingFriends, setPendingFriends] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -24,26 +20,43 @@ const MainPage = () => {
     setIsModalOpen(!isModalOpen);
   };
 
-  const deleteFriend = async (friend_wallet_address) => {
-    const accessToken = localStorage.getItem("accessToken");
-    const user = JSON.parse(localStorage.getItem("user"));
-    const response = await axios.post(
-      `${baseURL}/api/friend/delete`,
-      {
-        userId: user.id,
-        friend_wallet_address: friend_wallet_address,
-      },
-      {
-        headers: {
-          "x-access-token": accessToken,
+  const acceptFriend = async (friend_wallet_address) => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const user = JSON.parse(localStorage.getItem("user"));
+      const response = await axios.post(
+        `${baseURL}/api/friend/accept`,
+        {
+          userId: user.id,
+          friend_wallet_address: friend_wallet_address,
         },
-      }
-    );
-    if (response.status === 200) {
-      const success = () => toast("Friend successfully deleted");
-      window.location.reload();
-      return success;
+        {
+          headers: {
+            "x-access-token": accessToken,
+          },
+        }
+      );
+    } catch (err) {
+      console.log(err);
+      return err;
     }
+  };
+
+  const deniedFriend = async (friend_wallet_address) => {
+    const accessToken = localStorage.getItem("accessToken");
+      const user = JSON.parse(localStorage.getItem("user"));
+      const response = await axios.post(
+        `${baseURL}/api/friend/decline`,
+        {
+          userId: user.id,
+          friend_wallet_address: friend_wallet_address,
+        },
+        {
+          headers: {
+            "x-access-token": accessToken,
+          },
+        }
+      );
     try {
     } catch (err) {
       console.log(err);
@@ -53,19 +66,19 @@ const MainPage = () => {
 
   const blockFriend = async (friend_wallet_address) => {
     const accessToken = localStorage.getItem("accessToken");
-    const user = JSON.parse(localStorage.getItem("user"));
-    const response = await axios.post(
-      `${baseURL}/api/friend/decline`,
-      {
-        userId: user.id,
-        friend_wallet_address: friend_wallet_address,
-      },
-      {
-        headers: {
-          "x-access-token": accessToken,
+      const user = JSON.parse(localStorage.getItem("user"));
+      const response = await axios.post(
+        `${baseURL}/api/friend/decline`,
+        {
+          userId: user.id,
+          friend_wallet_address: friend_wallet_address,
         },
-      }
-    );
+        {
+          headers: {
+            "x-access-token": accessToken,
+          },
+        }
+      );
     try {
     } catch (err) {
       console.log(err);
@@ -77,18 +90,22 @@ const MainPage = () => {
     const fetchFriends = async () => {
       const accessToken = localStorage.getItem("accessToken");
       const user = JSON.parse(localStorage.getItem("user"));
+      console.log(user);
       try {
-        const result = await axios.get(`${baseURL}/api/friend/getAll`, {
-          params: {
-            userId: user.id,
-          },
-          headers: {
-            "x-access-token": accessToken,
-          },
-        });
+        const result = await axios.get(
+          `${baseURL}/api/friend/getAllFriendRequest`,
+          {
+            params: {
+              userId: user.id,
+            },
+            headers: {
+              "x-access-token": accessToken,
+            },
+          }
+        );
 
         const friendsWithAvatars = await Promise.all(
-          result.data.friends.map(async (friendRequest) => {
+          result.data.friendRequests.map(async (friendRequest) => {
             const friend = friendRequest.friend;
             try {
               const avatarResponse = await axios.get(
@@ -108,7 +125,7 @@ const MainPage = () => {
             }
           })
         );
-        setOnlineFriends(friendsWithAvatars);
+        setPendingFriends(friendsWithAvatars);
       } catch (err) {
         console.log(err);
         return err;
@@ -132,14 +149,23 @@ const MainPage = () => {
             >
               Add
             </button>
-            <button className="bg-gray-800 text-gray-300 px-2 py-1 ml-2 rounded">
-              <Link to="/main">Online</Link>
+            <button
+              className="bg-gray-500 text-white px-2 py-1 ml-2 rounded hover:bg-gray-600"
+              onClick={() => navigate("/main")}
+            >
+              Online
             </button>
-            <button className="bg-gray-500 text-gray-300 px-2 py-1 ml-2 rounded hover:bg-gray-600">
-              <Link to="/main/friend/pending">Pending</Link>
+            <button
+              className="bg-gray-800 text-gray-300 px-2 py-1 ml-2 rounded"
+              onClick={() => navigate("/friend/pending")}
+            >
+              Pending
             </button>
-            <button className="bg-gray-500 text-gray-300 px-2 py-1 ml-2 rounded hover:bg-gray-600">
-              <Link to="/main/friend/blocked">Blocked</Link>
+            <button
+              className="bg-gray-500 text-gray-300 px-2 py-1 ml-2 rounded hover:bg-gray-600"
+              onClick={() => navigate("/friend/blocked")}
+            >
+              Blocked
             </button>
           </div>
           <div className="relative">
@@ -150,39 +176,34 @@ const MainPage = () => {
             />
             <BsSearch className="absolute right-3 top-2 text-white" />
           </div>
-          <div className="text-white font-semibold mt-4">Online</div>
+          <div className="text-white font-semibold mt-4">Pending</div>
           <div className="flex flex-col mt-2">
-            {onlineFriends
-              ? onlineFriends.map((friendOnline) => (
+            {pendingFriends
+              ? pendingFriends.map((friendRequest) => (
                   <div
-                    key={friendOnline.id}
+                    key={friendRequest.id}
                     className="bg-gray-800 w-full h-16 flex items-center p-4 mb-2 rounded-md"
                   >
                     <img
                       src={
-                        friendOnline.friend.avatar
-                          ? friendOnline.friend.avatar
+                        friendRequest.friend.avatar
+                          ? friendRequest.friend.avatar
                           : "/image.jpg"
                       }
-                      alt={friendOnline.friend.pseudo}
+                      alt={friendRequest.friend.pseudo}
                       className="w-12 h-12 rounded-full mr-4"
                     />
 
                     <div className="text-white font-semibold">
-                      {friendOnline.friend.pseudo}
+                      {friendRequest.friend.pseudo}
                     </div>
                     <div className="ml-auto">
                       <Menu
                         as="div"
                         className="relative inline-block text-left"
                       >
-                        
-
                         <Menu.Button className="flex items-center justify-center w-full shadow-sm px-2 py-2 text-sm font-medium text-gray-700 focus:outline-none">
-                        <Link to={`/friend/message/${friendOnline.friend.id}`}>
-                          <TbMessageCircle2Filled className="text-white w-8 h-8 p-1 rounded-full bg-gray-700 mr-4" />
-                        </Link>
-                          <HiOutlineDotsVertical className="text-white w-8 h-8 p-1 rounded-full bg-gray-700 hover:bg-gray-600" />
+                          <HiOutlineDotsVertical className="text-white w-8 h-8 p-1 rounded-full bg-gray-700" />
                         </Menu.Button>
                         <Transition
                           as={Fragment}
@@ -202,10 +223,28 @@ const MainPage = () => {
                                       active
                                         ? "bg-gray-400 text-black"
                                         : "text-black"
+                                    } flex px-2 py-1 text-sm bg-gray-600 text-green-600 rounded-md w-full`}
+                                    onClick={() =>
+                                      acceptFriend(
+                                        friendRequest.friend.wallet_address
+                                      )
+                                    }
+                                  >
+                                    Accepter
+                                  </button>
+                                )}
+                              </Menu.Item>
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <button
+                                    className={`${
+                                      active
+                                        ? "bg-gray-400 text-black"
+                                        : "text-black"
                                     } flex px-2 py-1 text-sm bg-gray-600 text-red-500 rounded-md w-full`}
                                     onClick={() =>
-                                      deleteFriend(
-                                        friendOnline.friend.wallet_address
+                                      deniedFriend(
+                                        friendRequest.friend.wallet_address
                                       )
                                     }
                                   >
@@ -223,7 +262,7 @@ const MainPage = () => {
                                     } flex px-2 py-1 text-sm bg-gray-600 text-black rounded-md w-full`}
                                     onClick={() =>
                                       blockFriend(
-                                        friendOnline.friend.wallet_address
+                                        friendRequest.friend.wallet_address
                                       )
                                     }
                                   >

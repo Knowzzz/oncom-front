@@ -7,7 +7,9 @@ import { Provider } from 'react-redux';
 import Home from "./pages/home/home";
 import Main from "./pages/main/main";
 import Signup from "./pages/sign/signup";
+import Pending from "./pages/main/pending";
 import AuthWrapper from "./components/AuthWrapper";
+import FriendMessage from "./pages/message/FriendMessage";
 
 import store from './store';
 
@@ -23,6 +25,22 @@ function App() {
         element={
           <AuthWrapper>
             <Main />
+          </AuthWrapper>
+        }
+      />
+      <Route
+        path="/friend/message/:friendId"
+        element={
+          <AuthWrapper>
+            <FriendMessage />
+          </AuthWrapper>
+        }
+      />
+      <Route
+        path="/main/friend/pending"
+        element={
+          <AuthWrapper>
+            <Pending />
           </AuthWrapper>
         }
       />

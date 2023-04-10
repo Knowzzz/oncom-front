@@ -26,8 +26,7 @@ async function isAuthenticated() {
       "x-access-token": accessToken,
     },
   });
-
-  return result.data;
+  return result.data.success;
 }
 
 function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
@@ -40,9 +39,15 @@ function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
   };
 
   useEffect(() => {
-    if (isAuthenticated()) {
-      navigate("/main");
-    }
+    const checkAuthentication = async () => {
+      const authStatus = await isAuthenticated();
+      if (authStatus) {
+        navigate("/main");
+      }
+    };
+  
+    checkAuthentication();
+  
     AOS.init({
       duration: 1000,
     });
@@ -57,6 +62,7 @@ function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
       setModalIsOpen(false);
     }
   }, [location.pathname, setModalContent, setModalIsOpen]);
+  
 
   const closeModal = () => {
     toggleModal(null);

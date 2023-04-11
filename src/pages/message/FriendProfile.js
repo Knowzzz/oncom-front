@@ -10,24 +10,10 @@ const FriendProfile = ({ friendId }) => {
     avatar: "",
   });
   const [avatarUrl, setAvatarUrl] = useState("");
-  const [sharedDaos, setSharedDaos] = useState([]);
-  const [messages, setMessages] = useState([
-    // Example messages
-    {
-      messageId: 1,
-      messageContent: "Salut !",
-      messageWriter: "Alice",
-      messageDate: "2023-04-10",
-    },
-    {
-      messageId: 2,
-      messageContent: "Salut, comment ça va ?",
-      messageWriter: "Bob",
-      messageDate: "2023-04-10",
-    },
-  ]);
+  //const [sharedDaos, setSharedDaos] = useState([]);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchFriendProfile = async () => {
       try {
         const accessToken = localStorage.getItem("accessToken");
@@ -40,9 +26,11 @@ const FriendProfile = ({ friendId }) => {
             "x-access-token": accessToken,
           },
         });
-        setFriend(response.data.user);
-        setAvatarUrl(`${baseURL}/static${response.data.user.avatar}`);
-        // TODO: Fetch shared DAOs and update the state.
+        if (isMounted) {
+          setFriend(response.data.user);
+          setAvatarUrl(`${baseURL}/static${response.data.user.avatar}`);
+          // TODO: Fetch shared DAOs and update the state.
+        }
       } catch (error) {
         console.error(error);
       }
@@ -53,6 +41,8 @@ const FriendProfile = ({ friendId }) => {
   if (!friend) {
     return <div>Loading...</div>;
   }
+
+
 
   return (
     <div className="bg-gray-700 border border-gray-500 w-1/4 flex flex-col p-4">

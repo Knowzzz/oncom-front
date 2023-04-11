@@ -24,6 +24,7 @@ const SearchModal = ({ isOpen, closeModal }) => {
 
   const addFriend = async (friend_wallet_address) => {
     try {
+      console.log(friend_wallet_address);
       const accessToken = localStorage.getItem("accessToken");
       const user = JSON.parse(localStorage.getItem("user"));
       console.log(accessToken)
@@ -116,7 +117,7 @@ const SearchModal = ({ isOpen, closeModal }) => {
           foundProfiles.map((profile) => (
             <div
               key={profile.id}
-              className="bg-gray-500 w-full h-14 p-1 rounded-md flex items-center justify-between"
+              className="bg-gray-500 w-full h-14 p-1 m-2 rounded-md flex items-center justify-between"
             >
               <div className="flex items-center">
                 <img

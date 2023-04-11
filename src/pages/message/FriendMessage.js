@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import SidebarFriend from "../../components/SidebarFriend";
 import SidebarServers from "../../components/SidebarServers";
 import FriendProfile from "./FriendProfile";
-import axios from "axios";
 import { io } from "socket.io-client";
 
 const baseURL = "http://localhost:8080";
@@ -100,7 +99,7 @@ const FriendMessage = () => {
   return (
     <div className="h-screen w-screen bg-gray-800 flex">
       <SidebarServers />
-      <SidebarFriend friendId={currentFriendId}  />
+      <SidebarFriend friendId={friendId}  />
       <div className="flex-1 flex flex-col">
         <div className="flex-1 bg-gray-700 px-4 py-2 overflow-y-auto">
           {messages.map((message) => (
@@ -148,7 +147,7 @@ const FriendMessage = () => {
           />
         </form>
       </div>
-      <FriendProfile />
+      <FriendProfile key={friendId} friendId={friendId}/>
     </div>
   );
 };

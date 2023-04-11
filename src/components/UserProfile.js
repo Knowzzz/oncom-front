@@ -16,6 +16,8 @@ const UserProfile = () => {
   const [newAvatar, setNewAvatar] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState("");
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] =
+    useState(false);
 
   const navigate = useNavigate();
 
@@ -74,6 +76,10 @@ const UserProfile = () => {
       console.error(error);
     }
   };
+
+  const handleDeleteAccount = async () => {
+
+  }
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -160,9 +166,16 @@ const UserProfile = () => {
         </div>
         <button
           type="submit"
-          className="bg-green-500 text-white w-full p-2 rounded-md mt-4"
+          className="bg-green-500 text-white w-full p-2 rounded-md mt-4 hover:bg-green-600"
         >
           Valider
+        </button>
+        <button
+          type="button"
+          className="bg-red-500 text-white w-full p-2 rounded-md mt-4 hover:bg-red-600"
+          onClick={() => setIsDeleteAccountModalOpen(true)}
+        >
+          Supprimer le compte
         </button>
       </form>
       <div className="fixed bottom-4 right-4">
@@ -225,6 +238,58 @@ const UserProfile = () => {
                   }}
                 >
                   Confirmer
+                </button>
+              </div>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
+      <Transition show={isDeleteAccountModalOpen} as={Fragment}>
+        <Dialog
+          as="div"
+          className="fixed inset-0 z-10 overflow-y-auto"
+          onClose={() => setIsDeleteAccountModalOpen(false)}
+        >
+          <div className="min-h-screen px-4 text-center">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
+            </Transition.Child>
+
+            <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+              <Dialog.Title
+                as="h3"
+                className="text-lg font-medium leading-6 text-gray-900"
+              >
+                Supprimer le compte
+              </Dialog.Title>
+              <div className="mt-2">
+                <p className="text-sm text-gray-500">
+                  Signez cette transaction pour valider la suppression de votre compte.
+                </p>
+              </div>
+              <div className="mt-4 flex justify-end space-x-2">
+                <button
+                  type="button"
+                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                  onClick={() => setIsDeleteAccountModalOpen(false)}
+                >
+                  Annuler
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-red-500 border border-transparent rounded-md hover:bg-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-red-500"
+                  onClick={handleDeleteAccount}
+                >
+                  Supprimer
                 </button>
               </div>
             </div>

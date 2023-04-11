@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import SidebarFriend from "../../components/SidebarFriend";
 import SidebarServers from "../../components/SidebarServers";
 import FriendProfile from "./FriendProfile";
@@ -7,10 +7,14 @@ import axios from "axios";
 import { io } from "socket.io-client";
 
 const baseURL = "http://localhost:8080";
-const socket = io("http://localhost:8080");
 
 const FriendMessage = () => {
   const { friendId } = useParams();
+  const userId = JSON.parse(localStorage.getItem("user")).id;
+  const socket = io(`${baseURL}/friend-message`, {
+    query: { userId, friendId },
+  });
+
   const [currentFriendId, setCurrentFriendId] = useState(null);
   const [messages, setMessages] = useState([
     // Example messages
@@ -40,33 +44,36 @@ const FriendMessage = () => {
   useEffect(() => {
     setCurrentFriendId(friendId);
     // Fetch messages for the friend
-    const fetchMessages = async () => {
-      try {
-        const accessToken = localStorage.getItem("accessToken");
-        const response = await axios.get(
-          `${baseURL}/api/message/friend/get`,
-          {
-            userId: JSON.parse(localStorage.getItem("user")).id,
-            friendId: friendId,
-          },
-          {
-            headers: {
-              "x-access-token": accessToken,
-            },
-          }
-        );
-        setMessages(response.data.messages);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchMessages();
+    socket.on("initial-messages", (data) => {
+      const { messages, user1, user2 } = data;
+      
+      const formattedMessages = messages.map((message) => ({
+        messageId: message.id,
+        messageContent: message.content,
+        writer: {
+          pseudo: message.userId === user1.id ? user1.pseudo : user2.pseudo,
+          wallet_address: message.userId === user1.id ? user1.wallet_address : user2.wallet_address,
+          id: message.userId,
+        },
+      }));
+      setMessages(formattedMessages);
+    });
 
     socket.on("new-message", (message) => {
-      setMessages((prevMessages) => [...prevMessages, message]);
+      const formattedMessage = {
+        messageId: message.id,
+        messageContent: message.content,
+        writer: {
+          pseudo: message.user.pseudo,
+          wallet_address: message.user.wallet_address,
+          id: message.userId,
+        },
+      };
+      setMessages((prevMessages) => [...prevMessages, formattedMessage]);
     });
 
     return () => {
+      socket.off("initial-messages");
       socket.off("new-message");
     };
   }, [friendId]);
@@ -76,50 +83,33 @@ const FriendMessage = () => {
     if (inputMessage.trim() === "") return;
 
     try {
-      const accessToken = localStorage.getItem("accessToken");
-      const userId = JSON.parse(localStorage.getItem("user")).id;
-      await axios.post(
-        `${baseURL}/api/message/friend/create`,
-        {
-          userId,
-          friendId,
+      if (socket) {
+        socket.emit("new-message", {
+          userId: userId,
+          friendId: friendId,
           content: inputMessage,
-        },
-        {
-          headers: {
-            "x-access-token": accessToken,
-          },
-        }
-      );
+        });
 
-      setInputMessage("");
-
-      socket.emit("new-message", {
-        messageId: Date.now(),
-        messageContent: inputMessage,
-        writer: {
-          pseudo: "Your name or username here",
-          wallet_address: "Your wallet address here",
-          id: userId,
-        },
-        messageDate: new Date().toISOString(),
-      });
+        setInputMessage("");
+      }
     } catch (error) {
-      console.error(error);
+      return error;
     }
   };
 
   return (
     <div className="h-screen w-screen bg-gray-800 flex">
       <SidebarServers />
-      <SidebarFriend />
-      <div       className="flex-1 flex flex-col">
+      <SidebarFriend friendId={currentFriendId}  />
+      <div className="flex-1 flex flex-col">
         <div className="flex-1 bg-gray-700 px-4 py-2 overflow-y-auto">
           {messages.map((message) => (
             <div
               key={message.messageId}
               className={`${
-                message.writer.id === currentFriendId ? "ml-auto" : "mr-auto"
+                message.writer && message.writer.id === currentFriendId
+                  ? "ml-auto"
+                  : "mr-auto"
               } flex flex-col mb-2 max-w-full rounded-md`}
             >
               <div className="flex justify-between items-center mb-1">
@@ -156,18 +146,11 @@ const FriendMessage = () => {
               }
             }}
           />
-          <button
-            type="submit"
-            className="bg-blue-500 text-white ml-2 py-2 px-4 rounded-md hover:bg-blue-600"
-          >
-            Send
-          </button>
         </form>
       </div>
-      <FriendProfile friendId={currentFriendId} />
+      <FriendProfile />
     </div>
   );
 };
 
 export default FriendMessage;
-

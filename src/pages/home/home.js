@@ -13,11 +13,12 @@ import "./home.css";
 
 const baseURL = "http://localhost:8080";
 
-
 async function isAuthenticated() {
   const accessToken = localStorage.getItem("accessToken");
   const user = JSON.parse(localStorage.getItem("user"));
-  if (!user || !accessToken) { return false }
+  if (!user || !accessToken) {
+    return false;
+  }
   const result = await axios.get(`${baseURL}/api/user/validToken`, {
     params: {
       userId: user.id,
@@ -45,9 +46,9 @@ function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
         navigate("/main");
       }
     };
-  
+
     checkAuthentication();
-  
+
     AOS.init({
       duration: 1000,
     });
@@ -62,7 +63,6 @@ function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
       setModalIsOpen(false);
     }
   }, [location.pathname, setModalContent, setModalIsOpen]);
-  
 
   const closeModal = () => {
     toggleModal(null);
@@ -70,39 +70,39 @@ function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
   };
 
   return (
-    <div className="page-container">
-      <div className="rectangle">
-        <Navbar />
-        <div className="content-container flex flex-col md:flex-row items-center p-8">
-          <div className="text-container w-full md:w-1/2">
-            <h1
-              className="text-white text-3xl md:text-5xl font-bold mb-4 text-left"
-              data-aos="fade-left"
-            >
-              {t("empowering_daos")}
-            </h1>
-            <p
-              className="text-white text-xl md:text-2xl text-left"
-              data-aos="fade-left"
-            >
-              {t("similar_streamlines")}
-            </p>
-            <div className="mt-8" data-aos="fade-right">
-              <Link
-                to="/signup"
-                className="text-blue-600 bg-white px-6 py-2 text-lg rounded-full font-semibold transition-colors duration-300 hover:bg-blue-600 hover:text-white hover:border-white border"
-              >
-                Start!
-              </Link>
-            </div>
-          </div>
-          <img
-            className="image-container w-96 h-auto hidden md:block ml-auto mt-18"
-            src="/images/dao_reu.png"
-            alt="Image descriptive"
-          />
-        </div>
+    <div className="page-container w-full">
+      <div className="rectangle relative w-full bg-blue-600 rounded-b-3xl lg:rounded-b-5xl overflow-hidden">
+  <Navbar />
+  <div className="content-container flex flex-col md:flex-row items-center px-4 md:p-8">
+    <div className="text-container w-full md:w-1/2">
+      <h1
+        className="text-white text-2xl sm:text-3xl md:text-5xl font-bold mb-2 sm:mb-4 text-left"
+        data-aos="fade-left"
+      >
+        {t("empowering_daos")}
+      </h1>
+      <p
+        className="text-white text-base sm:text-lg md:text-2xl text-left"
+        data-aos="fade-left"
+      >
+        {t("similar_streamlines")}
+      </p>
+      <div className="mt-4 sm:mt-6 md:mt-8" data-aos="fade-right">
+        <Link
+          to="/signup"
+          className="text-blue-600 bg-white px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-lg rounded-full font-semibold transition-colors duration-300 hover:bg-blue-600 hover:text-white hover:border-white border"
+        >
+          Start!
+        </Link>
       </div>
+    </div>
+    <img
+      className="image-container w-32 sm:w-48 md:w-96 h-auto mx-auto md:mx-0 md:ml-auto mt-4 sm:mt-6 md:mt-18"
+      src="/images/dao_reu.png"
+      alt="Image descriptive"
+    />
+  </div>
+</div>
 
       <div
         className="flex flex-col md:flex-row items-start my-8"
@@ -171,7 +171,7 @@ function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
             </div>
             <div className="ml-8">
               <h3 className="text-lg font-bold">SkymoZ</h3>
-              <p className="text-gray-500">Founder & Designer</p>
+              <p className="text-gray-500">Founder & Designer </p>
             </div>
           </div>
           <div className="flex items-center m-4">

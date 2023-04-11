@@ -8,7 +8,7 @@ import { useNavigate, Link } from "react-router-dom";
 import SearchModal from "./SearchModal";
 import { Menu, Transition } from "@headlessui/react";
 import UserProfile from "../../components/UserProfile";
-import { TbMessageCircle2Filled} from "react-icons/tb";
+import { TbMessageCircle2Filled } from "react-icons/tb";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -18,6 +18,7 @@ const baseURL = "http://localhost:8080";
 const MainPage = () => {
   const [onlineFriends, setOnlineFriends] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [actualUserId, setActualUserId] = useState(null);
   const navigate = useNavigate();
 
   const toggleModal = () => {
@@ -27,6 +28,7 @@ const MainPage = () => {
   const deleteFriend = async (friend_wallet_address) => {
     const accessToken = localStorage.getItem("accessToken");
     const user = JSON.parse(localStorage.getItem("user"));
+    setActualUserId(user.id);
     const response = await axios.post(
       `${baseURL}/api/friend/delete`,
       {
@@ -77,6 +79,7 @@ const MainPage = () => {
     const fetchFriends = async () => {
       const accessToken = localStorage.getItem("accessToken");
       const user = JSON.parse(localStorage.getItem("user"));
+      setActualUserId(user.id);
       try {
         const result = await axios.get(`${baseURL}/api/friend/getAll`, {
           params: {
@@ -86,26 +89,18 @@ const MainPage = () => {
             "x-access-token": accessToken,
           },
         });
-
+  
         const friendsWithAvatars = await Promise.all(
           result.data.friends.map(async (friendRequest) => {
             const friend = friendRequest.friend;
-            try {
-              const avatarResponse = await axios.get(
-                `${baseURL}/static/images/user/user-${friend.id}.png`,
-                {
-                  responseType: "blob",
-                }
-              );
-              const avatarUrl = URL.createObjectURL(avatarResponse.data);
-              return {
-                ...friendRequest,
-                friend: { ...friend, avatar: avatarUrl },
-              };
-            } catch (err) {
-              console.log(err);
-              return { ...friendRequest, friend: { ...friend, avatar: "" } };
-            }
+            const friendAvatar = await getAvatar(friend);
+            const userAvatar = await getAvatar(friendRequest.user);
+  
+            return {
+              ...friendRequest,
+              friend: { ...friend, avatar: friendAvatar },
+              user: { ...friendRequest.user, avatar: userAvatar },
+            };
           })
         );
         setOnlineFriends(friendsWithAvatars);
@@ -114,16 +109,34 @@ const MainPage = () => {
         return err;
       }
     };
-
+  
+    const getAvatar = async (user) => {
+      try {
+        const avatarResponse = await axios.get(
+          `${baseURL}/static${user.avatar}`,
+          {
+            responseType: "blob",
+          }
+        );
+        const avatarUrl = URL.createObjectURL(avatarResponse.data);
+        return avatarUrl;
+      } catch (err) {
+        console.log(err);
+        return "";
+      }
+    };
+  
     fetchFriends();
   }, []);
+  
+  
 
   return (
     <div className="bg-gray-800 h-screen w-screen">
       <div className="flex h-full">
         <SidebarServers />
         <SidebarFriend />
-        <div className="bg-gray-700 w-full flex flex-col p-6 flex-grow">
+        <div className="bg-gray-700 w-fullflex flex-col p-6 flex-grow">
           <div className="flex items-center mb-4">
             <div className="text-white text-2xl font-semibold">Friends</div>
             <button
@@ -150,7 +163,9 @@ const MainPage = () => {
             />
             <BsSearch className="absolute right-3 top-2 text-white" />
           </div>
-          <div className="text-white font-semibold mt-4">Online</div>
+          <div className="text-white font-semibold mt-4">
+            Online - {onlineFriends.length}
+          </div>
           <div className="flex flex-col mt-2">
             {onlineFriends
               ? onlineFriends.map((friendOnline) => (
@@ -160,28 +175,42 @@ const MainPage = () => {
                   >
                     <img
                       src={
-                        friendOnline.friend.avatar
+                        actualUserId == friendOnline.user.id
                           ? friendOnline.friend.avatar
+                            ? friendOnline.friend.avatar
+                            : "/image.jpg"
+                          : friendOnline.user.avatar
+                          ? friendOnline.user.avatar
                           : "/image.jpg"
                       }
-                      alt={friendOnline.friend.pseudo}
+                      alt={
+                        actualUserId == friendOnline.user.id
+                          ? friendOnline.friend.pseudo
+                          : friendOnline.user.pseudo
+                      }
                       className="w-12 h-12 rounded-full mr-4"
                     />
 
                     <div className="text-white font-semibold">
-                      {friendOnline.friend.pseudo}
+                      {actualUserId == friendOnline.user.id
+                        ? friendOnline.friend.pseudo
+                        : friendOnline.user.pseudo}
                     </div>
                     <div className="ml-auto">
                       <Menu
                         as="div"
                         className="relative inline-block text-left"
                       >
-                        
-
                         <Menu.Button className="flex items-center justify-center w-full shadow-sm px-2 py-2 text-sm font-medium text-gray-700 focus:outline-none">
-                        <Link to={`/friend/message/${friendOnline.friend.id}`}>
-                          <TbMessageCircle2Filled className="text-white w-8 h-8 p-1 rounded-full bg-gray-700 mr-4" />
-                        </Link>
+                          <Link
+                            to={`/friend/message/${
+                              actualUserId == friendOnline.user.id
+                                ? friendOnline.friend.id
+                                : friendOnline.user.id
+                            }`}
+                          >
+                            <TbMessageCircle2Filled className="text-white w-8 h-8 p-1 rounded-full bg-gray-700 mr-4" />
+                          </Link>
                           <HiOutlineDotsVertical className="text-white w-8 h-8 p-1 rounded-full bg-gray-700 hover:bg-gray-600" />
                         </Menu.Button>
                         <Transition
@@ -205,7 +234,9 @@ const MainPage = () => {
                                     } flex px-2 py-1 text-sm bg-gray-600 text-red-500 rounded-md w-full`}
                                     onClick={() =>
                                       deleteFriend(
-                                        friendOnline.friend.wallet_address
+                                        actualUserId == friendOnline.user.id
+                                          ? friendOnline.friend.wallet_address
+                                          : friendOnline.user.wallet_address
                                       )
                                     }
                                   >
@@ -223,7 +254,9 @@ const MainPage = () => {
                                     } flex px-2 py-1 text-sm bg-gray-600 text-black rounded-md w-full`}
                                     onClick={() =>
                                       blockFriend(
-                                        friendOnline.friend.wallet_address
+                                        actualUserId == friendOnline.user.id
+                                          ? friendOnline.friend.wallet_address
+                                          : friendOnline.user.wallet_address
                                       )
                                     }
                                   >

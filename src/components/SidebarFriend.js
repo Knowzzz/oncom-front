@@ -9,13 +9,15 @@ const baseURL = "http://localhost:8080";
 const SidebarFriend = ({ friendId }) => {
   const [currentFriendId, setCurrentFriendId] = useState(null);
   const [friends, setFriends] = useState([]);
+  const [actualUserId, setActualUserId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     setCurrentFriendId(friendId);
+    const user = JSON.parse(localStorage.getItem("user"));
+    setActualUserId(user.id);
     const fetchFriends = async () => {
       const accessToken = localStorage.getItem("accessToken");
-      const user = JSON.parse(localStorage.getItem("user"));
       try {
         const result = await axios.get(`${baseURL}/api/friend/getAll`, {
           params: {
@@ -25,26 +27,42 @@ const SidebarFriend = ({ friendId }) => {
             "x-access-token": accessToken,
           },
         });
-
+  
         const friendsWithAvatars = await Promise.all(
           result.data.friends.map(async (friendRequest) => {
-            const friend = friendRequest.friend; // <-- Change this line
+            const friend = friendRequest.friend;
+            const user = friendRequest.user;
+            let friendAvatar, userAvatar;
+  
             try {
-              const avatarResponse = await axios.get(
-                `${baseURL}/static/images/user/user-${friend.id}.png`,
+              const friendAvatarResponse = await axios.get(
+                `${baseURL}/static${friend.avatar}`,
                 {
                   responseType: "blob",
                 }
               );
-              const avatarUrl = URL.createObjectURL(avatarResponse.data);
-              return {
-                ...friendRequest,
-                friend: { ...friend, avatar: avatarUrl },
-              };
+              friendAvatar = URL.createObjectURL(friendAvatarResponse.data);
             } catch (err) {
-              console.log(err);
-              return { ...friendRequest, friend: { ...friend, avatar: "" } };
+              friendAvatar = "";
             }
+  
+            try {
+              const userAvatarResponse = await axios.get(
+                `${baseURL}/static${user.avatar}`,
+                {
+                  responseType: "blob",
+                }
+              );
+              userAvatar = URL.createObjectURL(userAvatarResponse.data);
+            } catch (err) {
+              userAvatar = "";
+            }
+  
+            return {
+              ...friendRequest,
+              friend: { ...friend, avatar: friendAvatar },
+              user: { ...user, avatar: userAvatar },
+            };
           })
         );
         setFriends(friendsWithAvatars);
@@ -52,9 +70,11 @@ const SidebarFriend = ({ friendId }) => {
         return err;
       }
     };
-
+  
     fetchFriends();
   }, [friendId]);
+  
+  
 
   return (
     <div className="bg-gray-800 w-64 flex flex-col py-4 border border-gray-500">
@@ -83,29 +103,40 @@ const SidebarFriend = ({ friendId }) => {
         <p className="text-gray-400 text-sm text-center font-semibold">
           Message privé
         </p>
-        {friends.map((friend) => (
-          <Link to={`/friend/message/${friend.friend.id}`}>
-            <div
-              key={friend.id}
-              className={`${
-                friend.friend.id == currentFriendId
-                  ? "bg-gray-600"
-                  : "bg-gray-800 hover:bg-gray-600"
-              } w-full h-16 flex items-center p-4 rounded-md transition-colors duration-300`}
-              onClick={() => setCurrentFriendId(friend.friend.id)}
-            >
-              <img
-                src={friend.friend.avatar}
-                alt={friend.friend.pseudo}
-                className="w-12 h-12 rounded-full mr-4"
-              />
+        {friends.map((friend) => {
+          const displayFriend =
+            actualUserId === friend.friend.id ? friend.user : friend.friend;
 
-              <div className="text-white font-semibold">
-                {friend.friend.pseudo}
+          return (
+            <Link to={`/friend/message/${displayFriend.id}`}>
+              <div
+                key={friend.id}
+                className={`${
+                  displayFriend.id === currentFriendId
+                    ? "bg-gray-600"
+                    : "bg-gray-800 hover:bg-gray-600"
+                } w-full h-16 flex items-center p-4 rounded-md transition-colors duration-300`}
+                onClick={() => setCurrentFriendId(displayFriend.id)}
+              >
+                <img
+                  src={actualUserId == friend.user.id
+                    ? friend.friend.avatar
+                      ? friend.friend.avatar
+                      : "/image.jpg"
+                    : friend.user.avatar
+                    ? friend.user.avatar
+                    : "/image.jpg"}
+                  alt={actualUserId == friend.user.id ? friend.friend.pseudo : friend.user.pseudo}
+                  className="w-12 h-12 rounded-full mr-4"
+                />
+
+                <div className="text-white font-semibold">
+                  {displayFriend.pseudo}
+                </div>
               </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

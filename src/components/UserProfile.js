@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Dialog, Transition } from "@headlessui/react";
 import React, { useState, useEffect, Fragment } from "react";
 import axios from "axios";
+import { ethers } from "ethers";
 import { useNavigate } from "react-router-dom";
 
 const baseURL = "http://localhost:8080";
@@ -18,6 +19,7 @@ const UserProfile = () => {
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] =
     useState(false);
+  const [walletAddressPage, setWalletAddressPage] = useState("");
 
   const navigate = useNavigate();
 
@@ -78,8 +80,47 @@ const UserProfile = () => {
   };
 
   const handleDeleteAccount = async () => {
+    if (typeof window.ethereum !== "undefined") {
+      try {
+        const accounts = await window.ethereum.request({
+          method: "eth_requestAccounts",
+        });
+        setWalletAddressPage(accounts);
 
-  }
+        const provider = new ethers.BrowserProvider(window.ethereum);
+
+        const message = await axios.post(
+          `${baseURL}/api/user/generateMessage`,
+          {
+            wallet_address: walletAddressPage[0],
+          }
+        );
+        if (!message) {
+          return { error: "Error please try later" };
+        }
+
+        const signer = await provider.getSigner();
+        const signature = await signer.signMessage(message.data.message);
+        const result = await axios.post(`${baseURL}/api/user/delete`, {
+          wallet_address: walletAddressPage,
+          message: message.data.message,
+          signature: signature,
+          messageId: message.data.messageId,
+        });
+        if (result.data.error) {
+          return result.data.error;
+        }
+        localStorage.removeItem("user");
+        localStorage.removeItem("accessToken");
+        navigate("/");
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      console.log("No Ethereum provider found");
+      return;
+    }
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -113,7 +154,7 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="bg-gray-700 border border-gray-500 w-1/4 flex flex-col p-4">
+    <div className="bg-gray-700 border border-gray-500 w-1/5 flex flex-col p-4">
       <div className="flex justify-center">
         <label htmlFor="avatar">
           <img
@@ -273,7 +314,8 @@ const UserProfile = () => {
               </Dialog.Title>
               <div className="mt-2">
                 <p className="text-sm text-gray-500">
-                  Signez cette transaction pour valider la suppression de votre compte.
+                  Signez cette transaction pour valider la suppression de votre
+                  compte.
                 </p>
               </div>
               <div className="mt-4 flex justify-end space-x-2">

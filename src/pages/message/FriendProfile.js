@@ -42,10 +42,8 @@ const FriendProfile = ({ friendId }) => {
     return <div>Loading...</div>;
   }
 
-
-
   return (
-    <div className="bg-gray-700 border border-gray-500 w-1/4 flex flex-col p-4">
+    <div className="bg-gray-700 border border-gray-500 w-1/6 flex flex-col p-4">
       <div className="flex justify-center">
         <img
           src={avatarUrl || "/image.jpg"}

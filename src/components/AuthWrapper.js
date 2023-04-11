@@ -23,7 +23,7 @@ const isAuthenticated = async () => {
 const AuthWrapper = ({ children }) => {
   const navigate = useNavigate();
 
-  const [isAuthenticatedStatus, setIsAuthenticatedStatus] = useState(null);
+  const [isAuthenticatedStatus, setIsAuthenticatedStatus] = useState(true);
 
   useEffect(() => {
     const checkAuthentication = async () => {

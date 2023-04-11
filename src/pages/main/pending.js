@@ -109,7 +109,7 @@ const MainPage = () => {
             const friend = friendRequest.friend;
             try {
               const avatarResponse = await axios.get(
-                `${baseURL}/static/images/user/user-${friend.id}.png`,
+                `${baseURL}/static/${friend.avatar}`,
                 {
                   responseType: "blob",
                 }
@@ -186,16 +186,16 @@ const MainPage = () => {
                   >
                     <img
                       src={
-                        friendRequest.friend.avatar
-                          ? friendRequest.friend.avatar
+                        friendRequest.user.avatar
+                          ? friendRequest.user.avatar
                           : "/image.jpg"
                       }
-                      alt={friendRequest.friend.pseudo}
+                      alt={friendRequest.user.pseudo}
                       className="w-12 h-12 rounded-full mr-4"
                     />
 
                     <div className="text-white font-semibold">
-                      {friendRequest.friend.pseudo}
+                      {friendRequest.user.pseudo}
                     </div>
                     <div className="ml-auto">
                       <Menu
@@ -226,7 +226,7 @@ const MainPage = () => {
                                     } flex px-2 py-1 text-sm bg-gray-600 text-green-600 rounded-md w-full`}
                                     onClick={() =>
                                       acceptFriend(
-                                        friendRequest.friend.wallet_address
+                                        friendRequest.user.wallet_address
                                       )
                                     }
                                   >

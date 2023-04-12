@@ -73,7 +73,7 @@ const SearchModal = ({ isOpen, closeModal }) => {
           response.data.users.map(async (user) => {
             try {
               const avatarResponse = await axios.get(
-                `${baseURL}/static/${user.avatar}`,
+                `${baseURL}/static${user.avatar}`,
                 {
                   responseType: "blob",
                 }

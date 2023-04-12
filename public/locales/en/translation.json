@@ -16,8 +16,11 @@
   "about": "About",
   "help": "Help",
   "charters": "Charters",
-  "onfidentiality": "Confidentiality",
+  "confidentiality": "Confidentiality",
   "produces": "Produces",
   "download": "Download",
-  "signup": "Signup"
+  "signup": "Signup",
+
+  "already_account": "Already have an account?",
+  "signin": "Sign in"
 }

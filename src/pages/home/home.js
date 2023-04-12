@@ -1,61 +1,103 @@
 import React, { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useTranslation } from 'react-i18next';
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import Modal from "react-modal";
 import "aos/dist/aos.css";
+import axios from "axios";
 import AOS from "aos";
 
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import ModalContent from "../../components/ModalContent";
 import "./home.css";
 
-function isAuthenticated() {
+const baseURL = "http://localhost:8080";
+
+async function isAuthenticated() {
   const accessToken = localStorage.getItem("accessToken");
-  if (!accessToken) return false;
-  return false;
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user || !accessToken) {
+    return false;
+  }
+  const result = await axios.get(`${baseURL}/api/user/validToken`, {
+    params: {
+      userId: user.id,
+    },
+    headers: {
+      "x-access-token": accessToken,
+    },
+  });
+  return result.data.success;
 }
 
-function Home() {
+function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const location = useLocation();
+
+  const toggleModal = () => {
+    setModalIsOpen(!modalIsOpen);
+  };
 
   useEffect(() => {
-    if (isAuthenticated()) {
-      navigate("/main");
-    }
+    const checkAuthentication = async () => {
+      const authStatus = await isAuthenticated();
+      if (authStatus) {
+        navigate("/main");
+      }
+    };
+
+    checkAuthentication();
+
     AOS.init({
       duration: 1000,
     });
-  }, []);
+    if (location.pathname === "/cookies") {
+      setModalContent("cookies");
+      setModalIsOpen(true);
+    } else if (location.pathname === "/confidentiality") {
+      setModalContent("confidentiality");
+      setModalIsOpen(true);
+    } else {
+      setModalContent(null);
+      setModalIsOpen(false);
+    }
+  }, [location.pathname, setModalContent, setModalIsOpen]);
+
+  const closeModal = () => {
+    toggleModal(null);
+    navigate("/");
+  };
 
   return (
-    <div className="page-container">
-      <div className="rectangle">
+    <div className="page-container w-full">
+      <div className="rectangle relative w-full bg-blue-600 rounded-b-3xl lg:rounded-b-5xl overflow-hidden">
         <Navbar />
-        <div className="content-container flex flex-col md:flex-row items-center p-8">
+        <div className="content-container flex flex-col md:flex-row items-center px-4 md:p-8">
           <div className="text-container w-full md:w-1/2">
             <h1
-              className="text-white text-3xl md:text-5xl font-bold mb-4 text-left"
+              className="text-white text-2xl sm:text-3xl md:text-5xl font-bold mb-2 sm:mb-4 text-left"
               data-aos="fade-left"
             >
-              {t('empowering_daos')}
+              {t("empowering_daos")}
             </h1>
             <p
-              className="text-white text-xl md:text-2xl text-left"
+              className="text-white text-base sm:text-lg md:text-2xl text-left"
               data-aos="fade-left"
             >
-              {t('similar_streamlines')}
+              {t("similar_streamlines")}
             </p>
-            <div className="mt-8" data-aos="fade-right">
+            <div className="mt-4 sm:mt-6 md:mt-8" data-aos="fade-right">
               <Link
                 to="/signup"
-                className="text-blue-600 bg-white px-6 py-2 text-lg rounded-full font-semibold transition-colors duration-300 hover:bg-blue-600 hover:text-white hover:border-white border"
+                className="text-blue-600 bg-white px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-lg rounded-full font-semibold transition-colors duration-300 hover:bg-blue-600 hover:text-white hover:border-white border"
               >
                 Start!
               </Link>
             </div>
           </div>
           <img
-            className="image-container w-96 h-auto hidden md:block ml-auto mt-18"
+            className="image-container w-32 sm:w-48 md:w-96 h-auto mx-auto md:mx-0 md:ml-auto mt-4 sm:mt-6 md:mt-18"
             src="/images/dao_reu.png"
             alt="Image descriptive"
           />
@@ -72,7 +114,9 @@ function Home() {
           alt="Image"
         />
         <div className="w-full md:w-3/6 pb-20 flex flex-col items-center md:items-start mt-8 md:mt-20 text-center md:text-left">
-          <h2 className="text-3xl md:text-4xl font-bold mb-5">{t("web3_aspects")}</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-5">
+            {t("web3_aspects")}
+          </h2>
           <p className="text-lg text-gray-700 w-full md:w-3/6">
             {t("web3_aspects_desc")}
           </p>
@@ -97,9 +141,7 @@ function Home() {
       </div>
       <div className="flex flex-col items-center m-20" data-aos="fade-up">
         <h2 className="text-4xl font-bold mb-5"> {t("team")} </h2>
-        <p className="text-lg text-gray-700 mb-8">
-          {t("team_desc")}
-        </p>
+        <p className="text-lg text-gray-700 mb-8">{t("team_desc")}</p>
 
         <div className="flex flex-wrap justify-center">
           <div className="flex items-center m-4">
@@ -129,7 +171,7 @@ function Home() {
             </div>
             <div className="ml-8">
               <h3 className="text-lg font-bold">SkymoZ</h3>
-              <p className="text-gray-500">Founder & Designer</p>
+              <p className="text-gray-500">Founder & Designer </p>
             </div>
           </div>
           <div className="flex items-center m-4">
@@ -151,7 +193,7 @@ function Home() {
       </div>
       <div className="bg-white">
         <div
-          className="bg-gray-100 w-screen h-screen flex items-center justify-center"
+          className="bg-gray-100 w-full h-screen flex items-center justify-center"
           data-aos="fade-up"
         >
           <div className="w-full md:w-1/2 rounded-lg p-8">
@@ -184,6 +226,21 @@ function Home() {
       </div>
 
       <Footer />
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        className="relative bg-white p-5 rounded-lg w-full max-w-md mx-auto max-h-[90%] overflow-auto"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+        contentLabel="Confidentiality and Cookies"
+      >
+        <button
+          onClick={closeModal}
+          className="absolute top-2 right-2 bg-transparent border-none text-2xl cursor-pointer"
+        >
+          &times;
+        </button>
+        <ModalContent contentType={modalContent} />
+      </Modal>
     </div>
   );
 }

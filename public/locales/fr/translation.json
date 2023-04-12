@@ -19,5 +19,8 @@
   "confidentiality": "Confidentialité",
   "produces": "Produits",
   "download": "Télécharger",
-  "signup": "Inscription"
+  "signup": "Inscription",
+
+  "already_account": "Vous avez déjà un compte ?",
+  "signin": "Se connecter"
 }

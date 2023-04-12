@@ -1,24 +1,53 @@
-// AuthWrapper.js
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-function isAuthenticated() {
-  // Vérifiez si l'utilisateur est connecté, par exemple en vérifiant l'existence d'un accessToken
-  // Pour cet exemple, nous renvoyons simplement true ou false, mais vous devez implémenter la logique d'authentification appropriée
-  const accessToken = localStorage.getItem('accessToken');
-  return true;
-}
+const baseURL = "http://localhost:8080";
 
-function AuthWrapper({ children }) {
+const isAuthenticated = async () => {
+  const accessToken = localStorage.getItem("accessToken");
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user || !accessToken) { return false }
+  const result = await axios.get(`${baseURL}/api/user/validToken`, {
+    params: {
+      userId: user.id,
+    },
+    headers: {
+      "x-access-token": accessToken,
+    },
+  });
+  if (!result.data.success) return false;
+  return result.data.success;
+};
+
+const AuthWrapper = ({ children }) => {
   const navigate = useNavigate();
 
+  const [isAuthenticatedStatus, setIsAuthenticatedStatus] = useState(true);
+
   useEffect(() => {
-    if (!isAuthenticated()) {
-      navigate('/');
-    }
+    const checkAuthentication = async () => {
+      try {
+        const result = await isAuthenticated();
+        setIsAuthenticatedStatus(result);
+      } catch (error) {
+        console.error('Error during authentication check:', error);
+        setIsAuthenticatedStatus(false);
+      }
+    };
+
+    checkAuthentication();
   }, []);
 
-  return isAuthenticated() ? children : null;
-}
+  useEffect(() => {
+    if (isAuthenticatedStatus === false) {
+      navigate("/");
+    }
+  }, [isAuthenticatedStatus, navigate]);
+
+  return isAuthenticatedStatus
+    ? React.cloneElement(children)
+    : null;
+};
 
 export default AuthWrapper;

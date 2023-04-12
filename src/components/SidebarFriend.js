@@ -112,7 +112,7 @@ const SidebarFriend = ({ friendId }) => {
               <div
                 key={friend.id}
                 className={`${
-                  displayFriend.id === currentFriendId
+                  displayFriend.id == currentFriendId
                     ? "bg-gray-600"
                     : "bg-gray-800 hover:bg-gray-600"
                 } w-full h-16 flex items-center p-4 rounded-md transition-colors duration-300`}

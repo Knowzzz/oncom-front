@@ -10,7 +10,7 @@ import { Menu, Transition } from "@headlessui/react";
 import UserProfile from "../../components/UserProfile";
 import { TbMessageCircle2Filled } from "react-icons/tb";
 
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const baseURL = "http://localhost:8080";

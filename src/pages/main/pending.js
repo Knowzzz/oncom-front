@@ -42,7 +42,7 @@ const MainPage = () => {
     }
   };
 
-  const deniedFriend = async (friend_wallet_address) => {
+  const declineFriend = async (friend_wallet_address) => {
     const accessToken = localStorage.getItem("accessToken");
       const user = JSON.parse(localStorage.getItem("user"));
       const response = await axios.post(
@@ -107,24 +107,38 @@ const MainPage = () => {
         const friendsWithAvatars = await Promise.all(
           result.data.friendRequests.map(async (friendRequest) => {
             const friend = friendRequest.friend;
+            const user = friendRequest.user;
             try {
-              const avatarResponse = await axios.get(
+              const friendAvatarResponse = await axios.get(
                 `${baseURL}/static/${friend.avatar}`,
                 {
                   responseType: "blob",
                 }
               );
-              const avatarUrl = URL.createObjectURL(avatarResponse.data);
+              const userAvatarResponse = await axios.get(
+                `${baseURL}/static/${user.avatar}`,
+                {
+                  responseType: "blob",
+                }
+              );
+              const friendAvatarUrl = URL.createObjectURL(friendAvatarResponse.data);
+              const userAvatarUrl = URL.createObjectURL(userAvatarResponse.data);
               return {
                 ...friendRequest,
-                friend: { ...friend, avatar: avatarUrl },
+                friend: { ...friend, avatar: friendAvatarUrl },
+                user: { ...user, avatar: userAvatarUrl },
               };
             } catch (err) {
               console.log(err);
-              return { ...friendRequest, friend: { ...friend, avatar: "" } };
+              return {
+                ...friendRequest,
+                friend: { ...friend, avatar: "" },
+                user: { ...user, avatar: "" },
+              };
             }
           })
         );
+        
         setPendingFriends(friendsWithAvatars);
       } catch (err) {
         console.log(err);
@@ -243,8 +257,8 @@ const MainPage = () => {
                                         : "text-black"
                                     } flex px-2 py-1 text-sm bg-gray-600 text-red-500 rounded-md w-full`}
                                     onClick={() =>
-                                      deniedFriend(
-                                        friendRequest.friend.wallet_address
+                                      declineFriend(
+                                        friendRequest.user.wallet_address
                                       )
                                     }
                                   >

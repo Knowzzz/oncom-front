@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Provider } from 'react-redux';
 
 import Home from "./pages/home/home";
+import NotFound from "./pages/NotFound";
 import Main from "./pages/main/main";
 import Signup from "./pages/sign/signup";
 import Pending from "./pages/main/pending";
@@ -46,7 +47,7 @@ function App() {
       />
       <Route path="/signup" element={<Signup />} />
       <Route
-        path="/*"
+        path="/"
         element={
           <Home
             modalIsOpen={modalIsOpen}
@@ -56,6 +57,7 @@ function App() {
           />
         }
       />
+      <Route path="*" element={<NotFound />} />
     </Routes>
     </Provider>
   );

@@ -33,7 +33,7 @@ const UserProfile = () => {
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
-    navigate("/home");
+    navigate("/");
   };
 
   const updateUser = async (userId, pseudo, wallet_address, avatar) => {

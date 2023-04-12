@@ -27,7 +27,6 @@ const SearchModal = ({ isOpen, closeModal }) => {
       console.log(friend_wallet_address);
       const accessToken = localStorage.getItem("accessToken");
       const user = JSON.parse(localStorage.getItem("user"));
-      console.log(accessToken)
       const response = await axios.post(
         `${baseURL}/api/friend/add`,
         {

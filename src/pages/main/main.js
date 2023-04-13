@@ -103,6 +103,7 @@ const MainPage = () => {
             };
           })
         );
+        console.log(friendsWithAvatars);
         setOnlineFriends(friendsWithAvatars);
       } catch (err) {
         console.log(err);

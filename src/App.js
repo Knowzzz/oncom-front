@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import Main from "./pages/main/main";
 import Signup from "./pages/sign/signup";
 import Pending from "./pages/main/pending";
+import Block from "./pages/main/blockfriend";
 import AuthWrapper from "./components/AuthWrapper";
 import FriendMessage from "./pages/message/FriendMessage";
 
@@ -42,6 +43,14 @@ function App() {
         element={
           <AuthWrapper>
             <Pending />
+          </AuthWrapper>
+        }
+      />
+      <Route
+        path="/main/friend/blocked"
+        element={
+          <AuthWrapper>
+            <Block />
           </AuthWrapper>
         }
       />

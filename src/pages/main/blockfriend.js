@@ -11,7 +11,7 @@ import { Menu, Transition } from "@headlessui/react";
 
 const baseURL = "http://localhost:8080";
 
-const MainPage = () => {
+const Block = () => {
   const [pendingFriends, setPendingFriends] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
@@ -20,12 +20,12 @@ const MainPage = () => {
     setIsModalOpen(!isModalOpen);
   };
 
-  const acceptFriend = async (friend_wallet_address) => {
+  const unBlockFriend = async (friend_wallet_address) => {
     try {
       const accessToken = localStorage.getItem("accessToken");
       const user = JSON.parse(localStorage.getItem("user"));
       const response = await axios.post(
-        `${baseURL}/api/friend/accept`,
+        `${baseURL}/api/friend/unblock`,
         {
           userId: user.id,
           friend_wallet_address: friend_wallet_address,
@@ -36,50 +36,6 @@ const MainPage = () => {
           },
         }
       );
-    } catch (err) {
-      console.log(err);
-      return err;
-    }
-  };
-
-  const declineFriend = async (friend_wallet_address) => {
-    const accessToken = localStorage.getItem("accessToken");
-      const user = JSON.parse(localStorage.getItem("user"));
-      const response = await axios.post(
-        `${baseURL}/api/friend/decline`,
-        {
-          userId: user.id,
-          friend_wallet_address: friend_wallet_address,
-        },
-        {
-          headers: {
-            "x-access-token": accessToken,
-          },
-        }
-      );
-    try {
-    } catch (err) {
-      console.log(err);
-      return err;
-    }
-  };
-
-  const blockFriend = async (friend_wallet_address) => {
-    const accessToken = localStorage.getItem("accessToken");
-      const user = JSON.parse(localStorage.getItem("user"));
-      const response = await axios.post(
-        `${baseURL}/api/friend/block`,
-        {
-          userId: user.id,
-          friend_wallet_address: friend_wallet_address,
-        },
-        {
-          headers: {
-            "x-access-token": accessToken,
-          },
-        }
-      );
-    try {
     } catch (err) {
       console.log(err);
       return err;
@@ -93,7 +49,7 @@ const MainPage = () => {
       console.log(user);
       try {
         const result = await axios.get(
-          `${baseURL}/api/friend/getAllFriendRequest`,
+          `${baseURL}/api/friend/getAllBlocked`,
           {
             params: {
               userId: user.id,
@@ -170,13 +126,13 @@ const MainPage = () => {
               Online
             </button>
             <button
-              className="bg-gray-800 text-gray-300 px-2 py-1 ml-2 rounded"
-              onClick={() => navigate("/friend/pending")}
+              className="bg-gray-500 text-gray-300 px-2 py-1 ml-2 rounded hover:bg-gray-600"
+              onClick={() => navigate("/main/friend/pending")}
             >
               Pending
             </button>
             <button
-              className="bg-gray-500 text-gray-300 px-2 py-1 ml-2 rounded hover:bg-gray-600"
+              className="bg-gray-800 text-gray-300 px-2 py-1 ml-2 rounded hover:bg-gray-600"
               onClick={() => navigate("/main/friend/blocked")}
             >
               Blocked
@@ -200,16 +156,16 @@ const MainPage = () => {
                   >
                     <img
                       src={
-                        friendRequest.user.avatar
-                          ? friendRequest.user.avatar
+                        friendRequest.friend.avatar
+                          ? friendRequest.friend.avatar
                           : "/image.jpg"
                       }
-                      alt={friendRequest.user.pseudo}
+                      alt={friendRequest.friend.pseudo}
                       className="w-12 h-12 rounded-full mr-4"
                     />
 
                     <div className="text-white font-semibold">
-                      {friendRequest.user.pseudo}
+                      {friendRequest.friend.pseudo}
                     </div>
                     <div className="ml-auto">
                       <Menu
@@ -239,48 +195,12 @@ const MainPage = () => {
                                         : "text-black"
                                     } flex px-2 py-1 text-sm bg-gray-600 text-green-600 rounded-md w-full`}
                                     onClick={() =>
-                                      acceptFriend(
-                                        friendRequest.user.wallet_address
-                                      )
-                                    }
-                                  >
-                                    Accepter
-                                  </button>
-                                )}
-                              </Menu.Item>
-                              <Menu.Item>
-                                {({ active }) => (
-                                  <button
-                                    className={`${
-                                      active
-                                        ? "bg-gray-400 text-black"
-                                        : "text-black"
-                                    } flex px-2 py-1 text-sm bg-gray-600 text-red-500 rounded-md w-full`}
-                                    onClick={() =>
-                                      declineFriend(
-                                        friendRequest.user.wallet_address
-                                      )
-                                    }
-                                  >
-                                    Supprimer
-                                  </button>
-                                )}
-                              </Menu.Item>
-                              <Menu.Item>
-                                {({ active }) => (
-                                  <button
-                                    className={`${
-                                      active
-                                        ? "bg-gray-400 text-black"
-                                        : "text-black"
-                                    } flex px-2 py-1 text-sm bg-gray-600 text-black rounded-md w-full`}
-                                    onClick={() =>
-                                      blockFriend(
+                                      unBlockFriend(
                                         friendRequest.friend.wallet_address
                                       )
                                     }
                                   >
-                                    Bloquer
+                                    Accepter
                                   </button>
                                 )}
                               </Menu.Item>
@@ -301,4 +221,4 @@ const MainPage = () => {
   );
 };
 
-export default MainPage;
+export default Block;

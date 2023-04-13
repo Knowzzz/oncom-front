@@ -85,7 +85,7 @@ const SidebarFriend = ({ friendId }) => {
           } hover:bg-gray-600 text-white font-semibold rounded-t w-full py-2 focus:outline-none flex items-center px-4`}
           onClick={() => {
             setCurrentFriendId(null);
-            navigate("/friends");
+            navigate("/");
           }}
         >
           <FaUserPlus className="mr-2" />

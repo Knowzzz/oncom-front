@@ -123,10 +123,10 @@ const SidebarServers = () => {
   };
 
   return (
-    <div className="bg-gray-900 w-16 flex flex-col items-center py-4">
+    <div className="bg-gray-900 w-16 flex flex-col h-screen items-center py-4">
       {servers &&
         servers.map((server, index) => (
-          <Link key={index} to={`/server/${server.id}`}>
+          <Link key={index} to={`/dao/${server.id}`}>
             <img
               src={server.avatar || "/image.png"}
               alt={server.name}

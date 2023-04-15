@@ -124,6 +124,11 @@ const SidebarServers = () => {
 
   return (
     <div className="bg-gray-900 w-16 flex flex-col h-screen items-center py-4">
+      <Link to="/main">
+        <button className="group bg-gray-500 hover:bg-green-500 text-white w-12 h-12 rounded-full hover:rounded-[14px] flex items-center justify-center transition-colors duration-500 transition-border duration-500">
+          <AiOutlineUser className="text-green-500 group-hover:text-gray-500 text-3xl transition-colors duration-500" />
+        </button>
+      </Link>
       {servers &&
         servers.map((server, index) => (
           <Link key={index} to={`/dao/${server.id}`}>

@@ -4,6 +4,7 @@ import axios from "axios";
 
 import SidebarChannel from "../../components/SidebarChannel";
 import SidebarServers from "../../components/SidebarServers";
+import SidebarUserOnDao from "../../components/SidebarUserOnDao";
 
 const baseURL = "http://localhost:8080"
 
@@ -21,6 +22,7 @@ const Dao = () => {
     <div className="flex">
         <SidebarServers />
         <SidebarChannel daoId={currentDaoId}/>
+        <SidebarUserOnDao daoId={currentDaoId} />
     </div>
   );
 

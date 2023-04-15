@@ -10,6 +10,7 @@ import Main from "./pages/main/main";
 import Signup from "./pages/sign/signup";
 import Pending from "./pages/main/pending";
 import Block from "./pages/main/blockfriend";
+import Dao from "./pages/dao/dao";
 import AuthWrapper from "./components/AuthWrapper";
 import FriendMessage from "./pages/message/FriendMessage";
 
@@ -35,6 +36,14 @@ function App() {
         element={
           <AuthWrapper>
             <FriendMessage />
+          </AuthWrapper>
+        }
+      />
+      <Route
+        path="/dao/:daoId"
+        element={
+          <AuthWrapper>
+            <Dao />
           </AuthWrapper>
         }
       />

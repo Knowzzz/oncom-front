@@ -30,8 +30,16 @@ const SidebarUserOnDao = ({ daoId }) => {
           setUsersOnline(online);
           setUsersOffline(offline);
           const uniqueRoles = Array.from(
-            new Set(online.map((user) => user.userRoles[0]?.role))
+            new Set(
+              online
+                .map(
+                  (user) => user.userRoles[0]?.role || { id: -1, name: "Other" }
+                )
+                .filter(Boolean)
+                .map((role) => ({ id: role.id, name: role.name }))
+            )
           );
+
           setRoles(uniqueRoles);
         } else {
           console.error(
@@ -49,26 +57,31 @@ const SidebarUserOnDao = ({ daoId }) => {
   }, [daoId]);
 
   return (
-    <div className="bg-gray-800 w-64 h-screen p-4 fixed right-0 top-0">
+    <div className="bg-gray-800 w-52 h-screen p-4 fixed right-0 top-0">
       {roles.map((role) => (
         <div key={role.id}>
           <h2 className="text-white mb-2">
             {role.name} - [
             {
               usersOnline.filter(
-                (user) => user.userRoles[0]?.role.id === role.id
+                (user) => (user.userRoles[0]?.role?.id || -1) === role.id // Ajoutez la vérification du rôle par défaut ici
               ).length
             }
             ]
           </h2>
           <div className="text-white">
             {usersOnline
-              .filter((user) => user.userRoles[0]?.role.id === role.id)
+              .filter((user) => (user.userRoles[0]?.role?.id || -1) === role.id) // Ajoutez la vérification du rôle par défaut ici
               .map((user) => (
-                <div key={user.id} className="flex items-center mb-2">
+                <div
+                  key={user.id}
+                  className="flex items-center mb-2 px-2 py-1 w-11/12 bg-transparent hover:bg-white hover:bg-opacity-10 text-white hover:text-white rounded transition-colors duration-200 ease-in cursor-pointer"
+                >
                   <span className="inline-block w-2 h-2 mr-2 rounded-full bg-green-500"></span>
                   <span
-                    style={{ color: user.userRoles[0]?.role?.color || "gray" }}
+                    style={{
+                      color: user.userRoles[0]?.role?.color || "gray",
+                    }}
                   >
                     {user.pseudo}
                   </span>
@@ -79,7 +92,10 @@ const SidebarUserOnDao = ({ daoId }) => {
       ))}
       <div className="text-gray-400 mt-4">
         {usersOffline.map((user) => (
-          <div key={user.id} className="flex items-center mb-2">
+          <div
+            key={user.id}
+            className="flex items-center mb-2 px-2 py-1 w-11/12 bg-transparent hover:bg-white hover:bg-opacity-10 text-gray-400 hover:text-white rounded transition-colors duration-200 ease-in cursor-pointer"
+          >
             <span className="inline-block w-2 h-2 mr-2 rounded-full bg-gray-500"></span>
             <span style={{ color: user.userRoles[0]?.role?.color || "gray" }}>
               {user.pseudo}

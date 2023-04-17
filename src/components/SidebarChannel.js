@@ -15,7 +15,7 @@ Modal.setAppElement("#root");
 
 const baseURL = "http://localhost:8080";
 
-const SidebarChannel = ({ daoId }) => {
+const SidebarChannel = ({ daoId, channelId }) => {
   const [daoData, setDaoData] = useState(null);
   const [isOwner, setIsOwner] = useState(false);
   const [createChannelModalOpen, setCreateChannelModalOpen] = useState(false);
@@ -145,7 +145,9 @@ const SidebarChannel = ({ daoId }) => {
               <Link
                 key={channel.id}
                 to={`/dao/${daoId}/channel/${channel.id}`}
-                className="block cursor-pointer py-2 hover:bg-gray-700 flex items-center"
+                className={`block cursor-pointer py-2 hover:bg-gray-700 flex items-center rounded-lg ${
+                  channel.id === channelId ? "bg-gray-700" : ""
+                }`}
               >
                 <FiHash className="mr-1" />
                 {channel.name}
@@ -188,7 +190,9 @@ const SidebarChannel = ({ daoId }) => {
                 <Link
                   key={channel.id}
                   to={`/dao/${daoId}/categorie/${category.id}/channel/${channel.id}`}
-                  className="block cursor-pointer py-2 pl-4 hover:bg-gray-700 text-gray-400 hover:text-white flex items-center rounded-lg"
+                  className={`block cursor-pointer py-2 hover:bg-gray-700 flex items-center rounded-lg ${
+                    channel.id === channelId ? "bg-gray-700" : ""
+                  }`}
                 >
                   <FiHash className="mr-1" />
                   {channel.name}

@@ -8,14 +8,18 @@ const userSlice = createSlice({
       address: null,
       username: "",
     },
+    lastChannelId: null,
   },
   reducers: {
     updateUser: (state, action) => {
       state.user = action.payload;
     },
+    setLastChannelId: (state, action) => {
+      state.lastChannelId = action.payload;
+    },
   },
 });
 
-export const { updateUser } = userSlice.actions;
+export const { updateUser, setLastChannelId } = userSlice.actions;
 
 export default userSlice.reducer;

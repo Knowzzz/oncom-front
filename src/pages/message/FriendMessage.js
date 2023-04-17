@@ -45,13 +45,16 @@ const FriendMessage = () => {
     // Fetch messages for the friend
     socket.on("initial-messages", (data) => {
       const { messages, user1, user2 } = data;
-      
+
       const formattedMessages = messages.map((message) => ({
         messageId: message.id,
         messageContent: message.content,
         writer: {
           pseudo: message.userId === user1.id ? user1.pseudo : user2.pseudo,
-          wallet_address: message.userId === user1.id ? user1.wallet_address : user2.wallet_address,
+          wallet_address:
+            message.userId === user1.id
+              ? user1.wallet_address
+              : user2.wallet_address,
           id: message.userId,
         },
       }));
@@ -99,7 +102,7 @@ const FriendMessage = () => {
   return (
     <div className="h-screen w-screen bg-gray-800 flex">
       <SidebarServers />
-      <SidebarFriend friendId={friendId}  />
+      <SidebarFriend friendId={friendId} />
       <div className="flex-1 flex flex-col">
         <div className="flex-1 bg-gray-700 px-4 py-2 overflow-y-auto">
           {messages.map((message) => (
@@ -129,10 +132,7 @@ const FriendMessage = () => {
             </div>
           ))}
         </div>
-        <form
-          onSubmit={handleSubmit}
-          className="flex items-center px-4 py-2 bg-gray-600"
-        >
+        <div className="flex items-center px-4 py-2 bg-gray-600">
           <input
             type="text"
             className="bg-gray-500 text-white w-full p-2 rounded-md"
@@ -145,9 +145,9 @@ const FriendMessage = () => {
               }
             }}
           />
-        </form>
+        </div>
       </div>
-      <FriendProfile key={friendId} friendId={friendId}/>
+      <FriendProfile key={friendId} friendId={friendId} />
     </div>
   );
 };

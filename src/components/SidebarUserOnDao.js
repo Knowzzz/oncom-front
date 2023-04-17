@@ -57,21 +57,21 @@ const SidebarUserOnDao = ({ daoId }) => {
   }, [daoId]);
 
   return (
-    <div className="bg-gray-800 w-52 h-screen p-4 fixed right-0 top-0">
+    <div className="bg-gray-800 w-52 h-screen p-4 right-0 top-0">
       {roles.map((role) => (
         <div key={role.id}>
           <h2 className="text-white mb-2">
             {role.name} - [
             {
               usersOnline.filter(
-                (user) => (user.userRoles[0]?.role?.id || -1) === role.id // Ajoutez la vérification du rôle par défaut ici
+                (user) => (user.userRoles[0]?.role?.id || -1) === role.id
               ).length
             }
             ]
           </h2>
           <div className="text-white">
             {usersOnline
-              .filter((user) => (user.userRoles[0]?.role?.id || -1) === role.id) // Ajoutez la vérification du rôle par défaut ici
+              .filter((user) => (user.userRoles[0]?.role?.id || -1) === role.id)
               .map((user) => (
                 <div
                   key={user.id}

@@ -57,7 +57,7 @@ const SidebarUserOnDao = ({ daoId }) => {
   }, [daoId]);
 
   return (
-    <div className="bg-gray-800 w-52 h-screen p-4 right-0 top-0">
+    <div className="bg-gray-800 w-52 relative h-screen p-4 right-0 top-0">
       {roles.map((role) => (
         <div key={role.id}>
           <h2 className="text-white mb-2">

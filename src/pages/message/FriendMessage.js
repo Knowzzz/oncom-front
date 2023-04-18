@@ -80,7 +80,7 @@ const FriendMessage = () => {
     };
   }, [friendId]);
 
-  const handleSubmit = async (event) => {
+  const handleSend = async (event) => {
     event.preventDefault();
     if (inputMessage.trim() === "") return;
 
@@ -103,7 +103,7 @@ const FriendMessage = () => {
     <div className="h-screen w-screen bg-gray-800 flex">
       <SidebarServers />
       <SidebarFriend friendId={friendId} />
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col bg-gray-700">
         <div className="flex-1 bg-gray-700 px-4 py-2 overflow-y-auto">
           {messages.map((message) => (
             <div
@@ -132,20 +132,19 @@ const FriendMessage = () => {
             </div>
           ))}
         </div>
-        <div className="flex items-center px-4 py-2 bg-gray-600">
-          <input
-            type="text"
-            className="bg-gray-500 text-white w-full p-2 rounded-md"
-            placeholder="Type a message..."
-            value={inputMessage}
-            onChange={(event) => setInputMessage(event.target.value)}
-            onKeyPress={(event) => {
-              if (event.key === "Enter" && !event.shiftKey) {
-                handleSubmit(event);
-              }
-            }}
-          />
-        </div>
+        <input
+          type="text"
+          className="bg-gray-500 text-white p-2 rounded-md m-4 shadow-xl mb-6 focus:border-gray-600 focus:outline-none border-2 border-transparent"
+          placeholder="Type your message..."
+          value={inputMessage}
+          onChange={(event) => setInputMessage(event.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              handleSend();
+            }
+          }}
+          autoComplete="off"
+        />
       </div>
       <FriendProfile key={friendId} friendId={friendId} />
     </div>

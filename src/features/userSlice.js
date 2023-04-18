@@ -1,25 +1,23 @@
-// src/features/userSlice.js
 import { createSlice } from "@reduxjs/toolkit";
+
+const initialState = {
+  user: null,
+  lastChannelId: {},
+};
 
 const userSlice = createSlice({
   name: "user",
-  initialState: {
-    user: {
-      address: null,
-      username: "",
-    },
-    lastChannelId: null,
-  },
+  initialState,
   reducers: {
-    updateUser: (state, action) => {
+    setUser: (state, action) => {
       state.user = action.payload;
     },
     setLastChannelId: (state, action) => {
-      state.lastChannelId = action.payload;
+      // Utilisez l'ID de DAO comme clé et le channelId comme valeur
+      state.lastChannelId[action.payload.daoId] = action.payload.channelId;
     },
   },
 });
 
-export const { updateUser, setLastChannelId } = userSlice.actions;
-
+export const { setUser, setLastChannelId } = userSlice.actions;
 export default userSlice.reducer;

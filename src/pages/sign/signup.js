@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ethers } from "ethers";
 import { useDispatch } from "react-redux";
-import { updateUser } from "../../features/userSlice";
+import { setUser } from "../../features/userSlice";
 import axios from "axios";
 
 import Navbar from "../../components/Navbar";
@@ -82,7 +82,7 @@ const Signup = () => {
           JSON.stringify(result.data.user)
         );
 
-        dispatch(updateUser(user));
+        dispatch(setUser(user));
         navigate("/main");
       } catch (err) {
         console.log(err);
@@ -131,7 +131,7 @@ const Signup = () => {
             JSON.stringify(result.data.user)
           );
 
-          dispatch(updateUser(user));
+          dispatch(setUser(user));
 
           navigate("/main");
         } catch (err) {

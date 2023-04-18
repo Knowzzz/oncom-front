@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -24,6 +24,9 @@ const SidebarChannel = ({ daoId, channelId }) => {
   const [hoveringChannel, setHoveringChannel] = useState(null);
   const [channelType, setChannelType] = useState("text");
   const [daoMenuCollapsed, setDaoMenuCollapsed] = useState(true);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+
+  const userId = JSON.parse(localStorage.getItem("user")).id;
 
   const toggleDaoMenu = () => {
     setDaoMenuCollapsed(!daoMenuCollapsed);
@@ -61,6 +64,12 @@ const SidebarChannel = ({ daoId, channelId }) => {
   };
 
   useEffect(() => {
+    if (daoData && daoData.categories.length > 0) {
+      setSelectedCategoryId(daoData.categories[0].id);
+    }
+  }, [daoData]);
+
+  useEffect(() => {
     if (!daoId) {
       return;
     }
@@ -68,7 +77,6 @@ const SidebarChannel = ({ daoId, channelId }) => {
     async function fetchDao() {
       try {
         const accessToken = localStorage.getItem("accessToken");
-        const userId = JSON.parse(localStorage.getItem("user")).id;
 
         const result = await axios.get(`${baseURL}/api/dao/getOne`, {
           params: {
@@ -91,6 +99,16 @@ const SidebarChannel = ({ daoId, channelId }) => {
     fetchDao();
   }, [daoId]);
 
+  const handleSend = () => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+
+
+    } catch (err) {
+      return err;
+    }
+  }
+ 
   if (!daoData) {
     return <div>Loading...</div>;
   }
@@ -121,7 +139,7 @@ const SidebarChannel = ({ daoId, channelId }) => {
           </button>
           <button
             className="block w-full text-left px-2 py-1 hover:bg-gray-700 rounded"
-            onClick={() => setCreateChannelModalOpen(true)} // Ajoutez cette ligne pour ouvrir le modal lors du clic
+            onClick={() => setCreateChannelModalOpen(true)}
           >
             Create channel
           </button>
@@ -146,10 +164,12 @@ const SidebarChannel = ({ daoId, channelId }) => {
                 key={channel.id}
                 to={`/dao/${daoId}/channel/${channel.id}`}
                 className={`block cursor-pointer py-2 hover:bg-gray-700 flex items-center rounded-lg ${
-                  channel.id === channelId ? "bg-gray-700" : ""
+                  channel.id === channelId
+                    ? "bg-gray-700 hover:bg-gray-600"
+                    : "bg-gray-800 hover:bg-gray-700"
                 }`}
               >
-                <FiHash className="mr-1" />
+                <FiHash className="m-1" />
                 {channel.name}
               </Link>
               {isOwner && hoveringChannel === channel.id && (
@@ -189,12 +209,14 @@ const SidebarChannel = ({ daoId, channelId }) => {
               >
                 <Link
                   key={channel.id}
-                  to={`/dao/${daoId}/categorie/${category.id}/channel/${channel.id}`}
-                  className={`block cursor-pointer py-2 hover:bg-gray-700 flex items-center rounded-lg ${
-                    channel.id === channelId ? "bg-gray-700" : ""
+                  to={`/dao/${daoId}/${channel.id}`}
+                  className={`block cursor-pointer py-2  flex items-center rounded-lg ${
+                    channel.id == channelId
+                      ? "bg-gray-700 hover:bg-gray-600"
+                      : "bg-gray-800 hover:bg-gray-700"
                   }`}
                 >
-                  <FiHash className="mr-1" />
+                  <FiHash className="m-1" />
                   {channel.name}
                 </Link>
                 {isOwner && hoveringChannel === channel.id && (
@@ -224,7 +246,11 @@ const SidebarChannel = ({ daoId, channelId }) => {
             {["text", "vocal"].map((type) => (
               <label
                 key={type}
-                className="flex p-4 border border-gray-700 rounded hover:border-white cursor-pointer"
+                className={`flex p-4 border border-gray-700 rounded ${
+                  channelType === type
+                    ? "border-white"
+                    : "hover:border-gray-500"
+                } cursor-pointer`}
               >
                 {type === "text" ? (
                   <FiHash size={24} />
@@ -239,6 +265,7 @@ const SidebarChannel = ({ daoId, channelId }) => {
                       : "Salon vocal pour discuter à haute voix."}
                   </small>
                 </div>
+
                 <input
                   type="radio"
                   name="channelType"
@@ -251,6 +278,21 @@ const SidebarChannel = ({ daoId, channelId }) => {
             ))}
           </div>
         </div>
+        <div className="mb-4">
+          <label className="block">Category</label>
+          <select
+            value={selectedCategoryId}
+            onChange={(e) => setSelectedCategoryId(e.target.value)}
+            className="w-full mt-2 px-4 py-2 border border-gray-700 rounded text-gray-300 bg-gray-900"
+          >
+            {daoData.categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="mb-4">
           <label className="block">Channel Name</label>
           <div className="flex mt-2 items-center">

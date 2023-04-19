@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { useNavigate, Link } from "react-router-dom";
 import {
   AiOutlinePlusCircle,
@@ -71,7 +70,6 @@ const SidebarServers = () => {
     fetchServers();
   }, []);
 
-  const handleCreateDao = () => {
     const handleCreateDao = async () => {
       if (!daoName) {
         alert("Please enter a DAO name.");
@@ -123,6 +121,8 @@ const SidebarServers = () => {
     const handleDaoNameChange = (event) => {
       setDaoName(event.target.value);
     };
+
+    
 
     return (
       <div className="bg-gray-900 w-16 flex flex-col h-screen items-center py-4">
@@ -181,6 +181,6 @@ const SidebarServers = () => {
     );
 
   };
-}
+
 
 export default SidebarServers;

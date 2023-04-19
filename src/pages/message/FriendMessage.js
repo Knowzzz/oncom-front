@@ -140,7 +140,7 @@ const FriendMessage = () => {
           onChange={(event) => setInputMessage(event.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
-              handleSend();
+              handleSend(e);
             }
           }}
           autoComplete="off"

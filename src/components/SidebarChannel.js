@@ -102,13 +102,38 @@ const SidebarChannel = ({ daoId, channelId }) => {
   const handleSend = () => {
     try {
       const accessToken = localStorage.getItem("accessToken");
-
-
     } catch (err) {
       return err;
     }
-  }
- 
+  };
+
+  const handleInviteUser = async (daoId) => {
+    const accessToken = localStorage.getItem("accessToken");
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    try {
+      const response = await axios.post(
+        `${baseURL}/api/invite/create`,
+        {
+          daoId,
+          userId: user.id,
+        },
+        {
+          headers: {
+            "x-access-token": accessToken,
+          },
+        }
+      );
+
+      // Copier le lien d'invitation dans le presse-papiers
+      const inviteLink = response.data.inviteLink;
+      navigator.clipboard.writeText(inviteLink);
+      alert("Invitation link copied to clipboard!");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   if (!daoData) {
     return <div>Loading...</div>;
   }
@@ -131,7 +156,10 @@ const SidebarChannel = ({ daoId, channelId }) => {
 
       {!daoMenuCollapsed && (
         <div className="bg-black text-white py-2 px-4 space-y-2 mt-2 rounded-md m-4 dao-menu">
-          <button className="block w-full text-left px-2 py-1 hover:bg-gray-700 rounded text-blue-300">
+          <button
+            className="block w-full text-left px-2 py-1 hover:bg-gray-700 rounded text-blue-300"
+            onClick={handleInviteUser}
+          >
             Invite user
           </button>
           <button className="block w-full text-left px-2 py-1 hover:bg-gray-700 rounded">

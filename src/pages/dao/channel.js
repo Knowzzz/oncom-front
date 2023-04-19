@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { v4 as uuidv4 } from "uuid";
 import { useDispatch } from "react-redux";
 import { setLastChannelId } from "../../features/userSlice";
 import { io } from "socket.io-client";
@@ -20,15 +19,16 @@ const Channel = () => {
   const userId = JSON.parse(localStorage.getItem("user")).id;
   const [messages, setMessages] = useState([]);
   const [canWriteMessage, setCanWriteMessage] = useState(true);
+  const [userAvatars, setUserAvatars] = useState({});
   const [hoveredMessage, setHoveredMessage] = useState(null);
   const dispatch = useDispatch();
   const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
-    const socket = io(`${baseURL}/channel-message`, {
-      query: { userId, channelId, daoId },
-    });
+  const socket = io(`${baseURL}/channel-message`, {
+    query: { userId, channelId, daoId },
+  });
 
+  useEffect(() => {
     socket.on("initial-messages", ({ messages, canWriteMessage }) => {
       setMessages(messages);
       setCanWriteMessage(canWriteMessage);
@@ -54,11 +54,6 @@ const Channel = () => {
       });
 
       dispatch(setLastChannelId({ daoId: daoId, channelId: channelId }));
-      console.error(
-        "Error fetching DAO data:",
-        response.status,
-        response.statusText
-      );
     };
 
     if (currentDaoId) {
@@ -69,20 +64,23 @@ const Channel = () => {
       if (socket) {
         socket.off("initial-messages");
         socket.off("new-message");
-        socket.disconnect();
       }
     };
   }, [channelId, dispatch, daoId]);
+
+  useEffect(() => {
+    messages.forEach(async (message) => {
+      if (!userAvatars[message.user.id]) {
+        await getAvatarUrl(message.user.id, message.user.avatar);
+      }
+    });
+  }, [messages]);
 
   const handleSend = async (event) => {
     event.preventDefault();
     if (inputMessage.trim() === "") return;
 
     try {
-      const socket = io(`${baseURL}/channel-message`, {
-        query: { userId, channelId, daoId },
-      });
-
       if (socket) {
         socket.emit("new-message", {
           userId: userId,
@@ -92,10 +90,29 @@ const Channel = () => {
         });
 
         setInputMessage("");
-        socket.disconnect();
       }
     } catch (error) {
       return error;
+    }
+  };
+
+  const getAvatarUrl = async (userId, avatarPath) => {
+    if (userAvatars[userId]) {
+      return userAvatars[userId];
+    }
+
+    try {
+      const response = await axios.get(`${baseURL}/static/${avatarPath}`);
+
+      setUserAvatars((prevAvatars) => ({
+        ...prevAvatars,
+        [userId]: response.config.url,
+      }));
+
+      return response.config.url;
+    } catch (error) {
+      console.error("Error fetching avatar:", error);
+      return null;
     }
   };
 
@@ -116,28 +133,35 @@ const Channel = () => {
               onMouseEnter={() => setHoveredMessage(index)}
               onMouseLeave={() => setHoveredMessage(null)}
             >
-              {index === 0 ||
-              messages[index - 1].user.id !== message.user.id ? (
-                <div
-                  className={`${
-                    hoveredMessage === index ? "bg-gray-600" : "bg-gray-700"
-                  } px-1 py-0.5`}
-                >
-                  {message.user.pseudo}
-                </div>
-              ) : null}
               <div
                 className={`${
                   hoveredMessage === index ? "bg-gray-600" : "bg-gray-700"
-                } px-1 py-0.5 w-full relative cursor-pointer text-gray-300`}
+                } px-1 flex flex-col`}
               >
-                {message.content}
-                {hoveredMessage === index && (
-                  <BsThreeDots
-                    className="absolute top-1 right-2 text-xl hover:border hover:border-gray-500 hover:bg-gray-600 hover:shadow-xl rounded-full"
-                    onClick={() => setShowModal(true)}
-                  />
-                )}
+                {index === 0 ||
+                messages[index - 1].user.id !== message.user.id ? (
+                  <div className="flex items-center">
+                    <img
+                      src={userAvatars[message.user.id] || ""}
+                      alt={`${message.user.pseudo}'s avatar`}
+                      className="w-10 h-10 rounded-full mr-4 mt-4"
+                    />
+                    {message.user.pseudo}
+                  </div>
+                ) : null}
+                <div
+                  className={`${
+                    hoveredMessage === index ? "bg-gray-600" : "bg-gray-700"
+                  } px-10 w-full relative cursor-pointer text-gray-300 pl-14`}
+                >
+                  {message.content}
+                  {hoveredMessage === index && (
+                    <BsThreeDots
+                      className="absolute top-1 right-2 text-xl hover:border hover:border-gray-500 hover:bg-gray-600 hover:shadow-xl rounded-full"
+                      onClick={() => setShowModal(true)}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           ))}

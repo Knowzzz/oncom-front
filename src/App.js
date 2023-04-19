@@ -9,8 +9,11 @@ import NotFound from "./pages/NotFound";
 import Main from "./pages/main/main";
 import Signup from "./pages/sign/signup";
 import Pending from "./pages/main/pending";
+import Block from "./pages/main/blockfriend";
+import Channel from "./pages/dao/channel";
 import AuthWrapper from "./components/AuthWrapper";
 import FriendMessage from "./pages/message/FriendMessage";
+import DaoWrapper from "./pages/dao/DaoWrapper";
 
 import store from "./store";
 
@@ -37,11 +40,31 @@ function App() {
             </AuthWrapper>
           }
         />
+
+        <Route
+          path="/dao/:daoId"
+          element={
+            <AuthWrapper>
+              <DaoWrapper />
+            </AuthWrapper>
+          }
+        />
+        <Route path="/dao/:daoId/:channelId" element={<AuthWrapper>
+              <Channel />
+            </AuthWrapper>} />
         <Route
           path="/main/friend/pending"
           element={
             <AuthWrapper>
               <Pending />
+            </AuthWrapper>
+          }
+        />
+        <Route
+          path="/main/friend/blocked"
+          element={
+            <AuthWrapper>
+              <Block />
             </AuthWrapper>
           }
         />

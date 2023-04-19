@@ -27,13 +27,13 @@ const SidebarFriend = ({ friendId }) => {
             "x-access-token": accessToken,
           },
         });
-  
+
         const friendsWithAvatars = await Promise.all(
           result.data.friends.map(async (friendRequest) => {
             const friend = friendRequest.friend;
             const user = friendRequest.user;
             let friendAvatar, userAvatar;
-  
+
             try {
               const friendAvatarResponse = await axios.get(
                 `${baseURL}/static${friend.avatar}`,
@@ -45,7 +45,7 @@ const SidebarFriend = ({ friendId }) => {
             } catch (err) {
               friendAvatar = "";
             }
-  
+
             try {
               const userAvatarResponse = await axios.get(
                 `${baseURL}/static${user.avatar}`,
@@ -57,7 +57,7 @@ const SidebarFriend = ({ friendId }) => {
             } catch (err) {
               userAvatar = "";
             }
-  
+
             return {
               ...friendRequest,
               friend: { ...friend, avatar: friendAvatar },
@@ -70,11 +70,9 @@ const SidebarFriend = ({ friendId }) => {
         return err;
       }
     };
-  
+
     fetchFriends();
   }, [friendId]);
-  
-  
 
   return (
     <div className="bg-gray-800 w-64 flex flex-col py-4 border border-gray-500">
@@ -85,7 +83,7 @@ const SidebarFriend = ({ friendId }) => {
           } hover:bg-gray-600 text-white font-semibold rounded-t w-full py-2 focus:outline-none flex items-center px-4`}
           onClick={() => {
             setCurrentFriendId(null);
-            navigate("/");
+            navigate("/main");
           }}
         >
           <FaUserPlus className="mr-2" />
@@ -119,14 +117,20 @@ const SidebarFriend = ({ friendId }) => {
                 onClick={() => setCurrentFriendId(displayFriend.id)}
               >
                 <img
-                  src={actualUserId == friend.user.id
-                    ? friend.friend.avatar
+                  src={
+                    actualUserId == friend.user.id
                       ? friend.friend.avatar
+                        ? friend.friend.avatar
+                        : "/image.jpg"
+                      : friend.user.avatar
+                      ? friend.user.avatar
                       : "/image.jpg"
-                    : friend.user.avatar
-                    ? friend.user.avatar
-                    : "/image.jpg"}
-                  alt={actualUserId == friend.user.id ? friend.friend.pseudo : friend.user.pseudo}
+                  }
+                  alt={
+                    actualUserId == friend.user.id
+                      ? friend.friend.pseudo
+                      : friend.user.pseudo
+                  }
                   className="w-12 h-12 rounded-full mr-4"
                 />
 

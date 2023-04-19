@@ -170,10 +170,8 @@ const UserProfile = () => {
           accept="image/png, image/jpeg"
           className="hidden"
           onChange={(event) => {
-            console.log("File input onChange triggered");
             setNewAvatar(event.target.files[0]);
             const newAvatarUrl = URL.createObjectURL(event.target.files[0]);
-            console.log("New avatar URL:", newAvatarUrl);
             setAvatarUrl(newAvatarUrl);
           }}
         />

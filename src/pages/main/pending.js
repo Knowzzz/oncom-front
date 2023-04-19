@@ -68,7 +68,7 @@ const MainPage = () => {
     const accessToken = localStorage.getItem("accessToken");
       const user = JSON.parse(localStorage.getItem("user"));
       const response = await axios.post(
-        `${baseURL}/api/friend/decline`,
+        `${baseURL}/api/friend/block`,
         {
           userId: user.id,
           friend_wallet_address: friend_wallet_address,
@@ -177,7 +177,7 @@ const MainPage = () => {
             </button>
             <button
               className="bg-gray-500 text-gray-300 px-2 py-1 ml-2 rounded hover:bg-gray-600"
-              onClick={() => navigate("/friend/blocked")}
+              onClick={() => navigate("/main/friend/blocked")}
             >
               Blocked
             </button>

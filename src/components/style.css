@@ -29,9 +29,29 @@
   padding-top: 4rem;
 }
 
+.dao-menu {
+  position: relative;
+  z-index: 10;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 .sidebar.open {
   right: 0;
 }
+
+.ReactModal__Overlay {
+  opacity: 0;
+  transition: opacity 100ms ease-in-out;
+}
+
+.ReactModal__Overlay--after-open {
+  opacity: 1;
+}
+
+.ReactModal__Overlay--before-close {
+  opacity: 0;
+}
+
 
 .sidebar .ml-16 {
   margin-left: 1rem;
@@ -74,3 +94,6 @@
     margin-top: 1rem;
   }
 }
+
+
+

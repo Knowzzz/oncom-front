@@ -45,13 +45,16 @@ const FriendMessage = () => {
     // Fetch messages for the friend
     socket.on("initial-messages", (data) => {
       const { messages, user1, user2 } = data;
-      
+
       const formattedMessages = messages.map((message) => ({
         messageId: message.id,
         messageContent: message.content,
         writer: {
           pseudo: message.userId === user1.id ? user1.pseudo : user2.pseudo,
-          wallet_address: message.userId === user1.id ? user1.wallet_address : user2.wallet_address,
+          wallet_address:
+            message.userId === user1.id
+              ? user1.wallet_address
+              : user2.wallet_address,
           id: message.userId,
         },
       }));
@@ -77,7 +80,7 @@ const FriendMessage = () => {
     };
   }, [friendId]);
 
-  const handleSubmit = async (event) => {
+  const handleSend = async (event) => {
     event.preventDefault();
     if (inputMessage.trim() === "") return;
 
@@ -99,8 +102,8 @@ const FriendMessage = () => {
   return (
     <div className="h-screen w-screen bg-gray-800 flex">
       <SidebarServers />
-      <SidebarFriend friendId={friendId}  />
-      <div className="flex-1 flex flex-col">
+      <SidebarFriend friendId={friendId} />
+      <div className="flex-1 flex flex-col bg-gray-700">
         <div className="flex-1 bg-gray-700 px-4 py-2 overflow-y-auto">
           {messages.map((message) => (
             <div
@@ -129,25 +132,21 @@ const FriendMessage = () => {
             </div>
           ))}
         </div>
-        <form
-          onSubmit={handleSubmit}
-          className="flex items-center px-4 py-2 bg-gray-600"
-        >
-          <input
-            type="text"
-            className="bg-gray-500 text-white w-full p-2 rounded-md"
-            placeholder="Type a message..."
-            value={inputMessage}
-            onChange={(event) => setInputMessage(event.target.value)}
-            onKeyPress={(event) => {
-              if (event.key === "Enter" && !event.shiftKey) {
-                handleSubmit(event);
-              }
-            }}
-          />
-        </form>
+        <input
+          type="text"
+          className="bg-gray-500 text-white p-2 rounded-md m-4 shadow-xl mb-6 focus:border-gray-600 focus:outline-none border-2 border-transparent"
+          placeholder="Type your message..."
+          value={inputMessage}
+          onChange={(event) => setInputMessage(event.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              handleSend();
+            }
+          }}
+          autoComplete="off"
+        />
       </div>
-      <FriendProfile key={friendId} friendId={friendId}/>
+      <FriendProfile key={friendId} friendId={friendId} />
     </div>
   );
 };

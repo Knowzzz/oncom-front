@@ -87,7 +87,6 @@ const SidebarChannel = ({ daoId, channelId }) => {
             "x-access-token": accessToken,
           },
         });
-        console.log(result.data);
 
         setDaoData(result.data.dao);
         setIsOwner(result.data.dao.ownerId === userId);
@@ -99,24 +98,16 @@ const SidebarChannel = ({ daoId, channelId }) => {
     fetchDao();
   }, [daoId]);
 
-  const handleSend = () => {
-    try {
-      const accessToken = localStorage.getItem("accessToken");
-    } catch (err) {
-      return err;
-    }
-  };
-
-  const handleInviteUser = async (daoId) => {
+  const handleInviteUser = async () => {
     const accessToken = localStorage.getItem("accessToken");
-    const user = JSON.parse(localStorage.getItem("user"));
 
     try {
       const response = await axios.post(
-        `${baseURL}/api/invite/create`,
+        `${baseURL}/api/inviteLink/create`,
         {
-          daoId,
-          userId: user.id,
+          daoId: daoId,
+          userId: userId,
+          maxTime: 86400
         },
         {
           headers: {
@@ -124,13 +115,13 @@ const SidebarChannel = ({ daoId, channelId }) => {
           },
         }
       );
+      console.log(response.data);
 
-      // Copier le lien d'invitation dans le presse-papiers
       const inviteLink = response.data.inviteLink;
       navigator.clipboard.writeText(inviteLink);
       alert("Invitation link copied to clipboard!");
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
 

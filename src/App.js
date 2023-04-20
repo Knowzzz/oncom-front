@@ -14,6 +14,7 @@ import Channel from "./pages/dao/channel";
 import AuthWrapper from "./components/AuthWrapper";
 import FriendMessage from "./pages/message/FriendMessage";
 import DaoWrapper from "./pages/dao/DaoWrapper";
+import JoinDaoPage from "./pages/JoinDao";
 
 import store from "./store";
 
@@ -46,6 +47,14 @@ function App() {
           element={
             <AuthWrapper>
               <DaoWrapper />
+            </AuthWrapper>
+          }
+        />
+        <Route
+          path="/invite/:inviteToken"
+          element={
+            <AuthWrapper>
+              <JoinDaoPage />
             </AuthWrapper>
           }
         />

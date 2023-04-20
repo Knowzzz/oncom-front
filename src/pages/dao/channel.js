@@ -28,7 +28,16 @@ const Channel = () => {
     query: { userId, channelId, daoId },
   });
 
+  function linkify(text) {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.replace(
+      urlRegex,
+      (url) => `<a href="${url}" target="_blank">${url}</a>`
+    );
+  }
+
   useEffect(() => {
+    if (!daoId || !channelId) { return }
     socket.on("initial-messages", ({ messages, canWriteMessage }) => {
       setMessages(messages);
       setCanWriteMessage(canWriteMessage);
@@ -152,7 +161,7 @@ const Channel = () => {
                 <div
                   className={`${
                     hoveredMessage === index ? "bg-gray-600" : "bg-gray-700"
-                  } px-10 w-full relative cursor-pointer text-gray-300 pl-14`}
+                  } px-10 w-full relative text-gray-300 pl-14`}
                 >
                   {message.content}
                   {hoveredMessage === index && (

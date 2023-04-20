@@ -14,6 +14,12 @@ const FriendMessage = () => {
     query: { userId, friendId },
   });
 
+  function linkify(text) {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.replace(urlRegex, (url) => `<a href="${url}" target="_blank">${url}</a>`);
+  }
+  
+
   const [currentFriendId, setCurrentFriendId] = useState(null);
   const [messages, setMessages] = useState([
     // Example messages

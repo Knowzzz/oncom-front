@@ -123,10 +123,15 @@ const SidebarServers = () => {
   };
 
   return (
-    <div className="bg-gray-900 w-16 flex flex-col items-center py-4">
+    <div className="bg-zinc-900 w-16 flex flex-col items-center py-4">
+      <Link to="/main">
+        <button className="group bg-zinc-600 hover:bg-green-500 text-white w-12 h-12 rounded-full hover:rounded-[14px] flex items-center justify-center transition-colors duration-500 transition-border duration-500">
+          <AiOutlineUser className="text-green-500 group-hover:text-gray-500 text-3xl transition-colors duration-500" />
+        </button>
+      </Link>
       {servers &&
         servers.map((server, index) => (
-          <Link key={index} to={`/server/${server.id}`}>
+          <Link key={index} to={`/dao/${server.id}`}>
             <img
               src={server.avatar || "/image.png"}
               alt={server.name}
@@ -136,7 +141,7 @@ const SidebarServers = () => {
         ))}
 
       <button
-        className="group bg-gray-500 hover:bg-green-500 text-white w-12 h-12 rounded-full hover:rounded-[14px] flex items-center justify-center transition-colors duration-500 transition-border duration-500"
+        className="group bg-zinc-600   hover:bg-green-500 text-white w-12 h-12 rounded-full hover:rounded-[14px] flex items-center justify-center transition-colors duration-500 transition-border duration-500"
         onClick={() => setShowModal(true)}
       >
         <AiOutlinePlusCircle className="text-green-500 group-hover:text-gray-500 text-3xl transition-colors duration-500" />
@@ -145,7 +150,7 @@ const SidebarServers = () => {
       <Modal
         isOpen={showModal}
         onRequestClose={() => setShowModal(false)}
-        className="bg-gray-900 w-1/4 mx-auto mt-16 p-6 rounded-lg flex flex-col items-center"
+        className="bg-zinc-800 w-1/4 mx-auto mt-16 p-6 rounded-lg flex flex-col items-center"
         overlayClassName="fixed inset-0 flex items-center justify-center z-50 bgblack bg-opacity-75"
       >
         <h2 className="text-white text-2xl mb-2">Give a name for your DAO!</h2>

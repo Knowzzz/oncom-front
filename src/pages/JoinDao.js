@@ -1,5 +1,7 @@
 import { useState, useEffect} from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from 'axios';
 
 const baseURL = 'http://localhost:8080';
@@ -7,6 +9,7 @@ const baseURL = 'http://localhost:8080';
 function JoinDaoPage() {
   const [daoInfo, setDaoInfo] = useState(null);
   const { inviteToken } = useParams();
+  const navigate = useNavigate();
   
   const userId = JSON.parse(localStorage.getItem("user")).id;
 
@@ -27,7 +30,7 @@ function JoinDaoPage() {
 
           setDaoInfo(daoResponse.data);
         } else {
-          console.error('Error fetching invite link:', response.statusText);
+          toast.error("Error while fetching DAO data")
         }
       } catch (error) {
         console.error('Error fetching DAO info:', error);
@@ -42,8 +45,9 @@ function JoinDaoPage() {
       const response = await axios.post(`${baseURL}/api/invite/accept`, { userId, inviteToken, daoId: daoInfo.dao.id }, {
         headers: { 'x-access-token': accessToken }
       });
-      if (response.data.success) {
-        alert("You have successfully joined the DAO!");
+      if (response.status === 200) {
+        toast.success("You have successfully joined the DAO!");
+        navigate(`/dao/${daoInfo.dao.id}`)
       }
     } catch (error) {
       console.error('Error joining DAO:', error);
@@ -67,6 +71,7 @@ function JoinDaoPage() {
           Join
         </button>
       </div>
+      <ToastContainer position="bottom-right" autoClose={5000} />
     </div>
   );
 }

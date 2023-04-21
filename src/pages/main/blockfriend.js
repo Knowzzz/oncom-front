@@ -105,11 +105,11 @@ const Block = () => {
   }, []);
 
   return (
-    <div className="bg-gray-800 h-screen w-screen">
+    <div className="bg-zizc-800 h-screen w-screen">
       <div className="flex h-full">
         <SidebarServers />
         <SidebarFriend />
-        <div className="bg-gray-700 w-full flex flex-col p-6 flex-grow">
+        <div className="bg-zinc w-full flex flex-col p-6 flex-grow">
           <div className="flex items-center mb-4">
             <div className="text-white text-2xl font-semibold">Friends</div>
             <button
@@ -119,19 +119,19 @@ const Block = () => {
               Add
             </button>
             <button
-              className="bg-gray-500 text-white px-2 py-1 ml-2 rounded hover:bg-gray-600"
+              className="bg-zinc text-white px-2 py-1 ml-2 rounded hover:bg-zinc"
               onClick={() => navigate("/main")}
             >
               Online
             </button>
             <button
-              className="bg-gray-500 text-gray-300 px-2 py-1 ml-2 rounded hover:bg-gray-600"
+              className="bg-zinc text-gray-300 px-2 py-1 ml-2 rounded hover:bg-bg-zinc"
               onClick={() => navigate("/main/friend/pending")}
             >
               Pending
             </button>
             <button
-              className="bg-gray-800 text-gray-300 px-2 py-1 ml-2 rounded hover:bg-gray-600"
+              className="bg-zinc text-gray-300 px-2 py-1 ml-2 rounded hover:bg-bg-zinc"
               onClick={() => navigate("/main/friend/blocked")}
             >
               Blocked
@@ -140,7 +140,7 @@ const Block = () => {
           <div className="relative">
             <input
               type="text"
-              className="bg-gray-600 text-white w-full h-10 pl-3 pr-10 rounded-md"
+              className="bg-zinc text-white w-full h-10 pl-3 pr-10 rounded-md"
               placeholder="Search"
             />
             <BsSearch className="absolute right-3 top-2 text-white" />
@@ -151,7 +151,7 @@ const Block = () => {
               ? pendingFriends.map((friendRequest) => (
                 <div
                   key={friendRequest.id}
-                  className="bg-gray-800 w-full h-16 flex items-center p-4 mb-2 rounded-md"
+                  className="bg-zinc w-full h-16 flex items-center p-4 mb-2 rounded-md"
                 >
                   <img
                     src={
@@ -172,7 +172,7 @@ const Block = () => {
                       className="relative inline-block text-left"
                     >
                       <Menu.Button className="flex items-center justify-center w-full shadow-sm px-2 py-2 text-sm font-medium text-gray-700 focus:outline-none">
-                        <HiOutlineDotsVertical className="text-white w-8 h-8 p-1 rounded-full bg-gray-700" />
+                        <HiOutlineDotsVertical className="text-white w-8 h-8 p-1 rounded-full bg-zinc" />
                       </Menu.Button>
                       <Transition
                         as={Fragment}
@@ -183,15 +183,15 @@ const Block = () => {
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
                       >
-                        <Menu.Items className="origin-top-right absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-gray-600 text-gray-700 focus:outline-none">
-                          <div className="py-1 bg-gray-600 rounded-lg">
+                        <Menu.Items className="origin-top-right absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-zinc text-gray-700 focus:outline-none">
+                          <div className="py-1 bg-zinc rounded-lg">
                             <Menu.Item>
                               {({ active }) => (
                                 <button
                                   className={`${active
-                                      ? "bg-gray-400 text-black"
+                                      ? "bg-zinc text-black"
                                       : "text-black"
-                                    } flex px-2 py-1 text-sm bg-gray-600 text-green-600 rounded-md w-full`}
+                                    } flex px-2 py-1 text-sm bg-zinc text-green-600 rounded-md w-full`}
                                   onClick={() =>
                                     unBlockFriend(
                                       friendRequest.friend.wallet_address

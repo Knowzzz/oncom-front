@@ -4,7 +4,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setLastChannelId } from "../../features/userSlice";
 import { io } from "socket.io-client";
-import SidebarChannel from "../../components/SidebarChannel";
+import SidebarChannel from "./SidebarChannel";
 import SidebarServers from "../../components/SidebarServers";
 import SidebarUserOnDao from "../../components/SidebarUserOnDao";
 import { BsThreeDots } from "react-icons/bs";
@@ -120,17 +120,16 @@ const Channel = () => {
 
       return response.config.url;
     } catch (error) {
-      console.error("Error fetching avatar:", error);
       return null;
     }
   };
 
   return (
-    <div className="h-screen w-screen bg-gray-800 text-white flex">
+    <div className="h-screen w-screen bg-zinc-700 text-white flex">
       <SidebarServers />
       <SidebarChannel daoId={currentDaoId} channelId={channelId} />
-      <div className="flex-1 flex flex-col bg-gray-700">
-        <div className="flex-1 bg-gray-700 px-4 py-2">
+      <div className="flex-1 flex flex-col bg-zinc-700">
+        <div className="flex-1 bg-zinc-700 px-4 py-2">
           {messages.map((message, index) => (
             <div
               key={index}
@@ -144,7 +143,7 @@ const Channel = () => {
             >
               <div
                 className={`${
-                  hoveredMessage === index ? "bg-gray-600" : "bg-gray-700"
+                  hoveredMessage === index ? "bg-zinc-600" : "bg-zinc-700"
                 } px-1 flex flex-col`}
               >
                 {index === 0 ||
@@ -160,13 +159,13 @@ const Channel = () => {
                 ) : null}
                 <div
                   className={`${
-                    hoveredMessage === index ? "bg-gray-600" : "bg-gray-700"
+                    hoveredMessage === index ? "bg-zinc-600" : "bg-zinc-700"
                   } px-10 w-full relative text-gray-300 pl-14`}
                 >
                   {message.content}
                   {hoveredMessage === index && (
                     <BsThreeDots
-                      className="absolute top-1 right-2 text-xl hover:border hover:border-gray-500 hover:bg-gray-600 hover:shadow-xl rounded-full"
+                      className="absolute top-1 right-2 text-xl hover:border hover:border-gray-500 hover:bg-zinc-600 hover:shadow-xl rounded-full"
                       onClick={() => setShowModal(true)}
                     />
                   )}
@@ -178,7 +177,7 @@ const Channel = () => {
 
         <input
           type="text"
-          className="bg-gray-500 text-white p-2 rounded-md m-4 shadow-xl mb-6 focus:border-gray-600 focus:outline-none border-2 border-transparent"
+          className="bg-zinc-500 text-white p-2 rounded-md m-4 shadow-xl mb-6 focus:border-gray-600 focus:outline-none border-2 border-transparent"
           placeholder={
             canWriteMessage
               ? "Type your message..."

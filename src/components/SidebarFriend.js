@@ -75,12 +75,12 @@ const SidebarFriend = ({ friendId }) => {
   }, [friendId]);
 
   return (
-    <div className="bg-gray-800 w-64 flex flex-col py-4 border border-gray-500">
+    <div className="bg-zinc-800 w-64 flex flex-col py-4 border border-zinc-600">
       <div className="flex flex-col mb-4 space-y-1">
         <button
           className={`${
-            currentFriendId != null ? "bg-gray-800" : "bg-gray-600"
-          } hover:bg-gray-600 text-white font-semibold rounded-t w-full py-2 focus:outline-none flex items-center px-4`}
+            currentFriendId != null ? "bg-zinc-800" : "bg-zinc-600"
+          } hover:bg-zinc-500 text-white font-semibold rounded-t w-full py-2 focus:outline-none flex items-center px-4`}
           onClick={() => {
             setCurrentFriendId(null);
             navigate("/main");
@@ -90,7 +90,7 @@ const SidebarFriend = ({ friendId }) => {
           Amis
         </button>
         <button
-          className={`bg-gray-800 hover:bg-gray-600 text-gray-300 font-semibold rounded-b w-full py-2 focus:outline-none flex items-center px-4`}
+          className={`bg-zinc-800 hover:bg-zinc-500 text-gray-300 font-semibold rounded-b w-full py-2 focus:outline-none flex items-center px-4`}
           onClick={() => navigate("/similar")}
         >
           <TbSquareRoundedPlusFilled className="mr-2" />
@@ -111,8 +111,8 @@ const SidebarFriend = ({ friendId }) => {
                 key={friend.id}
                 className={`${
                   displayFriend.id == currentFriendId
-                    ? "bg-gray-600"
-                    : "bg-gray-800 hover:bg-gray-600"
+                    ? "bg-zinc-600"
+                    : "bg-zinc-800 hover:bg-zinc-700"
                 } w-full h-16 flex items-center p-4 rounded-md transition-colors duration-300`}
                 onClick={() => setCurrentFriendId(displayFriend.id)}
               >

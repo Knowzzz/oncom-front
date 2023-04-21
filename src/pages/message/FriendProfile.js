@@ -43,12 +43,12 @@ const FriendProfile = ({ friendId }) => {
   }
 
   return (
-    <div className="bg-gray-700 border border-gray-500 w-1/6 flex flex-col p-4">
+    <div className="bg-zinc-800 border border-zinc-600 w-1/6 flex flex-col p-4">
       <div className="flex justify-center">
         <img
           src={avatarUrl || "/image.jpg"}
           alt="Profile"
-          className="w-24 h-24 rounded-full cursor-pointer border-2 border-gray-600"
+          className="w-24 h-24 rounded-full cursor-pointer border-2 border-zinc-700"
         />
       </div>
       <div className="mt-4">
@@ -61,7 +61,7 @@ const FriendProfile = ({ friendId }) => {
           name="username"
           value={friend.pseudo || ""}
           readOnly
-          className="bg-gray-600 text-white w-full p-2 rounded-md mt-2"
+          className="bg-zinc-600 text-white w-full p-2 rounded-md mt-2"
         />
       </div>
       <div className="mt-4">
@@ -74,7 +74,7 @@ const FriendProfile = ({ friendId }) => {
           name="address"
           value={friend.wallet_address}
           readOnly
-          className="bg-gray-600 text-white w-full p-2 rounded-md mt-2"
+          className="bg-zinc-600 text-white w-full p-2 rounded-md mt-2"
         />
       </div>
       {/* Add the shared DAOs section here */}

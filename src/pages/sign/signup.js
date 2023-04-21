@@ -201,7 +201,7 @@ const Signup = () => {
   return (
     <div>
       <Navbar />
-      <div className="flex flex-col min-h-screen bg-gray-100 items-center justify-center">
+      <div className="flex flex-col min-h-screen bg-zinc-100 items-center justify-center">
         <h1 className="text-4xl mb-10 font-bold"> {t("signup")} </h1>
         {isConnected ? (
           <>

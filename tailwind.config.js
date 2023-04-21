@@ -7,7 +7,10 @@ module.exports = {
         '4xl': '8rem',
       },
       spacing: {
-        '18': '4.5rem', // Ajoutez cette ligne
+        '18': '4.5rem',
+      },
+      boxShadow: {
+        '3xl': '0 35px 60px -15px rgba(0, 0, 0, 0.3)',
       },
     },
   },
@@ -15,4 +18,5 @@ module.exports = {
     extend: {},
   },
   plugins: [],
+
 };

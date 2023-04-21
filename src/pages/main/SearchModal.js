@@ -100,14 +100,14 @@ const SearchModal = ({ isOpen, closeModal }) => {
   }
 
   return (
-    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-      <div className="bg-gray-600 w-1/3 h-2/3 rounded-lg flex flex-col items-center p-6">
+    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-zizc-800 bg-opacity-50 z-50">
+      <div className="bg-zinc-600 w-1/3 h-2/3 rounded-lg flex flex-col items-center p-6">
         <h2 className="text-white text-2xl font-semibold mb-4">
           Recherchez un utilisateur par adresse de portefeuille
         </h2>
         <input
           type="text"
-          className="bg-gray-500 text-white w-full h-10 pl-3 pr-10 rounded-md mb-4"
+          className="bg-zinc-500 text-white w-full h-10 pl-3 pr-10 rounded-md mb-4"
           placeholder="Adresse du portefeuille"
           value={walletAddress}
           onChange={(e) => handleSearch(e.target.value)}
@@ -116,7 +116,7 @@ const SearchModal = ({ isOpen, closeModal }) => {
           foundProfiles.map((profile) => (
             <div
               key={profile.id}
-              className="bg-gray-500 w-full h-14 p-1 m-2 rounded-md flex items-center justify-between"
+              className="bg-zinc-500 w-full h-14 p-1 m-2 rounded-md flex items-center justify-between"
             >
               <div className="flex items-center">
                 <img
@@ -138,9 +138,9 @@ const SearchModal = ({ isOpen, closeModal }) => {
                   }}
                 />
                 {activeContextMenu === profile.id && (
-                  <div className="bg-gray-600 rounded-lg p-2 absolute right-0">
+                  <div className="bg-zinc-600 rounded-lg p-2 absolute right-0">
                     <button
-                      className="bg-gray-500 hover:bg-gray-400 text-green-500 w-full p-1 rounded-md"
+                      className="bg-zinc-500 hover:bg-zinc-400 text-green-500 w-full p-1 rounded-md"
                       onClick={() => addFriend(profile.wallet_address)}
                     >
                       Add Friend

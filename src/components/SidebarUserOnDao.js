@@ -62,7 +62,7 @@ const SidebarUserOnDao = ({ daoId }) => {
   }, [daoId]);
 
   return (
-    <div className="bg-gray-800 w-52 relative h-screen p-4 right-0 top-0">
+    <div className="bg-zinc-800 w-52 relative h-screen p-4 right-0 top-0">
       {Object.entries(roles).map(([roleId, roleData]) => (
         <div key={roleId}>
           <h2 className="text-white mb-2">
@@ -93,7 +93,6 @@ const SidebarUserOnDao = ({ daoId }) => {
             key={user.id}
             className="flex items-center mb-2 px-2 py-1 w-11/12 bg-transparent hover:bg-white hover:bg-opacity-10 text-gray-400 hover:text-white rounded transition-colors duration-200 ease-in cursor-pointer"
           >
-            <span className="inline-block w-2 h-2 mr-2 rounded-full bg-gray-500"></span>
             <span style={{ color: user.userRoles[0]?.role?.color || "gray" }}>
               {user.pseudo}
             </span>

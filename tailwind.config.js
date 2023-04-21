@@ -9,6 +9,7 @@ module.exports = {
       spacing: {
         '18': '4.5rem', // Ajoutez cette ligne
       },
+
     },
   },
   variants: {

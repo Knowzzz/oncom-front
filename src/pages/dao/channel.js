@@ -24,11 +24,11 @@ const Channel = () => {
   const dispatch = useDispatch();
   const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
-    const socket = io(`${baseURL}/channel-message`, {
-      query: { userId, channelId, daoId },
-    });
+  const socket = io(`${baseURL}/channel-message`, {
+    query: { userId, channelId, daoId },
+  });
 
+  useEffect(() => {
     socket.on("initial-messages", ({ messages, canWriteMessage }) => {
       setMessages(messages);
       setCanWriteMessage(canWriteMessage);
@@ -79,10 +79,6 @@ const Channel = () => {
     if (inputMessage.trim() === "") return;
 
     try {
-      const socket = io(`${baseURL}/channel-message`, {
-        query: { userId, channelId, daoId },
-      });
-
       if (socket) {
         socket.emit("new-message", {
           userId: userId,
@@ -92,7 +88,6 @@ const Channel = () => {
         });
 
         setInputMessage("");
-        socket.disconnect();
       }
     } catch (error) {
       return error;
@@ -111,7 +106,7 @@ const Channel = () => {
               className={`${
                 index > 0 && messages[index - 1].user.id === message.user.id
                   ? ""
-                  : "mb-1"
+                  : ""
               }`}
               onMouseEnter={() => setHoveredMessage(index)}
               onMouseLeave={() => setHoveredMessage(null)}
@@ -129,7 +124,7 @@ const Channel = () => {
               <div
                 className={`${
                   hoveredMessage === index ? "bg-gray-600" : "bg-gray-700"
-                } px-1 py-0.5 w-full relative cursor-pointer text-gray-300`}
+                } px-1 py-0.5 w-full relative text-gray-300`}
               >
                 {message.content}
                 {hoveredMessage === index && (

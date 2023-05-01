@@ -4,7 +4,7 @@ import SidebarFriend from "../../components/SidebarFriend";
 import axios from "axios";
 import { BsSearch } from "react-icons/bs";
 import { HiOutlineDotsVertical } from "react-icons/hi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import SearchModal from "./SearchModal";
 import UserProfile from "../../components/UserProfile";
 import { Menu, Transition } from "@headlessui/react";
@@ -14,7 +14,6 @@ const baseURL = "http://localhost:8080";
 const MainPage = () => {
   const [pendingFriends, setPendingFriends] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const navigate = useNavigate();
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -44,19 +43,19 @@ const MainPage = () => {
 
   const declineFriend = async (friend_wallet_address) => {
     const accessToken = localStorage.getItem("accessToken");
-      const user = JSON.parse(localStorage.getItem("user"));
-      const response = await axios.post(
-        `${baseURL}/api/friend/decline`,
-        {
-          userId: user.id,
-          friend_wallet_address: friend_wallet_address,
+    const user = JSON.parse(localStorage.getItem("user"));
+    const response = await axios.post(
+      `${baseURL}/api/friend/decline`,
+      {
+        userId: user.id,
+        friend_wallet_address: friend_wallet_address,
+      },
+      {
+        headers: {
+          "x-access-token": accessToken,
         },
-        {
-          headers: {
-            "x-access-token": accessToken,
-          },
-        }
-      );
+      }
+    );
     try {
     } catch (err) {
       console.log(err);
@@ -66,19 +65,19 @@ const MainPage = () => {
 
   const blockFriend = async (friend_wallet_address) => {
     const accessToken = localStorage.getItem("accessToken");
-      const user = JSON.parse(localStorage.getItem("user"));
-      const response = await axios.post(
-        `${baseURL}/api/friend/block`,
-        {
-          userId: user.id,
-          friend_wallet_address: friend_wallet_address,
+    const user = JSON.parse(localStorage.getItem("user"));
+    const response = await axios.post(
+      `${baseURL}/api/friend/block`,
+      {
+        userId: user.id,
+        friend_wallet_address: friend_wallet_address,
+      },
+      {
+        headers: {
+          "x-access-token": accessToken,
         },
-        {
-          headers: {
-            "x-access-token": accessToken,
-          },
-        }
-      );
+      }
+    );
     try {
     } catch (err) {
       console.log(err);
@@ -121,8 +120,12 @@ const MainPage = () => {
                   responseType: "blob",
                 }
               );
-              const friendAvatarUrl = URL.createObjectURL(friendAvatarResponse.data);
-              const userAvatarUrl = URL.createObjectURL(userAvatarResponse.data);
+              const friendAvatarUrl = URL.createObjectURL(
+                friendAvatarResponse.data
+              );
+              const userAvatarUrl = URL.createObjectURL(
+                userAvatarResponse.data
+              );
               return {
                 ...friendRequest,
                 friend: { ...friend, avatar: friendAvatarUrl },
@@ -138,7 +141,7 @@ const MainPage = () => {
             }
           })
         );
-        
+
         setPendingFriends(friendsWithAvatars);
       } catch (err) {
         console.log(err);
@@ -154,7 +157,7 @@ const MainPage = () => {
       <div className="flex h-full">
         <SidebarServers />
         <SidebarFriend />
-        <div className="bg-zinc-700 w-full flex flex-col p-6 flex-grow">
+        <div className="bg-zinc-700 flex flex-col p-6 flex-grow">
           <div className="flex items-center mb-4">
             <div className="text-white text-2xl font-semibold">Friends</div>
             <button
@@ -163,23 +166,24 @@ const MainPage = () => {
             >
               Add
             </button>
-            <button
-              className="bg-zinc-600 text-white px-2 py-1 ml-2 rounded hover:bg-zinc-600"
-              onClick={() => navigate("/main")}
+            <Link
+              className="bg-zinc-600 text-white px-2 py-1 ml-2 rounded hover:bg-zinc-500"
+              to="/main"
             >
               Online
-            </button>
-            <button
-              className="bg-zinc-800 text-gray-300 px-2 py-1 ml-2 rounded"
+            </Link>
+            <Link
+              className="bg-zinc-800 text-gray-300 px-2 py-1 ml-2 rounded hover:bg-zinc-400"
+              to="/main/friend/pending"
             >
               Pending
-            </button>
-            <button
-              className="bg-zinc-800 text-gray-300 px-2 py-1 ml-2 rounded hover:bg-zinc-600"
-              onClick={() => navigate("/main/friend/blocked")}
+            </Link>
+            <Link
+              className="bg-zinc-600 text-gray-300 px-2 py-1 ml-2 rounded hover:bg-zinc-500"
+              to="/main/friend/blocked"
             >
               Blocked
-            </button>
+            </Link>
           </div>
           <div className="relative">
             <input

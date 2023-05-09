@@ -13,32 +13,32 @@ const SidebarDaoSettings = ({ setActiveContent, activeContent, daoData }) => {
         <div>
           <h2 className="font-bold text-lg mb-2 px-2">{daoData.name}</h2>
           <button
-            className="block w-full text-left px-4 py-2 mb-2 hover:bg-zinc rounded"
+            className="block w-full text-left px-4 py-2 mb-2 hover:bg-zinc-700 rounded"
             onClick={() => handleButtonClick("Overview")}
           >
             Overview
           </button>
           <button
-            className="block w-full text-left px-4 py-2 mb-2 hover:bg-zinc rounded"
+            className="block w-full text-left px-4 py-2 mb-2 hover:bg-zinc-700 rounded"
             onClick={() => handleButtonClick("Roles")}
           >
             Roles
           </button>
           <button
-            className="block w-full text-left px-4 py-2 mb-2 hover:bg-zinc rounded"
+            className="block w-full text-left px-4 py-2 mb-2 hover:bg-zinc-700 rounded"
             onClick={() => handleButtonClick("Members")}
           >
             Members
           </button>
           <button
-            className="block w-full text-left px-4 py-2 mb-2 hover:bg-zinc rounded"
+            className="block w-full text-left px-4 py-2 mb-2 hover:bg-zinc-700 rounded"
             onClick={() => handleButtonClick("Invitations")}
           >
             Invitations
           </button>
           <h2 className="font-bold text-lg mb-2 px-2">Moderation</h2>
           <button
-            className="block w-full text-left px-4 py-2 mb-2 hover:bg-zinc rounded"
+            className="block w-full text-left px-4 py-2 mb-2 hover:bg-zinc-700 rounded"
             onClick={() => handleButtonClick("Ban")}
           >
             Ban

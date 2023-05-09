@@ -318,6 +318,7 @@ const SidebarChannel = ({ daoId, channelId }) => {
         daoSettingsModalOpen={daoSettingsModalOpen}
         setDaoSettingsModalOpen={setDaoSettingsModalOpen}
         daoData={daoData}
+        setDaoData={setDaoData}
       />
 
       <CreateChannelModal

@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { RxCross2 } from "react-icons/rx";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 const baseURL = "http://localhost:8080";
 
@@ -43,23 +46,65 @@ const OverviewButton = ({
     setUnsavedChanges(false);
   };
 
-  const saveChanges = () => {
-    // Save changes logic here
+  const saveChanges = async () => {
+    try {
+      const userId = JSON.parse(localStorage.getItem("user")).id;
+      const accessToken = localStorage.getItem("accessToken");
+      const daoId = daoData.id;
+
+      if (!daoId || !userId || !accessToken) {
+        toast.error("Missing information(s)");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("daoId", daoId.toString());
+      formData.append("userId", userId.toString());
+      formData.append("infos", JSON.stringify({ name: daoName, id: userId }));
+
+      if (image) {
+        formData.append("avatar", image);
+      }
+
+      const response = await axios.put(`${baseURL}/api/dao/update`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "x-access-token": accessToken,
+        },
+      });
+
+      if (response.data.error) {
+        toast.error("Error updating DAO", { position: "bottom-right" });
+      }
+      
+
+      toast.success("DAO updated successfully", { position: "bottom-right" });
+    } catch (err) {
+      toast.error("Error updating DAO", { position: "bottom-right" });
+    }
     setUnsavedChanges(false);
   };
 
   return (
-    <div>
+    <div className="w-full h-full">
       {daoSettingsModalOpen && (
-        <div className="modal relative">
-          <h2 className="font-bold text-lg ml-10 mt-4">Overview Server</h2>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
+        <div className="relative flex flex-col">
+          <button
+            className="close-btn border border-gray-400 rounded-full text-gray-400 hover:border-white hover:text-white absolute right-0 top-0 m-4"
+            onClick={() => setDaoSettingsModalOpen(false)}
+          >
+            <RxCross2 className="w-8 h-8" />
+          </button>
+          <h2 className="font-bold text-lg ml-10 mt-4">
+            Overview {daoData.name}
+          </h2>
+          <div className="flex flex-grow items-start justify-center">
+            <div className="flex items-center justify-start m-10 ">
               <label htmlFor="image" onClick={triggerInputFileClick}>
                 <img
                   src={imageUrl || "/default-image.jpg"}
                   alt="DAO"
-                  className="w-28 object-cover shadow-[-3px_10px_16px_9px_#00000024] m-10 rounded-full cursor-pointer border border-zinc-600"
+                  className="w-28 object-cover shadow-[-3px_10px_16px_9px_#00000024] rounded-full m-2 mr-8 cursor-pointer border border-zinc-600"
                 />
               </label>
               <input
@@ -83,15 +128,15 @@ const OverviewButton = ({
                 </button>
               </div>
             </div>
-            <div className="self-right">
-              <label className="block font-bold mb-2 bg-zinc">
+            <div className="flex flex-col items-start justify-end m-18">
+              <p className="font-bold mb-2 bg-zinc text-center leading-tight">
                 Server Name
-              </label>
+              </p>
               <input
                 type="text"
                 value={daoName}
                 onChange={handleDaoNameChange}
-                className="rounded-sm px-3 py-2 bg-zinc-800"
+                className="rounded-sm px-3 py-2 bg-zinc-800 border border-zinc-600"
               />
             </div>
           </div>
@@ -114,12 +159,6 @@ const OverviewButton = ({
               </button>
             </div>
           )}
-          <button
-            className="close-btn border border-gray-400 rounded-full text-gray-400 hover:border-white hover:text-white absolute right-0 top-0 m-4"
-            onClick={() => setDaoSettingsModalOpen(false)}
-          >
-            <RxCross2 className="w-8 h-8" />
-          </button>
         </div>
       )}
     </div>

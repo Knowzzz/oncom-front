@@ -1,26 +1,24 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
 import SidebarDaoSettings from "./SidebarDaoSettings";
-import {
-  Overview,
-  Roles,
-  Members,
-  Invitations,
-  Ban,
-  SecurityAlert,
-  Web3Management,
-} from "./ButtonsDaoSettings";
+import OverviewButton from "./Buttons/Overview";
+import RolesButton from "./Buttons/Roles";
+import UpdateRole from "./Buttons/Modals/UpdateRole";
 
 const DaoSettingsContent = ({
   activeContent,
   daoSettingsModalOpen,
   setDaoSettingsModalOpen,
-  daoData={daoData}
+  daoData = { daoData },
+  setDaoData,
+  setActiveContent,
+  activeRoleId,
+  setActiveRoleId,
 }) => {
   switch (activeContent) {
     case "Overview":
       return (
-        <Overview
+        <OverviewButton
           daoData={daoData}
           daoSettingsModalOpen={daoSettingsModalOpen}
           setDaoSettingsModalOpen={setDaoSettingsModalOpen}
@@ -28,48 +26,41 @@ const DaoSettingsContent = ({
       );
     case "Roles":
       return (
-        <Roles
+        <RolesButton
           daoSettingsModalOpen={daoSettingsModalOpen}
           setDaoSettingsModalOpen={setDaoSettingsModalOpen}
+          daoData={daoData}
+          setDaoData={setDaoData}
+          setActiveContent={setActiveContent}
+          setActiveRoleId={setActiveRoleId}
         />
       );
     case "Members":
-      return (
-        <Members
-          daoSettingsModalOpen={daoSettingsModalOpen}
-          setDaoSettingsModalOpen={setDaoSettingsModalOpen}
-        />
-      );
+
     case "Invitations":
-      return (
-        <Invitations
-          daoSettingsModalOpen={daoSettingsModalOpen}
-          setDaoSettingsModalOpen={setDaoSettingsModalOpen}
-        />
-      );
+
     case "Ban":
-      return (
-        <Ban
-          daoSettingsModalOpen={daoSettingsModalOpen}
-          setDaoSettingsModalOpen={setDaoSettingsModalOpen}
-        />
-      );
+
     case "Security Alert":
-      return (
-        <SecurityAlert
-          daoSettingsModalOpen={daoSettingsModalOpen}
-          setDaoSettingsModalOpen={setDaoSettingsModalOpen}
-        />
-      );
+
     case "Web3 Management":
+
+    case "Create Role":
       return (
-        <Web3Management
-          daoSettingsModalOpen={daoSettingsModalOpen}
+        <UpdateRole
+          daoData={daoData}
           setDaoSettingsModalOpen={setDaoSettingsModalOpen}
+          setDaoData={setDaoData}
+          activeContent={activeContent}
+          setActiveContent={setActiveContent}
+          daoSettingsModalOpen={daoSettingsModalOpen}
+          roleId={activeRoleId}
+          setActiveRoleId={setActiveRoleId}
         />
       );
+
     default:
-      return <Overview />;
+      return <OverviewButton />;
   }
 };
 
@@ -77,8 +68,10 @@ const DaoSettingsModal = ({
   daoSettingsModalOpen,
   setDaoSettingsModalOpen,
   daoData,
+  setDaoData,
 }) => {
   const [activeContent, setActiveContent] = useState("Overview");
+  const [activeRoleId, setActiveRoleId] = useState(null);
 
   return (
     <Modal
@@ -91,7 +84,7 @@ const DaoSettingsModal = ({
     >
       <div className="flex relative h-full">
         <SidebarDaoSettings
-        daoData={daoData}
+          daoData={daoData}
           activeContent={activeContent}
           setActiveContent={setActiveContent}
         />
@@ -100,6 +93,10 @@ const DaoSettingsModal = ({
           activeContent={activeContent}
           daoSettingsModalOpen={daoSettingsModalOpen}
           setDaoSettingsModalOpen={setDaoSettingsModalOpen}
+          setDaoData={setDaoData}
+          setActiveContent={setActiveContent}
+          activeRoleId={activeRoleId}
+          setActiveRoleId={setActiveRoleId}
         />
       </div>
     </Modal>

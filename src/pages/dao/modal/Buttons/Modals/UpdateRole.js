@@ -6,7 +6,10 @@ import { Menu, Transition } from "@headlessui/react";
 import { SketchPicker } from "react-color";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
+import { permissionsList } from "./PermissionsList";
 import "react-toastify/dist/ReactToastify.css";
+import { IoSearch } from "react-icons/io5";
+import { IoCheckmark, IoClose } from "react-icons/io5";
 
 const baseURL = "http://localhost:8080";
 
@@ -46,14 +49,9 @@ const UpdateRole = ({
   const handleColorChange = (color) => {
     setSelectedRoleColor(color.hex);
     const roleIndex = tempDaoData.roles.findIndex((role) => role.id === roleId);
-
-    // Créer une copie des rôles pour ne pas modifier directement l'état
     const updatedRoles = [...tempDaoData.roles];
-
-    // Mettre à jour la couleur du rôle
     updatedRoles[roleIndex].color = color.hex;
 
-    // Mettre à jour l'état de tempDaoData avec les rôles mis à jour
     setTempDaoData({ ...tempDaoData, roles: updatedRoles });
     setUnsavedChanges(true);
   };
@@ -61,7 +59,7 @@ const UpdateRole = ({
   const handleNameChange = (event) => {
     setSelectedRoleName(event.target.value);
     setUnsavedChanges(true);
-  }
+  };
 
   const resetChanges = () => {
     setTempDaoData(daoData);
@@ -93,9 +91,6 @@ const UpdateRole = ({
         </button>
         <div className="flex flex-col mt-4">
           {tempDaoData.roles.map((role) => {
-            if (role.name === "everyone") {
-              return null;
-            }
             return (
               <button
                 key={role.id}
@@ -132,6 +127,7 @@ const UpdateRole = ({
           ROLE NAME <span className="text-red-500 text-sm">*</span>
         </label>
         <input
+          key={roleId}
           type="text"
           className="block w-full mb-4 p-2 rounded-md bg-zinc-800 text-zinc-400"
           value={selectedRoleName}
@@ -160,8 +156,87 @@ const UpdateRole = ({
     );
   };
 
+
+  const PermissionSwitch = ({ permission, onChange }) => {
+    const [value, setValue] = useState(permission.defaultValue);
+
+    const handleClick = () => {
+      setValue(!value);
+      onChange(permission.name, !value);
+    };
+
+    return (
+      <div
+        className={`${
+          value ? "bg-green-500" : "bg-gray-700"
+        } relative inline-block w-12 rounded-full overflow-hidden cursor-pointer transition-colors duration-200 ease-in`}
+        onClick={handleClick}
+      >
+        <span
+          className={`${
+            value ? "translate-x-6" : "translate-x-0"
+          } inline-block w-6 h-6 bg-white rounded-full transform transition-transform duration-200 ease-in`}
+        ></span>
+        <IoCheckmark
+          className={`absolute top-1 left-1 text-xs ${
+            value ? "text-white" : "text-transparent"
+          }`}
+        />
+        <IoClose
+          className={`absolute top-1 right-1 text-xs ${
+            !value ? "text-white" : "text-transparent"
+          }`}
+        />
+      </div>
+    );
+  };
+
   const PermissionsTab = () => {
-    // Permissions Tab Content
+    const [search, setSearch] = useState("");
+    const [permissions, setPermissions] = useState({});
+
+    const handleSearchChange = (event) => {
+      setSearch(event.target.value);
+    };
+
+    const handlePermissionChange = (name, value) => {
+      setPermissions({ ...permissions, [name]: value });
+    };
+
+    return (
+      <div>
+        <div className="flex items-center">
+          <IoSearch className="w-5 h-5" />
+          <input
+            type="text"
+            className="block w-full mb-4 p-2 rounded-md bg-zinc-800 text-zinc-400"
+            placeholder="Search Roles"
+            value={search}
+            onChange={handleSearchChange}
+          />
+        </div>
+        <label className="font-semibold text-sm">Server Permissions</label>
+        <div className="mt-4">
+          {permissionsList.map((permission) => (
+            <div
+              key={permission.name}
+              className="flex items-center justify-between mb-2"
+            >
+              <div>
+                <p className="font-semibold">{permission.title}</p>
+                <p className="text-xs text-gray-400">
+                  {permission.description}
+                </p>
+              </div>
+              <PermissionSwitch
+                permission={permission}
+                onChange={handlePermissionChange}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   };
 
   return (

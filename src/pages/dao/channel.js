@@ -46,7 +46,6 @@ const Channel = () => {
     socket.on("new-message", (message) => {
       setMessages((messages) => [...messages, message]);
     });
-  
 
     setCurrentDaoId(daoId);
 
@@ -127,15 +126,13 @@ const Channel = () => {
               className={`${
                 index > 0 && messages[index - 1].user.id === message.user.id
                   ? ""
-                  : ""
+                  : "mb-1"
               }`}
               onMouseEnter={() => setHoveredMessage(index)}
               onMouseLeave={() => setHoveredMessage(null)}
             >
               <div
                 className={`${
-                  hoveredMessage === index ? "bg-gray-600" : "bg-gray-700"
-                } px-1 py-0.5 w-full relative text-gray-300`}
                   hoveredMessage === index ? "bg-zinc-600" : "bg-zinc-700"
                 } px-1 flex flex-col`}
               >

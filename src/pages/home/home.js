@@ -124,7 +124,7 @@ function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
       </div>
 
       <div
-        className="flex flex-col md:flex-row justify-center items-center my-8 bg-gray-100"
+        className="flex flex-col md:flex-row justify-center items-center my-8 bg-zinc"
         data-aos="fade-up"
       >
         <div className="w-full md:w-3/6 flex flex-col items-center pb-20 mt-20 text-center md:text-left">
@@ -193,7 +193,7 @@ function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
       </div>
       <div className="bg-white">
         <div
-          className="bg-gray-100 w-full h-screen flex items-center justify-center"
+          className="bg-zinc w-full h-screen flex items-center justify-center"
           data-aos="fade-up"
         >
           <div className="w-full md:w-1/2 rounded-lg p-8">

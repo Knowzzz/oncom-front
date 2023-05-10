@@ -53,16 +53,6 @@ const Channel = () => {
     const fetchDaoData = async () => {
       const accessToken = localStorage.getItem("accessToken");
 
-      const response = await axios.get(`${baseURL}/api/dao/getOne`, {
-        params: {
-          daoId: currentDaoId,
-          userId: userId,
-        },
-        headers: {
-          "x-access-token": accessToken,
-        },
-      });
-
       dispatch(setLastChannelId({ daoId: daoId, channelId: channelId }));
     };
 

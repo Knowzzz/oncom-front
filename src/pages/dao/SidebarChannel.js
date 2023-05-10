@@ -204,7 +204,7 @@ const SidebarChannel = ({ daoId, channelId }) => {
       {!daoMenuCollapsed && (
         <div className="bg-black text-white py-2 px-4 space-y-2 mt-2 rounded-md m-4 dao-menu">
           <button
-            className="block w-full text-left px-2 py-1 hover:bg-zinc rounded text-blue-300"
+            className="block w-full text-left px-2 py-1 hover:bg-zinc-700 rounded text-blue-300"
             onClick={handleInviteUser}
           >
             Invite user
@@ -318,6 +318,7 @@ const SidebarChannel = ({ daoId, channelId }) => {
         daoSettingsModalOpen={daoSettingsModalOpen}
         setDaoSettingsModalOpen={setDaoSettingsModalOpen}
         daoData={daoData}
+        setDaoData={setDaoData}
       />
 
       <CreateChannelModal

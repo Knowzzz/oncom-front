@@ -4,6 +4,7 @@ import SidebarDaoSettings from "./SidebarDaoSettings";
 import OverviewButton from "./Buttons/Overview";
 import RolesButton from "./Buttons/Roles";
 import UpdateRole from "./Buttons/Modals/UpdateRole";
+import MembersButton from "./Buttons/Members";
 
 const DaoSettingsContent = ({
   activeContent,
@@ -14,6 +15,8 @@ const DaoSettingsContent = ({
   setActiveContent,
   activeRoleId,
   setActiveRoleId,
+  users,
+  setUsers
 }) => {
   switch (activeContent) {
     case "Overview":
@@ -36,7 +39,15 @@ const DaoSettingsContent = ({
         />
       );
     case "Members":
-
+      return (
+        <MembersButton
+          users={users}
+          setDaoSettingsModalOpen={setDaoSettingsModalOpen}
+          daoData={daoData}
+          setDaoData={setDaoData}
+          setUsers={setUsers}
+        />
+      );
     case "Invitations":
 
     case "Ban":
@@ -45,7 +56,7 @@ const DaoSettingsContent = ({
 
     case "Web3 Management":
 
-    case "Create Role":
+    case "Update Role":
       return (
         <UpdateRole
           daoData={daoData}
@@ -69,6 +80,8 @@ const DaoSettingsModal = ({
   setDaoSettingsModalOpen,
   daoData,
   setDaoData,
+  users,
+  setUsers,
 }) => {
   const [activeContent, setActiveContent] = useState("Overview");
   const [activeRoleId, setActiveRoleId] = useState(null);
@@ -78,8 +91,8 @@ const DaoSettingsModal = ({
       isOpen={daoSettingsModalOpen}
       onRequestClose={() => setDaoSettingsModalOpen(false)}
       contentLabel="Dao Settings Modal"
-      className="w-4/6 bg-zinc-700 text-white rounded-lg h-5/6"
-      overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center transition-opacity duration-500 ease-in-out opacity-100"
+      className="w-4/6 bg-zinc-700 text-white rounded-lg h-5/6 z-50"
+      overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center transition-opacity duration-500 ease-in-out opacity-100 z-50"
       closeTimeoutMS={500}
     >
       <div className="flex relative h-full">
@@ -97,6 +110,8 @@ const DaoSettingsModal = ({
           setActiveContent={setActiveContent}
           activeRoleId={activeRoleId}
           setActiveRoleId={setActiveRoleId}
+          users={users}
+          setUsers={setUsers}
         />
       </div>
     </Modal>

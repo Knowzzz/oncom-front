@@ -6,16 +6,21 @@ import { setLastChannelId } from "../../features/userSlice";
 import { io } from "socket.io-client";
 import SidebarChannel from "./SidebarChannel";
 import SidebarServers from "../../components/SidebarServers";
-import SidebarUserOnDao from "../../components/SidebarUserOnDao";
+import SidebarUserOnDao from "./SidebarUserOnDao";
 import { BsThreeDots } from "react-icons/bs";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Modal from "react-modal";
+import MessageInput from "../../components/MessageInput";
+import SendMATICComponent from "../../components/SendMATICComponent";
 
 const baseURL = "http://localhost:8080";
 
 const Channel = () => {
   const { daoId, channelId } = useParams();
   const [currentDaoId, setCurrentDaoId] = useState(null);
-  const [inputMessage, setInputMessage] = useState("");
+  const [daoData, setDaoData] = useState(null);
+  const [isOwner, setIsOwner] = useState(false);
   const userId = JSON.parse(localStorage.getItem("user")).id;
   const [messages, setMessages] = useState([]);
   const [canWriteMessage, setCanWriteMessage] = useState(true);
@@ -23,21 +28,88 @@ const Channel = () => {
   const [hoveredMessage, setHoveredMessage] = useState(null);
   const dispatch = useDispatch();
   const [showModal, setShowModal] = useState(false);
+  const [usersOffline, setUsersOffline] = useState([]);
+  const [roles, setRoles] = useState({});
+
+  const [users, setUsers] = useState({});
+
+  const fetchDao = async () => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+
+      const result = await axios.get(`${baseURL}/api/dao/getOne`, {
+        params: {
+          daoId: daoId,
+          userId: userId,
+        },
+        headers: {
+          "x-access-token": accessToken,
+        },
+      });
+      setDaoData(result.data.dao);
+      setIsOwner(result.data.dao.ownerId === userId);
+    } catch (error) {
+      console.error("Error fetching DAO data:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!daoId) {
+      return;
+    }
+
+    fetchDao();
+  }, [daoId]);
+
+  useEffect(() => {
+    if (!daoId) {
+      return;
+    }
+    const fetchUsers = async () => {
+      try {
+        const accessToken = localStorage.getItem("accessToken");
+        const response = await axios.get(`${baseURL}/api/dao/getUsers`, {
+          params: {
+            userId: JSON.parse(localStorage.getItem("user")).id,
+            daoId: daoId,
+          },
+          headers: {
+            "x-access-token": accessToken,
+          },
+        });
+
+        if (response.status === 200) {
+          const {
+            usersOnlineGroupedByRole: online,
+            usersOffline: offline,
+            users,
+          } = response.data;
+          setUsersOffline(offline);
+          setUsers(users);
+          setRoles(online);
+        } else {
+          console.error(
+            "Error fetching users:",
+            response.status,
+            response.statusText
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchUsers();
+  }, [daoId]);
 
   const socket = io(`${baseURL}/channel-message`, {
     query: { userId, channelId, daoId },
   });
 
-  function linkify(text) {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return text.replace(
-      urlRegex,
-      (url) => `<a href="${url}" target="_blank">${url}</a>`
-    );
-  }
-
   useEffect(() => {
-    if (!daoId || !channelId) { return }
+    if (!daoId || !channelId) {
+      return;
+    }
     socket.on("initial-messages", ({ messages, canWriteMessage }) => {
       setMessages(messages);
       setCanWriteMessage(canWriteMessage);
@@ -48,16 +120,6 @@ const Channel = () => {
     });
 
     setCurrentDaoId(daoId);
-
-    const fetchDaoData = async () => {
-      const accessToken = localStorage.getItem("accessToken");
-
-      dispatch(setLastChannelId({ daoId: daoId, channelId: channelId }));
-    };
-
-    if (currentDaoId) {
-      fetchDaoData();
-    }
 
     return () => {
       if (socket) {
@@ -74,26 +136,6 @@ const Channel = () => {
       }
     });
   }, [messages]);
-
-  const handleSend = async (event) => {
-    event.preventDefault();
-    if (inputMessage.trim() === "") return;
-
-    try {
-      if (socket) {
-        socket.emit("new-message", {
-          userId: userId,
-          channelId: channelId,
-          content: inputMessage,
-          daoId: daoId,
-        });
-
-        setInputMessage("");
-      }
-    } catch (error) {
-      return error;
-    }
-  };
 
   const getAvatarUrl = async (userId, avatarPath) => {
     if (userAvatars[userId]) {
@@ -117,7 +159,16 @@ const Channel = () => {
   return (
     <div className="h-screen w-screen bg-zinc-700 text-white flex">
       <SidebarServers />
-      <SidebarChannel daoId={currentDaoId} channelId={channelId} />
+      <SidebarChannel
+        daoId={currentDaoId}
+        channelId={channelId}
+        users={users}
+        setUsers={setUsers}
+        daoData={daoData}
+        setDaoData={setDaoData}
+        isOwner={isOwner}
+        setIsOwner={setIsOwner}
+      />
       <div className="flex-1 flex flex-col bg-zinc-700">
         <div className="flex-1 bg-zinc-700 px-4 py-2">
           {messages.map((message, index) => (
@@ -152,7 +203,15 @@ const Channel = () => {
                     hoveredMessage === index ? "bg-zinc-600" : "bg-zinc-700"
                   } px-10 w-full relative text-gray-300 pl-14`}
                 >
-                  {message.content}
+                  {message.content.startsWith("/MATIC-SHIPMENTS-REQUEST") ? (
+                    <SendMATICComponent
+                      recipientPseudo={message.user.pseudo}
+                      recipientAddress={message.user.wallet_address}
+                      daoId={currentDaoId}
+                    />
+                  ) : (
+                    message.content
+                  )}
                   {hoveredMessage === index && (
                     <BsThreeDots
                       className="absolute top-1 right-2 text-xl hover:border hover:border-gray-500 hover:bg-zinc-600 hover:shadow-xl rounded-full"
@@ -165,26 +224,14 @@ const Channel = () => {
           ))}
         </div>
 
-        <input
-          type="text"
-          className="bg-zinc-500 text-white p-2 rounded-md m-4 shadow-xl mb-6 focus:border-gray-600 focus:outline-none border-2 border-transparent"
-          placeholder={
-            canWriteMessage
-              ? "Type your message..."
-              : "You don't have the permission to write in this channel"
-          }
-          value={inputMessage}
-          onChange={(event) => setInputMessage(event.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey && canWriteMessage) {
-              handleSend(e);
-            }
-          }}
-          autoComplete="off"
-          disabled={!canWriteMessage}
+        <MessageInput
+          canWriteMessage={canWriteMessage}
+          socket={socket}
+          daoId={currentDaoId}
+          channelId={channelId}
         />
       </div>
-      <SidebarUserOnDao daoId={currentDaoId} />
+      <SidebarUserOnDao roles={roles} usersOffline={usersOffline} />
 
       {showModal && (
         <Modal onClose={() => setShowModal(false)}>

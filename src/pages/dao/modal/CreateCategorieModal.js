@@ -17,10 +17,10 @@ const CreateCategorie = ({
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center transition-opacity duration-500 ease-in-out opacity-100"
       closeTimeoutMS={500}
     >
-      <h2 className="mb-4">Create Channel</h2>
+      <h2 className="mb-4">Create Categorie</h2>
       <input
         type="text"
-        placeholder="new-channel"
+        placeholder="new-categorie"
         value={inputCategorieName}
         onChange={(e) => setInputCategorieName(e.target.value)}
         className="w-full ml-2 px-4 py-2 border border-gray-700 rounded text-gray-300 bg-zinc-800 mb-4"
@@ -36,7 +36,7 @@ const CreateCategorie = ({
           className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
           onClick={handleCreateCategorie}
         >
-          Create Channel
+          Create Categorie
         </button>
       </div>
     </Modal>

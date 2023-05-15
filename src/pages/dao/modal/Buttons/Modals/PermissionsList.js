@@ -36,6 +36,18 @@ export const permissionsList = [
       defaultValue: false,
     },
     {
+      name: "canManageUserRole",
+      title: "Can Manager Users",
+      description: "Allow role to set and delete role for users.",
+      defaultValue: false,
+    },
+    {
+      name: "canManageRole",
+      title: "Can Manager Role",
+      description: "Allow role to manage others roles.",
+      defaultValue: false,
+    },
+    {
       name: "canCreateChannel",
       title: "Can Create Channel",
       description: "Allow role members to create channels.",

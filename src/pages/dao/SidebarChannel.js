@@ -17,9 +17,7 @@ Modal.setAppElement("#root");
 
 const baseURL = "http://localhost:8080";
 
-const SidebarChannel = ({ daoId, channelId }) => {
-  const [daoData, setDaoData] = useState(null);
-  const [isOwner, setIsOwner] = useState(false);
+const SidebarChannel = ({ daoId, channelId, users, daoData, setDaoData, isOwner, setIsOwner, setUsers }) => {
   const [createChannelModalOpen, setCreateChannelModalOpen] = useState(false);
   const [createCategorieModalOpen, setCreateCategorieModalOpen] =
     useState(false);
@@ -59,34 +57,7 @@ const SidebarChannel = ({ daoId, channelId }) => {
     }
   }, [daoData]);
 
-  const fetchDao = async () => {
-    try {
-      const accessToken = localStorage.getItem("accessToken");
-
-      const result = await axios.get(`${baseURL}/api/dao/getOne`, {
-        params: {
-          daoId: daoId,
-          userId: userId,
-        },
-        headers: {
-          "x-access-token": accessToken,
-        },
-      });
-      setDaoData(result.data.dao);
-      setIsOwner(result.data.dao.ownerId === userId);
-    } catch (error) {
-      console.error("Error fetching DAO data:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (!daoId) {
-      return;
-    }
-
-    fetchDao();
-  }, [daoId]);
-
+  
   const handleInviteUser = async () => {
     const accessToken = localStorage.getItem("accessToken");
 
@@ -116,6 +87,26 @@ const SidebarChannel = ({ daoId, channelId }) => {
   if (!daoData) {
     return <div>Loading...</div>;
   }
+
+  const fetchDao = async () => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+
+      const result = await axios.get(`${baseURL}/api/dao/getOne`, {
+        params: {
+          daoId: daoId,
+          userId: userId,
+        },
+        headers: {
+          "x-access-token": accessToken,
+        },
+      });
+      setDaoData(result.data.dao);
+      setIsOwner(result.data.dao.ownerId === userId);
+    } catch (error) {
+      console.error("Error fetching DAO data:", error);
+    }
+  };
 
   const handleCreateChannel = async () => {
     try {
@@ -319,6 +310,8 @@ const SidebarChannel = ({ daoId, channelId }) => {
         setDaoSettingsModalOpen={setDaoSettingsModalOpen}
         daoData={daoData}
         setDaoData={setDaoData}
+        users={users}
+        setUsers={setUsers}
       />
 
       <CreateChannelModal

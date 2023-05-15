@@ -47,7 +47,7 @@ const UserProfile = () => {
         formData.append("avatar", avatar);
       }
 
-      const response = await axios.post(
+      const response = await axios.put(
         `${baseURL}/api/user/update`,
         formData,
         {

@@ -87,6 +87,7 @@ const OverviewButton = ({
 
   return (
     <div className="w-full h-full">
+      <ToastContainer />
       {daoSettingsModalOpen && (
         <div className="relative flex flex-col">
           <button

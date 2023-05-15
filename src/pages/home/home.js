@@ -14,6 +14,9 @@ import "./home.css";
 const baseURL = "http://localhost:8080";
 
 async function isAuthenticated() {
+  try {
+
+  
   const accessToken = localStorage.getItem("accessToken");
   const user = JSON.parse(localStorage.getItem("user"));
   if (!user || !accessToken) {
@@ -27,7 +30,13 @@ async function isAuthenticated() {
       "x-access-token": accessToken,
     },
   });
+  if (result.status == 400) {
+    return false;
+  }
   return result.data.success;
+} catch (err) {
+  return err;
+}
 }
 
 function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {

@@ -8,6 +8,7 @@ import axios from "axios";
 
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { JSON_RPC_URL } from "../../components/const";
 
 const Signup = () => {
   const [isConnected, setIsConnected] = useState(false);
@@ -46,7 +47,7 @@ const Signup = () => {
   const register = async () => {
     if (typeof window.ethereum !== "undefined") {
       // Utilisez Web3Provider pour accéder au fournisseur MetaMask
-      const provider = new ethers.BrowserProvider(window.ethereum);
+      const provider = new ethers.providers.JsonRpcProvider(JSON_RPC_URL);
 
       try {
         if (!isConnected) {
@@ -96,7 +97,7 @@ const Signup = () => {
     try {
       if (typeof window.ethereum !== "undefined") {
         // Utilisez Web3Provider pour accéder au fournisseur MetaMask
-        const provider = new ethers.BrowserProvider(window.ethereum);
+        const provider = new ethers.providers.JsonRpcProvider(JSON_RPC_URL);
 
         try {
           if (!isConnected) {

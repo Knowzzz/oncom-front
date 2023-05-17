@@ -6,7 +6,7 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/system";
-import { baseURL } from "../components/const/index";
+import { baseURL, JSON_RPC_URL } from "../components/const/index";
 import axios from "axios";
 import { ethers } from "ethers";
 import { toast, ToastContainer } from "react-toastify";
@@ -44,16 +44,16 @@ const SendMATICComponent = ({ recipientPseudo, recipientAddress, daoId }) => {
 
   const connectWallet = async () => {
     if (window.ethereum) {
-        try {
-            // Demande à MetaMask de connecter le compte de l'utilisateur
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-        } catch (error) {
-            console.error("L'utilisateur a refusé la connexion à MetaMask");
-        }
+      try {
+        // Demande à MetaMask de connecter le compte de l'utilisateur
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+      } catch (error) {
+        console.error("L'utilisateur a refusé la connexion à MetaMask");
+      }
     } else {
-        console.log('Vous devez installer MetaMask !');
+      console.log("Vous devez installer MetaMask !");
     }
-}
+  };
 
   const handleAmountChange = (e) => {
     setAmount(e.target.value);
@@ -67,15 +67,19 @@ const SendMATICComponent = ({ recipientPseudo, recipientAddress, daoId }) => {
         amount: amount,
       };
 
-      const response = await axios.post(`${baseURL}/api/transaction/request/matic/pending`, {
-        transactionData,
-        userId: JSON.parse(localStorage.getItem("user")).id,
-        daoId: daoId
-      }, {
-        headers: {
-          "x-access-token": localStorage.getItem("accessToken")
+      const response = await axios.post(
+        `${baseURL}/api/transaction/request/matic/pending`,
+        {
+          transactionData,
+          userId: JSON.parse(localStorage.getItem("user")).id,
+          daoId: daoId,
+        },
+        {
+          headers: {
+            "x-access-token": localStorage.getItem("accessToken"),
+          },
         }
-      });
+      );
 
       if (response.data.error) {
         toast.error(response.data.error);
@@ -83,24 +87,23 @@ const SendMATICComponent = ({ recipientPseudo, recipientAddress, daoId }) => {
       }
 
       if (window.ethereum) {
-        const provider = new ethers.BrowserProvider(window.ethereum);
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
-        const signedTransaction = await signer.signTransaction(response.data.unsignedTransaction);
-
-
-    } else {
-        console.log('Vous devez installer MetaMask !');
-        connectWallet()
-    }
-      
+        const signedTx = await signer.signTransaction(response.data.unsignedTransaction);
+        console.log(signedTx);
+      } else {
+        console.log("Vous devez installer MetaMask !");
+        connectWallet();
+      }
     } catch (err) {
+      console.log(err);
       toast.error(err);
     }
   };
 
   return (
     <CustomCard>
-      <ToastContainer/>
+      <ToastContainer />
       <CardContent>
         <StyledText variant="subtitle2" component="div" gutterBottom>
           Send MATIC to {recipientPseudo}
@@ -121,7 +124,7 @@ const SendMATICComponent = ({ recipientPseudo, recipientAddress, daoId }) => {
           }}
           InputLabelProps={{
             style: { color: "gray", fontSize: "0.8rem" },
-          }}  
+          }}
         />
         <Box marginTop={2}>
           <Button

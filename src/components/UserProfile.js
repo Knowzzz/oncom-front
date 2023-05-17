@@ -5,6 +5,7 @@ import React, { useState, useEffect, Fragment } from "react";
 import axios from "axios";
 import { ethers } from "ethers";
 import { useNavigate } from "react-router-dom";
+import { JSON_RPC_URL } from "./const";
 
 const baseURL = "http://localhost:8080";
 
@@ -87,7 +88,7 @@ const UserProfile = () => {
         });
         setWalletAddressPage(accounts);
 
-        const provider = new ethers.BrowserProvider(window.ethereum);
+        const provider = new ethers.providers.JsonRpcProvider(JSON_RPC_URL);
 
         const message = await axios.post(
           `${baseURL}/api/user/generateMessage`,

@@ -5,6 +5,7 @@ import React, { useState, useEffect, Fragment } from "react";
 import axios from "axios";
 import { ethers } from "ethers";
 import { useNavigate } from "react-router-dom";
+import { JSON_RPC_URL } from "./const";
 
 const baseURL = "http://localhost:8080";
 
@@ -47,7 +48,7 @@ const UserProfile = () => {
         formData.append("avatar", avatar);
       }
 
-      const response = await axios.post(
+      const response = await axios.put(
         `${baseURL}/api/user/update`,
         formData,
         {
@@ -87,7 +88,7 @@ const UserProfile = () => {
         });
         setWalletAddressPage(accounts);
 
-        const provider = new ethers.BrowserProvider(window.ethereum);
+        const provider = new ethers.providers.JsonRpcProvider(JSON_RPC_URL);
 
         const message = await axios.post(
           `${baseURL}/api/user/generateMessage`,
@@ -154,13 +155,13 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="bg-gray-700 border border-gray-500 w-1/5 flex flex-col p-4">
+    <div className="bg-zinc-800 border border-zinc-600 w-1/5 flex flex-col p-4">
       <div className="flex justify-center">
         <label htmlFor="avatar">
           <img
             src={avatarUrl || "/image.jpg"}
             alt="Profile"
-            className="w-24 h-24 rounded-full cursor-pointer border-2 border-gray-600"
+            className="w-24 h-24 shadow-2xl rounded-full cursor-pointer border-2 border-gray-600"
           />
         </label>
         <input
@@ -170,10 +171,8 @@ const UserProfile = () => {
           accept="image/png, image/jpeg"
           className="hidden"
           onChange={(event) => {
-            console.log("File input onChange triggered");
             setNewAvatar(event.target.files[0]);
             const newAvatarUrl = URL.createObjectURL(event.target.files[0]);
-            console.log("New avatar URL:", newAvatarUrl);
             setAvatarUrl(newAvatarUrl);
           }}
         />
@@ -189,7 +188,7 @@ const UserProfile = () => {
             name="username"
             value={user.pseudo || ""}
             onChange={handleChange}
-            className="bg-gray-600 text-white w-full p-2 rounded-md mt-2"
+            className="bg-zinc-600 text-white w-full p-2 rounded-md mt-2"
           />
         </div>
         <div className="mt-4">
@@ -202,7 +201,7 @@ const UserProfile = () => {
             name="address"
             value={user.wallet_address}
             onChange={handleChange}
-            className="bg-gray-600 text-white w-full p-2 rounded-md mt-2"
+            className="bg-zinc-600 text-white w-full p-2 rounded-md mt-2"
           />
         </div>
         <button
@@ -265,7 +264,7 @@ const UserProfile = () => {
               <div className="mt-4 flex justify-end space-x-2">
                 <button
                   type="button"
-                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-zinc focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
                   onClick={() => setIsLogoutModalOpen(false)}
                 >
                   Annuler
@@ -321,7 +320,7 @@ const UserProfile = () => {
               <div className="mt-4 flex justify-end space-x-2">
                 <button
                   type="button"
-                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
+                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-zinc focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500"
                   onClick={() => setIsDeleteAccountModalOpen(false)}
                 >
                   Annuler

@@ -103,6 +103,7 @@ const MainPage = () => {
             };
           })
         );
+        console.log(friendsWithAvatars);
         setOnlineFriends(friendsWithAvatars);
       } catch (err) {
         console.log(err);
@@ -132,11 +133,11 @@ const MainPage = () => {
   
 
   return (
-    <div className="bg-gray-800 h-screen w-screen">
+    <div className="bg-zinc-700 h-screen w-screen">
       <div className="flex h-full">
         <SidebarServers />
         <SidebarFriend />
-        <div className="bg-gray-700 w-fullflex flex-col p-6 flex-grow">
+        <div className="bg-zinc-700 flex flex-col p-6 flex-grow">
           <div className="flex items-center mb-4">
             <div className="text-white text-2xl font-semibold">Friends</div>
             <button
@@ -145,20 +146,22 @@ const MainPage = () => {
             >
               Add
             </button>
-            <button className="bg-gray-800 text-gray-300 px-2 py-1 ml-2 rounded">
+            <button className="bg-zinc-800 text-gray-300 px-2 py-1 ml-2 rounded">
               <Link to="/main">Online</Link>
             </button>
-            <button className="bg-gray-500 text-gray-300 px-2 py-1 ml-2 rounded hover:bg-gray-600">
+            <button className="bg-zinc-500 text-gray-300 px-2 py-1 ml-2 rounded hover:bg-zinc-600">
               <Link to="/main/friend/pending">Pending</Link>
             </button>
-            <button className="bg-gray-500 text-gray-300 px-2 py-1 ml-2 rounded hover:bg-gray-600">
+            <button className="bg-zinc-500 text-gray-300 px-2 py-1 ml-2 rounded hover:bg-zinc-600">
               <Link to="/main/friend/blocked">Blocked</Link>
             </button>
           </div>
           <div className="relative">
             <input
               type="text"
-              className="bg-gray-600 text-white w-full h-10 pl-3 pr-10 rounded-md"
+              name="searchfriend"
+              autoComplete="off"
+              className="bg-zinc-600 text-white w-full h-10 pl-3 pr-10 rounded-md"
               placeholder="Search"
             />
             <BsSearch className="absolute right-3 top-2 text-white" />
@@ -171,7 +174,7 @@ const MainPage = () => {
               ? onlineFriends.map((friendOnline) => (
                   <div
                     key={friendOnline.id}
-                    className="bg-gray-800 w-full h-16 flex items-center p-4 mb-2 rounded-md"
+                    className="bg-zinc-800 w-full h-16 flex items-center p-4 mb-2 rounded-md"
                   >
                     <img
                       src={
@@ -209,9 +212,9 @@ const MainPage = () => {
                                 : friendOnline.user.id
                             }`}
                           >
-                            <TbMessageCircle2Filled className="text-white w-8 h-8 p-1 rounded-full bg-gray-700 mr-4" />
+                            <TbMessageCircle2Filled className="text-white w-8 h-8 p-1 rounded-full bg-zinc-700 mr-4" />
                           </Link>
-                          <HiOutlineDotsVertical className="text-white w-8 h-8 p-1 rounded-full bg-gray-700 hover:bg-gray-600" />
+                          <HiOutlineDotsVertical className="text-white w-8 h-8 p-1 rounded-full bg-zinc-700 hover:bg-zinc-600" />
                         </Menu.Button>
                         <Transition
                           as={Fragment}
@@ -222,16 +225,16 @@ const MainPage = () => {
                           leaveFrom="transform opacity-100 scale-100"
                           leaveTo="transform opacity-0 scale-95"
                         >
-                          <Menu.Items className="origin-top-right absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-gray-600 text-gray-700 focus:outline-none">
-                            <div className="py-1 bg-gray-600 rounded-lg">
+                          <Menu.Items className="origin-top-right absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-zinc-600 text-gray-700 focus:outline-none">
+                            <div className="py-1 bg-zinc-600 rounded-lg">
                               <Menu.Item>
                                 {({ active }) => (
                                   <button
                                     className={`${
                                       active
-                                        ? "bg-gray-400 text-black"
+                                        ? "bg-zinc-400 text-black"
                                         : "text-black"
-                                    } flex px-2 py-1 text-sm bg-gray-600 text-red-500 rounded-md w-full`}
+                                    } flex px-2 py-1 text-sm bg-zinc-600 text-red-500 rounded-md w-full`}
                                     onClick={() =>
                                       deleteFriend(
                                         actualUserId == friendOnline.user.id
@@ -249,9 +252,9 @@ const MainPage = () => {
                                   <button
                                     className={`${
                                       active
-                                        ? "bg-gray-400 text-black"
+                                        ? "bg-zinc-400 text-black"
                                         : "text-black"
-                                    } flex px-2 py-1 text-sm bg-gray-600 text-black rounded-md w-full`}
+                                    } flex px-2 py-1 text-sm bg-zinc-600 text-black rounded-md w-full`}
                                     onClick={() =>
                                       blockFriend(
                                         actualUserId == friendOnline.user.id

@@ -14,20 +14,30 @@ import "./home.css";
 const baseURL = "http://localhost:8080";
 
 async function isAuthenticated() {
-  const accessToken = localStorage.getItem("accessToken");
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (!user || !accessToken) {
+  try {
+    const accessToken = localStorage.getItem("accessToken");
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !accessToken) {
+      return false;
+    }
+    const result = await axios.get(`${baseURL}/api/user/validToken`, {
+      params: {
+        userId: user.id,
+      },
+      headers: {
+        "x-access-token": accessToken,
+      },
+    });
+    if (!result) {
+      return false;
+    }
+    if (result.status == 400) {
+      return false;
+    }
+    return result.data.success;
+  } catch (err) {
     return false;
   }
-  const result = await axios.get(`${baseURL}/api/user/validToken`, {
-    params: {
-      userId: user.id,
-    },
-    headers: {
-      "x-access-token": accessToken,
-    },
-  });
-  return result.data.success;
 }
 
 function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
@@ -124,7 +134,7 @@ function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
       </div>
 
       <div
-        className="flex flex-col md:flex-row justify-center items-center my-8 bg-gray-100"
+        className="flex flex-col md:flex-row justify-center items-center my-8 bg-zinc"
         data-aos="fade-up"
       >
         <div className="w-full md:w-3/6 flex flex-col items-center pb-20 mt-20 text-center md:text-left">
@@ -161,21 +171,6 @@ function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
           </div>
           <div className="flex items-center m-4">
             <div className="w-32 h-32 border-2 border-white rounded-full overflow-hidden">
-              <a href="https://twitter.com/Rurubg31" target="_blank">
-                <img
-                  src="/images/primate.jpg"
-                  alt="Founder & Designer"
-                  className="w-full h-full object-cover"
-                />
-              </a>
-            </div>
-            <div className="ml-8">
-              <h3 className="text-lg font-bold">SkymoZ</h3>
-              <p className="text-gray-500">Founder & Designer </p>
-            </div>
-          </div>
-          <div className="flex items-center m-4">
-            <div className="w-32 h-32 border-2 border-white rounded-full overflow-hidden">
               <a href="https://twitter.com/LiBledar" target="_blank">
                 <img
                   src="/images/primate.jpg"
@@ -193,7 +188,7 @@ function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
       </div>
       <div className="bg-white">
         <div
-          className="bg-gray-100 w-full h-screen flex items-center justify-center"
+          className="bg-zinc w-full h-screen flex items-center justify-center"
           data-aos="fade-up"
         >
           <div className="w-full md:w-1/2 rounded-lg p-8">

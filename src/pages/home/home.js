@@ -15,28 +15,29 @@ const baseURL = "http://localhost:8080";
 
 async function isAuthenticated() {
   try {
-
-  
-  const accessToken = localStorage.getItem("accessToken");
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (!user || !accessToken) {
+    const accessToken = localStorage.getItem("accessToken");
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || !accessToken) {
+      return false;
+    }
+    const result = await axios.get(`${baseURL}/api/user/validToken`, {
+      params: {
+        userId: user.id,
+      },
+      headers: {
+        "x-access-token": accessToken,
+      },
+    });
+    if (!result) {
+      return false;
+    }
+    if (result.status == 400) {
+      return false;
+    }
+    return result.data.success;
+  } catch (err) {
     return false;
   }
-  const result = await axios.get(`${baseURL}/api/user/validToken`, {
-    params: {
-      userId: user.id,
-    },
-    headers: {
-      "x-access-token": accessToken,
-    },
-  });
-  if (result.status == 400) {
-    return false;
-  }
-  return result.data.success;
-} catch (err) {
-  return err;
-}
 }
 
 function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
@@ -166,21 +167,6 @@ function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
             <div className="ml-8">
               <h3 className="text-lg font-bold">Knowz</h3>
               <p className="text-gray-500">Founder & Developer</p>
-            </div>
-          </div>
-          <div className="flex items-center m-4">
-            <div className="w-32 h-32 border-2 border-white rounded-full overflow-hidden">
-              <a href="https://twitter.com/Rurubg31" target="_blank">
-                <img
-                  src="/images/primate.jpg"
-                  alt="Founder & Designer"
-                  className="w-full h-full object-cover"
-                />
-              </a>
-            </div>
-            <div className="ml-8">
-              <h3 className="text-lg font-bold">SkymoZ</h3>
-              <p className="text-gray-500">Founder & Designer </p>
             </div>
           </div>
           <div className="flex items-center m-4">

@@ -1,8 +1,10 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setLastChannelId } from "../../features/userSlice";
+import { Menu, Transition } from "@headlessui/react";
+import { TrashIcon } from "@heroicons/react/outline";
 import { io } from "socket.io-client";
 import SidebarChannel from "./SidebarChannel";
 import SidebarServers from "../../components/SidebarServers";
@@ -106,6 +108,11 @@ const Channel = () => {
     query: { userId, channelId, daoId },
   });
 
+  const deleteMessage = (messageId) => {
+    const userId = JSON.parse(localStorage.getItem("user")).id;
+    socket.emit("delete-message", { messageId, userId, daoId });
+  };
+
   useEffect(() => {
     if (!daoId || !channelId) {
       return;
@@ -119,12 +126,19 @@ const Channel = () => {
       setMessages((messages) => [...messages, message]);
     });
 
+    socket.on("delete-message", (messageId) => {
+      setMessages((messages) =>
+        messages.filter((message) => message.id !== messageId)
+      );
+    });
+
     setCurrentDaoId(daoId);
 
     return () => {
       if (socket) {
         socket.off("initial-messages");
         socket.off("new-message");
+        socket.off("delete-message");
       }
     };
   }, [channelId, dispatch, daoId]);
@@ -212,12 +226,65 @@ const Channel = () => {
                   ) : (
                     message.content
                   )}
-                  {hoveredMessage === index && (
-                    <BsThreeDots
-                      className="absolute top-1 right-2 text-xl hover:border hover:border-gray-500 hover:bg-zinc-600 hover:shadow-xl rounded-full"
-                      onClick={() => setShowModal(true)}
-                    />
-                  )}
+                  <Menu as="div" className="absolute top-1 right-2">
+                    {hoveredMessage === index && (
+                      <Menu.Button className="text-xl hover:border hover:border-gray-500 hover:bg-zinc-600 hover:shadow-xl rounded-full">
+                        <BsThreeDots />
+                      </Menu.Button>
+                    )}
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95"
+                    >
+                      <Menu.Items
+                        static
+                        className="origin-top-right absolute right-0 w-56 mt-2 bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+                      >
+                        <div className="px-1 py-1 ">
+                          <Menu.Item>
+                            {({ active }) => (
+                              <button
+                                className={`${
+                                  active
+                                    ? "bg-violet-500 text-white"
+                                    : "text-gray-900"
+                                } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                onClick={() => {
+                                  setShowModal(true);
+                                }}
+                              >
+                                Update
+                              </button>
+                            )}
+                          </Menu.Item>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <button
+                                className={`${
+                                  active
+                                    ? "bg-red-500 text-white"
+                                    : "text-red-500"
+                                } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                onClick={() => deleteMessage(message.id)}
+                              >
+                                <TrashIcon
+                                  className={`mr-2 h-5 w-5 ${
+                                    active ? "text-white" : "text-red-500"
+                                  }`}
+                                />
+                                Supprimer
+                              </button>
+                            )}
+                          </Menu.Item>
+                        </div>
+                      </Menu.Items>
+                    </Transition>
+                  </Menu>
                 </div>
               </div>
             </div>

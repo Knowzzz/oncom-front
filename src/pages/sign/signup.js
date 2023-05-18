@@ -1,147 +1,113 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ethers } from "ethers";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../features/userSlice";
 import axios from "axios";
-
+import { useAccount, useConnect } from "wagmi";
+import { signMessage } from "@wagmi/core";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
-import { JSON_RPC_URL } from "../../components/const";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { baseURL } from "../../components/const";
+import Modal from "react-modal";
+import { Transition, Dialog } from "@headlessui/react";
 
 const Signup = () => {
-  const [isConnected, setIsConnected] = useState(false);
   const [pseudo, setPseudo] = useState("");
-  const [walletAddressPage, setWalletAddressPage] = useState("");
-  const [error, setError] = useState("");
-
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  useEffect(() => {
-    connectWallet();
-  }, []);
+  const { address, isConnected } = useAccount();
+  const { connect, connectors, isLoading, pendingConnector } = useConnect();
+  const [modalIsOpen, setModalIsOpen] = useState(false);
 
-  const baseURL = "http://localhost:8080";
-
-  const connectWallet = async () => {
-    if (typeof window.ethereum !== "undefined") {
-      try {
-        const accounts = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        setIsConnected(accounts.length > 0);
-        setWalletAddressPage(accounts);
-      } catch (err) {
-        console.error(err);
-      }
-    } else {
-      console.log("No Ethereum provider found");
-      return;
-    }
-  };
+  const openModal = () => setModalIsOpen(true);
+  const closeModal = () => setModalIsOpen(false);
 
   const register = async () => {
-    if (typeof window.ethereum !== "undefined") {
-      // Utilisez Web3Provider pour accéder au fournisseur MetaMask
-      const provider = new ethers.providers.JsonRpcProvider(JSON_RPC_URL);
-
-      try {
-        if (!isConnected) {
-          return;
-        }
-        const message = await axios.post(
-          `${baseURL}/api/user/generateMessage`,
-          {
-            wallet_address: walletAddressPage[0],
-          }
-        );
-        if (!message) {
-          return { error: "Error please try later" };
-        }
-        const signer = await provider.getSigner();
-        const signature = await signer.signMessage(message.data.message);
-        const result = await axios.post(`${baseURL}/api/user/register`, {
-          pseudo: pseudo,
-          wallet_address: walletAddressPage[0],
-          message: message.data.message,
-          signature: signature,
-          messageId: message.data.messageId,
-        });
-        if (result.data.error) {
-          setError(result.data.error);
-          return console.log(result.data.error);
-        }
-        setError("");
-
-        localStorage.setItem("accessToken", result.data.accessToken);
-        const user = localStorage.setItem(
-          "user",
-          JSON.stringify(result.data.user)
-        );
-
-        dispatch(setUser(user));
-        navigate("/main");
-      } catch (err) {
-        console.log(err);
-        setError("Error");
-        return err;
+    try {
+      if (!isConnected) {
+        return;
       }
+      const message = await axios.post(`${baseURL}/api/user/generateMessage`, {
+        wallet_address: address,
+      });
+      if (!message) {
+        return { error: "Error please try later" };
+      }
+
+      const signature = await signMessage({
+        message: message.data.message,
+      });
+
+      const result = await axios.post(`${baseURL}/api/user/register`, {
+        pseudo: pseudo,
+        wallet_address: address,
+        message: message.data.message,
+        signature: signature,
+        messageId: message.data.messageId,
+      });
+      if (result.data.error) {
+        toast.error(result.data.error);
+        return;
+      }
+
+      localStorage.setItem("accessToken", result.data.accessToken);
+      const user = localStorage.setItem(
+        "user",
+        JSON.stringify(result.data.user)
+      );
+
+      dispatch(setUser(user));
+      navigate("/main");
+    } catch (err) {
+      toast.error(err);
+      return err;
     }
   };
 
   const login = async () => {
     try {
-      if (typeof window.ethereum !== "undefined") {
-        // Utilisez Web3Provider pour accéder au fournisseur MetaMask
-        const provider = new ethers.providers.JsonRpcProvider(JSON_RPC_URL);
-
-        try {
-          if (!isConnected) {
-            return;
-          }
-          const message = await axios.post(
-            `${baseURL}/api/user/generateMessage`,
-            {
-              wallet_address: walletAddressPage[0],
-            }
-          );
-          if (!message) {
-            return { error: "Error please try later" };
-          }
-          const signer = await provider.getSigner();
-          const signature = await signer.signMessage(message.data.message);
-          const result = await axios.post(`${baseURL}/api/user/login`, {
-            wallet_address: walletAddressPage[0],
-            message: message.data.message,
-            signature: signature,
-            messageId: message.data.messageId,
-          });
-          if (result.data.error) {
-            setError(result.data.error);
-            return console.log(result.data.error);
-          }
-          setError("");
-
-          localStorage.setItem("accessToken", result.data.accessToken);
-          const user = localStorage.setItem(
-            "user",
-            JSON.stringify(result.data.user)
-          );
-
-          dispatch(setUser(user));
-
-          navigate("/main");
-        } catch (err) {
-          console.log(err);
-          setError("Error");
-          return err;
-        }
+      if (!isConnected) {
+        return;
       }
+      const message = await axios.post(`${baseURL}/api/user/generateMessage`, {
+        wallet_address: address,
+      });
+      if (!message) {
+        return { error: "Error please try later" };
+      }
+
+      const signature = await signMessage({
+        message: message.data.message,
+      });
+
+      const result = await axios.post(`${baseURL}/api/user/login`, {
+        wallet_address: address,
+        message: message.data.message,
+        signature: signature,
+        messageId: message.data.messageId,
+      });
+      if (result.data.error) {
+        toast.error(result.data.error);
+        return;
+      }
+
+      localStorage.setItem("accessToken", result.data.accessToken);
+      const user = localStorage.setItem(
+        "user",
+        JSON.stringify(result.data.user)
+      );
+
+      dispatch(setUser(user));
+
+      navigate("/main");
     } catch (err) {
+      toast.error("Cannot sign in");
       return err;
     }
   };
@@ -202,6 +168,7 @@ const Signup = () => {
   return (
     <div>
       <Navbar />
+      <ToastContainer position="bottom-right" />
       <div className="flex flex-col min-h-screen bg-zinc-100 items-center justify-center">
         <h1 className="text-4xl mb-10 font-bold"> {t("signup")} </h1>
         {isConnected ? (
@@ -213,8 +180,6 @@ const Signup = () => {
               onChange={(e) => setPseudo(e.target.value)}
               placeholder={generateRandomPseudo()}
             />
-            {error && <p className="text-s text-red-500">{error}</p>}
-
             <button
               type="button"
               className="bg-green-500 text-white px-4 py-2 rounded w-64 focus:outline-none transition duration-300 ease-in-out transform hover:scale-105 mt-4"
@@ -224,13 +189,77 @@ const Signup = () => {
             </button>
           </>
         ) : (
-          <button
-            type="button"
-            className="bg-blue-500 text-white px-4 py-2 rounded w-64 focus:outline-none transition duration-300 ease-in-out transform hover:scale-105"
-            onClick={connectWallet}
-          >
-            Connect Wallet
-          </button>
+          <div>
+            <button
+              type="button"
+              className="bg-blue-500 text-white px-4 py-2 rounded w-64 focus:outline-none transition duration-300 ease-in-out transform hover:scale-105"
+              onClick={openModal}
+            >
+              Connect Wallet
+            </button>
+            <Transition appear show={modalIsOpen} as={Fragment}>
+              <Dialog
+                as="div"
+                className="fixed inset-0 z-10 overflow-y-auto"
+                onClose={closeModal}
+              >
+                <div className="px-4 min-h-screen text-center">
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
+                    <Dialog.Overlay className="fixed inset-0 bg-black opacity-30" />
+                  </Transition.Child>
+
+                  <span
+                    className="inline-block h-screen align-middle"
+                    aria-hidden="true"
+                  >
+                    &#8203;
+                  </span>
+
+                  <Transition.Child
+                    as={Fragment}
+                    enter="ease-out duration-300"
+                    enterFrom="opacity-0 scale-95"
+                    enterTo="opacity-100 scale-100"
+                    leave="ease-in duration-200"
+                    leaveFrom="opacity-100 scale-100"
+                    leaveTo="opacity-0 scale-95"
+                  >
+                    <div className="inline-block w-full max-w-md p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-gray-900 shadow-xl rounded-2xl">
+                      <Dialog.Title
+                        as="h3"
+                        className="text-lg font-medium leading-6 text-white"
+                      >
+                        Connect Wallet
+                      </Dialog.Title>
+                      <div className="mt-4">
+                        {connectors.map((connector) => (
+                          <button
+                            key={connector.id}
+                            onClick={() => connect({ connector })}
+                            disabled={!connector.ready}
+                            className="block w-full px-4 py-2 text-sm font-medium text-left text-white bg-gray-700 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                          >
+                            {connector.name}
+                            {isLoading &&
+                              pendingConnector?.id === connector.id &&
+                              " (connecting)"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </Transition.Child>
+                </div>
+              </Dialog>
+            </Transition>
+          </div>
         )}
         <p className="mt-4 text-gray-700">{t("already_account")}</p>
         <button

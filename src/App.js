@@ -1,6 +1,6 @@
 // App.js
 import "./App.css";
-import { Route, Routes } from "react-router-dom";
+import { Form, Route, Routes } from "react-router-dom";
 import { useState } from "react";
 import { Provider } from "react-redux";
 
@@ -32,6 +32,7 @@ const config = createConfig({
   publicClient,
   webSocketPublicClient,
 })
+
 
 function App() {
   const [modalIsOpen, setModalIsOpen] = useState(false);

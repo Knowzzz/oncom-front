@@ -13,8 +13,8 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-blue-600 py-4">
-      <div className="container mx-auto flex flex-wrap justify-between items-center px-4">
+    <nav className="bg-blue-600 py-1">
+      <div className="container mx-auto flex flex-wrap justify-between items-center px-2">
         <Link to="/" className="text-white font-bold text-xl ml-10">
           <img
             src="/images/logo_similar.png"
@@ -23,9 +23,8 @@ const Navbar = () => {
           />
         </Link>
         <div
-          className={`nav-menu md:flex items-center ml-10 space-x-8 ${
-            menuOpen ? "sidebar open" : "sidebar"
-          }`}
+          className={`nav-menu md:flex items-center ml-10 space-x-8 ${menuOpen ? "sidebar open" : "sidebar"
+            }`}
         >
           <div className="ml-16 flex flex-col space-y-8 md:space-y-0 md:flex-row md:space-x-8">
             <Link to="/about" className="text-white underline-from-center">

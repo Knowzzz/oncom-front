@@ -3,6 +3,7 @@ import { RxCross2 } from "react-icons/rx";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const baseURL = "http://localhost:8080";
 
@@ -16,6 +17,7 @@ const OverviewButton = ({
   const [daoName, setDaoName] = useState("");
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const inputFileRef = useRef();
+  const navigate = useNavigate();
 
   const handleImageChange = (event) => {
     setImage(event.target.files[0]);
@@ -83,6 +85,43 @@ const OverviewButton = ({
       toast.error("Error updating DAO", { position: "bottom-right" });
     }
     setUnsavedChanges(false);
+  };
+
+  const deleteDao = async () => {
+    try {
+      const userId = JSON.parse(localStorage.getItem("user")).id;
+      const accessToken = localStorage.getItem("accessToken");
+      const daoId = daoData.id;
+
+      if (!daoId || !userId || !accessToken) {
+        toast.error("Missing information(s)");
+        return;
+      }
+
+      const response = await axios.post(
+        `${baseURL}/api/dao/delete`,
+        { daoId, userId },
+        {
+          headers: {
+            "x-access-token": accessToken,
+          },
+        }
+      );
+
+      if (response.data.error) {
+        toast.error("Error deleting DAO", { position: "bottom-right" });
+        return;
+      }
+
+      toast.success("DAO deleted successfully", { position: "bottom-right" });
+
+      // Close the modal after successful deletion
+      setDaoSettingsModalOpen(false);
+      navigate("/main");
+
+    } catch (err) {
+      toast.error("Error deleting DAO", { position: "bottom-right" });
+    }
   };
 
   return (
@@ -159,7 +198,14 @@ const OverviewButton = ({
                 Save changes
               </button>
             </div>
+            
           )}
+          <button
+            className="bg-red-500 text-white px-4 py-2 mt-4"
+            onClick={deleteDao}
+          >
+            Delete DAO
+          </button>
         </div>
       )}
     </div>

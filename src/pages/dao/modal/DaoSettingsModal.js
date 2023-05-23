@@ -16,7 +16,8 @@ const DaoSettingsContent = ({
   activeRoleId,
   setActiveRoleId,
   users,
-  setUsers
+  setUsers,
+  socketUsers,
 }) => {
   switch (activeContent) {
     case "Overview":
@@ -46,6 +47,7 @@ const DaoSettingsContent = ({
           daoData={daoData}
           setDaoData={setDaoData}
           setUsers={setUsers}
+          socketUsers={socketUsers}
         />
       );
     case "Invitations":
@@ -82,6 +84,7 @@ const DaoSettingsModal = ({
   setDaoData,
   users,
   setUsers,
+  socketUsers
 }) => {
   const [activeContent, setActiveContent] = useState("Overview");
   const [activeRoleId, setActiveRoleId] = useState(null);
@@ -112,6 +115,7 @@ const DaoSettingsModal = ({
           setActiveRoleId={setActiveRoleId}
           users={users}
           setUsers={setUsers}
+          socketUsers={socketUsers}
         />
       </div>
     </Modal>

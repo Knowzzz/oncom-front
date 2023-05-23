@@ -12,6 +12,7 @@ const MembersButton = ({
   users,
   daoData,
   setUsers,
+  socketUsers
 }) => {
   const [imageUrls, setImageUrls] = useState({});
   const [roleMenus, setRoleMenus] = useState({});
@@ -30,28 +31,13 @@ const MembersButton = ({
       const user = JSON.parse(localStorage.getItem("user"));
       const accessToken = localStorage.getItem("accessToken");
 
-      const response = await axios.post(
-        `${baseURL}/api/role/removeRole`,
-        {
-          daoId: daoData.id,
+      if (socketUsers) {
+        socketUsers.emit("role-user-set", {
           userId: user.id,
-          user_wallet_address: user_wallet_address,
           roleIds: [roleId],
-        },
-        {
-          headers: {
-            "x-access-token": accessToken,
-          },
-        }
-      );
-
-      if (response.data.error) {
-        toast.error(response.data.error);
-        return;
-      }
-      if (!response.status == 200) {
-        toast.error("Failed to remove role");
-        return;
+          daoId: daoData.id,
+          user_wallet_address: user_wallet_address
+        });
       }
 
       // Update the roles of the user in the state
@@ -75,33 +61,19 @@ const MembersButton = ({
       return err;
     }
   };
-
   const handleRoleClick = async (user_wallet_address, roleId) => {
     try {
       const user = JSON.parse(localStorage.getItem("user"));
       const accessToken = localStorage.getItem("accessToken");
 
-      const response = await axios.post(
-        `${baseURL}/api/role/setRole`,
-        {
-          daoId: daoData.id,
+
+      if (socketUsers) {
+        socketUsers.emit("role-user-set", {
           userId: user.id,
-          user_wallet_address: user_wallet_address,
           roleIds: [roleId],
-        },
-        {
-          headers: {
-            "x-access-token": accessToken,
-          },
-        }
-      );
-      if (response.data.error) {
-        toast.error(response.data.error);
-        return;
-      }
-      if (!response.status == 200) {
-        toast.error("Failed to set role");
-        return;
+          daoId: daoData.id,
+          user_wallet_address: user_wallet_address
+        });
       }
 
       // Get the new role from daoData

@@ -15,6 +15,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Modal from "react-modal";
 import MessageInput from "../../components/MessageInput";
 import SendMATICComponent from "../../components/SendMATICComponent";
+import LoadingPage from "../../components/Loading";
 
 const baseURL = "http://localhost:8080";
 
@@ -31,12 +32,26 @@ const Channel = () => {
   const dispatch = useDispatch();
   const [showModal, setShowModal] = useState(false);
   const [usersOffline, setUsersOffline] = useState([]);
-  const [roles, setRoles] = useState({});
+  const [roles, setRoles] = useState();
 
   const [users, setUsers] = useState({});
+  const [isLoading, setLoading] = useState(true);
+  const [socketLoading, setSocketLoading] = useState(true);
+
+  useEffect(() => {
+    if (!daoData || !roles || !usersOffline || !users) {
+      setLoading(true);
+    } else {
+        setLoading(false);
+        setSocketLoading(false);
+    }
+  }, [daoData, roles, usersOffline, users]);
+  
+  
 
   const fetchDao = async () => {
     try {
+      setLoading(true);
       const accessToken = localStorage.getItem("accessToken");
 
       const result = await axios.get(`${baseURL}/api/dao/getOne`, {
@@ -50,8 +65,10 @@ const Channel = () => {
       });
       setDaoData(result.data.dao);
       setIsOwner(result.data.dao.ownerId === userId);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching DAO data:", error);
+      setLoading(false);
     }
   };
 
@@ -63,70 +80,47 @@ const Channel = () => {
     fetchDao();
   }, [daoId]);
 
-  useEffect(() => {
-    if (!daoId) {
-      return;
-    }
-    const fetchUsers = async () => {
-      try {
-        const accessToken = localStorage.getItem("accessToken");
-        const response = await axios.get(`${baseURL}/api/dao/getUsers`, {
-          params: {
-            userId: JSON.parse(localStorage.getItem("user")).id,
-            daoId: daoId,
-          },
-          headers: {
-            "x-access-token": accessToken,
-          },
-        });
-
-        if (response.status === 200) {
-          const {
-            usersOnlineGroupedByRole: online,
-            usersOffline: offline,
-            users,
-          } = response.data;
-          setUsersOffline(offline);
-          setUsers(users);
-          setRoles(online);
-        } else {
-          console.error(
-            "Error fetching users:",
-            response.status,
-            response.statusText
-          );
-        }
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
-
-    fetchUsers();
-  }, [daoId]);
-
-  const socket = io(`${baseURL}/channel-message`, {
+  const socketMessages = io(`${baseURL}/channel-message`, {
     query: { userId, channelId, daoId },
+  });
+
+  const socketUsers = io(`${baseURL}/server-users`, {
+    query: { daoId },
   });
 
   const deleteMessage = (messageId) => {
     const userId = JSON.parse(localStorage.getItem("user")).id;
-    socket.emit("delete-message", { messageId, userId, daoId });
+    socketMessages.emit("delete-message", { messageId, userId, daoId });
   };
 
   useEffect(() => {
     if (!daoId || !channelId) {
       return;
     }
-    socket.on("initial-messages", ({ messages, canWriteMessage }) => {
+
+    socketUsers.on("initial-users", (result) => {
+      setUsersOffline(result.usersOffline);
+      setUsers(result.users);
+      setRoles(result.usersOnlineGroupedByRole);
+    });
+
+
+    socketMessages.on("initial-messages", ({ messages, canWriteMessage }) => {
       setMessages(messages);
       setCanWriteMessage(canWriteMessage);
     });
 
-    socket.on("new-message", (message) => {
+    socketUsers.on("role-user-set", (result) => {
+      setUsersOffline(result.usersOffline);
+      setUsers(result.users);
+      setRoles(result.usersOnlineGroupedByRole);
+    });
+
+    socketMessages.on("new-message", (message) => {
       setMessages((messages) => [...messages, message]);
     });
 
-    socket.on("delete-message", (messageId) => {
+    socketMessages.on("delete-message", (messageId) => {
       setMessages((messages) =>
         messages.filter((message) => message.id !== messageId)
       );
@@ -135,15 +129,19 @@ const Channel = () => {
     setCurrentDaoId(daoId);
 
     return () => {
-      if (socket) {
-        socket.off("initial-messages");
-        socket.off("new-message");
-        socket.off("delete-message");
+      if (socketMessages) {
+        socketMessages.off("initial-messages");
+        socketMessages.off("new-message");
+        socketMessages.off("delete-message");
+        socketUsers.off("initial-users");
       }
     };
   }, [channelId, dispatch, daoId]);
 
   useEffect(() => {
+    if (!messages) {
+      return;
+    }
     messages.forEach(async (message) => {
       if (!userAvatars[message.user.id]) {
         await getAvatarUrl(message.user.id, message.user.avatar);
@@ -170,10 +168,14 @@ const Channel = () => {
     }
   };
 
+  if (isLoading) {
+    return <LoadingPage />;
+  }
   return (
     <div className="h-screen w-screen bg-zinc-700 text-white flex">
       <SidebarServers />
       <SidebarChannel
+        socketUsers={socketUsers}
         daoId={currentDaoId}
         channelId={channelId}
         users={users}
@@ -185,120 +187,121 @@ const Channel = () => {
       />
       <div className="flex-1 flex flex-col bg-zinc-700">
         <div className="flex-1 bg-zinc-700 px-4 py-2">
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`${
-                index > 0 && messages[index - 1].user.id === message.user.id
-                  ? ""
-                  : "mb-1"
-              }`}
-              onMouseEnter={() => setHoveredMessage(index)}
-              onMouseLeave={() => setHoveredMessage(null)}
-            >
+          {messages &&
+            messages.map((message, index) => (
               <div
+                key={index}
                 className={`${
-                  hoveredMessage === index ? "bg-zinc-600" : "bg-zinc-700"
-                } px-1 flex flex-col`}
+                  index > 0 && messages[index - 1].user.id === message.user.id
+                    ? ""
+                    : "mb-1"
+                }`}
+                onMouseEnter={() => setHoveredMessage(index)}
+                onMouseLeave={() => setHoveredMessage(null)}
               >
-                {index === 0 ||
-                messages[index - 1].user.id !== message.user.id ? (
-                  <div className="flex items-center">
-                    <img
-                      src={userAvatars[message.user.id] || ""}
-                      alt={`${message.user.pseudo}'s avatar`}
-                      className="w-10 h-10 rounded-full mr-4 mt-4"
-                    />
-                    {message.user.pseudo}
-                  </div>
-                ) : null}
                 <div
                   className={`${
                     hoveredMessage === index ? "bg-zinc-600" : "bg-zinc-700"
-                  } px-10 w-full relative text-gray-300 pl-14`}
+                  } px-1 flex flex-col`}
                 >
-                  {message.content.startsWith("/MATIC-SHIPMENTS-REQUEST") ? (
-                    <SendMATICComponent
-                      recipientPseudo={message.user.pseudo}
-                      recipientAddress={message.user.wallet_address}
-                      daoId={currentDaoId}
-                    />
-                  ) : (
-                    message.content
-                  )}
-                  <Menu as="div" className="absolute top-1 right-2">
-                    {hoveredMessage === index && (
-                      <Menu.Button className="text-xl hover:border hover:border-gray-500 hover:bg-zinc-600 hover:shadow-xl rounded-full">
-                        <BsThreeDots />
-                      </Menu.Button>
+                  {index === 0 ||
+                  messages[index - 1].user.id !== message.user.id ? (
+                    <div className="flex items-center">
+                      <img
+                        src={userAvatars[message.user.id] || ""}
+                        alt={`${message.user.pseudo}'s avatar`}
+                        className="w-10 h-10 rounded-full mr-4 mt-4"
+                      />
+                      {message.user.pseudo}
+                    </div>
+                  ) : null}
+                  <div
+                    className={`${
+                      hoveredMessage === index ? "bg-zinc-600" : "bg-zinc-700"
+                    } px-10 w-full relative text-gray-300 pl-14`}
+                  >
+                    {message.content.startsWith("/MATIC-SHIPMENTS-REQUEST") ? (
+                      <SendMATICComponent
+                        recipientPseudo={message.user.pseudo}
+                        recipientAddress={message.user.wallet_address}
+                        daoId={currentDaoId}
+                      />
+                    ) : (
+                      message.content
                     )}
-                    <Transition
-                      as={Fragment}
-                      enter="transition ease-out duration-100"
-                      enterFrom="transform opacity-0 scale-95"
-                      enterTo="transform opacity-100 scale-100"
-                      leave="transition ease-in duration-75"
-                      leaveFrom="transform opacity-100 scale-100"
-                      leaveTo="transform opacity-0 scale-95"
-                    >
-                      <Menu.Items
-                        static
-                        className="origin-top-right absolute right-0 w-56 mt-2 bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+                    <Menu as="div" className="absolute top-1 right-2">
+                      {hoveredMessage === index && (
+                        <Menu.Button className="text-xl hover:border hover:border-gray-500 hover:bg-zinc-600 hover:shadow-xl rounded-full">
+                          <BsThreeDots />
+                        </Menu.Button>
+                      )}
+                      <Transition
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
                       >
-                        <div className="px-1 py-1 ">
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                className={`${
-                                  active
-                                    ? "bg-violet-500 text-white"
-                                    : "text-gray-900"
-                                } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                onClick={() => {
-                                  setShowModal(true);
-                                }}
-                              >
-                                Update
-                              </button>
-                            )}
-                          </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <button
-                                className={`${
-                                  active
-                                    ? "bg-red-500 text-white"
-                                    : "text-red-500"
-                                } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
-                                onClick={() => deleteMessage(message.id)}
-                              >
-                                <TrashIcon
-                                  className={`mr-2 h-5 w-5 ${
-                                    active ? "text-white" : "text-red-500"
-                                  }`}
-                                />
-                                Supprimer
-                              </button>
-                            )}
-                          </Menu.Item>
-                        </div>
-                      </Menu.Items>
-                    </Transition>
-                  </Menu>
+                        <Menu.Items
+                          static
+                          className="origin-top-right absolute right-0 w-56 mt-2 bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+                        >
+                          <div className="px-1 py-1 ">
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  className={`${
+                                    active
+                                      ? "bg-violet-500 text-white"
+                                      : "text-gray-900"
+                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                  onClick={() => {
+                                    setShowModal(true);
+                                  }}
+                                >
+                                  Update
+                                </button>
+                              )}
+                            </Menu.Item>
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  className={`${
+                                    active
+                                      ? "bg-red-500 text-white"
+                                      : "text-red-500"
+                                  } group flex rounded-md items-center w-full px-2 py-2 text-sm`}
+                                  onClick={() => deleteMessage(message.id)}
+                                >
+                                  <TrashIcon
+                                    className={`mr-2 h-5 w-5 ${
+                                      active ? "text-white" : "text-red-500"
+                                    }`}
+                                  />
+                                  Supprimer
+                                </button>
+                              )}
+                            </Menu.Item>
+                          </div>
+                        </Menu.Items>
+                      </Transition>
+                    </Menu>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
 
         <MessageInput
           canWriteMessage={canWriteMessage}
-          socket={socket}
+          socketMessages={socketMessages}
           daoId={currentDaoId}
           channelId={channelId}
         />
       </div>
-      <SidebarUserOnDao roles={roles} usersOffline={usersOffline} />
+      {isLoading ? <LoadingPage/> : <SidebarUserOnDao roles={roles} usersOffline={usersOffline} />}
 
       {showModal && (
         <Modal onClose={() => setShowModal(false)}>

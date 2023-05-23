@@ -80,8 +80,8 @@ function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
   };
 
   return (
-    <div className="page-container w-full">
-      <div className="rectangle relative w-full bg-blue-600 rounded-b-3xl lg:rounded-b-5xl overflow-hidden">
+    <div className="page-container min-h-screen bg-gray-900 text-white w-full">
+      <div className="rectangle relative w-full bg-gray-800 rounded-b-3xl lg:rounded-b-5xl overflow-hidden">
         <Navbar />
         <div className="content-container flex flex-col md:flex-row items-center px-4 md:p-8">
           <div className="text-container w-full md:w-1/2">
@@ -92,7 +92,7 @@ function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
               {t("empowering_daos")}
             </h1>
             <p
-              className="text-white text-base sm:text-lg md:text-2xl text-left"
+              className="text-gray-300 text-base sm:text-lg md:text-2xl text-left"
               data-aos="fade-left"
             >
               {t("similar_streamlines")}
@@ -100,7 +100,7 @@ function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
             <div className="mt-4 sm:mt-6 md:mt-8" data-aos="fade-right">
               <Link
                 to="/signup"
-                className="text-blue-600 bg-white px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-lg rounded-full font-semibold transition-colors duration-300 hover:bg-blue-600 hover:text-white hover:border-white border"
+                className="text-gray-800 bg-white px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-lg rounded-full font-semibold transition-colors duration-300 hover:bg-gray-700 hover:text-white hover:border-white border"
               >
                 Start!
               </Link>

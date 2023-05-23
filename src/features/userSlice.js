@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   user: null,
   lastChannelId: {},
+  isLoading: false,
 };
 
 const userSlice = createSlice({
@@ -13,11 +14,13 @@ const userSlice = createSlice({
       state.user = action.payload;
     },
     setLastChannelId: (state, action) => {
-      // Utilisez l'ID de DAO comme clé et le channelId comme valeur
       state.lastChannelId[action.payload.daoId] = action.payload.channelId;
+    },
+    setLoading: (state, action) => { 
+      state.isLoading = action.payload;
     },
   },
 });
 
-export const { setUser, setLastChannelId } = userSlice.actions;
+export const { setUser, setLastChannelId, setLoading } = userSlice.actions;
 export default userSlice.reducer;

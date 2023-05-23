@@ -17,7 +17,7 @@ Modal.setAppElement("#root");
 
 const baseURL = "http://localhost:8080";
 
-const SidebarChannel = ({ daoId, channelId, users, daoData, setDaoData, isOwner, setIsOwner, setUsers }) => {
+const SidebarChannel = ({ daoId, channelId, users, daoData, setDaoData, isOwner, setIsOwner, setUsers, socketUsers }) => {
   const [createChannelModalOpen, setCreateChannelModalOpen] = useState(false);
   const [createCategorieModalOpen, setCreateCategorieModalOpen] =
     useState(false);
@@ -312,6 +312,7 @@ const SidebarChannel = ({ daoId, channelId, users, daoData, setDaoData, isOwner,
         setDaoData={setDaoData}
         users={users}
         setUsers={setUsers}
+        socketUsers={socketUsers}
       />
 
       <CreateChannelModal

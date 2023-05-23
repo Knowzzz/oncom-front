@@ -7,6 +7,9 @@ import { BsThreeDots } from "react-icons/bs";
 import Modal from "react-modal";
 import { io } from "socket.io-client";
 import axios from "axios";
+import { setLoading } from "../../features/userSlice";
+import LoadingPage from "../../components/Loading";
+import { useSelector, useDispatch } from "react-redux";
 
 const baseURL = "http://localhost:8080";
 
@@ -17,44 +20,18 @@ const FriendMessage = () => {
     query: { userId, friendId },
   });
 
-  function linkify(text) {
-    const urlRegex = /(https?:\/\/[^\s]+)/g;
-    return text.replace(
-      urlRegex,
-      (url) => `<a href="${url}" target="_blank">${url}</a>`
-    );
-  }
+  const isLoading = useSelector((state) => state.user.isLoading);
 
   const [currentFriendId, setCurrentFriendId] = useState(null);
   const [hoveredMessage, setHoveredMessage] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [userAvatars, setUserAvatars] = useState({});
-  const [messages, setMessages] = useState([
-    // Example messages
-    {
-      messageId: 1,
-      messageContent: "Salut !",
-      writer: {
-        pseudo: "Alice",
-        wallet_address: "0x123",
-        id: 1,
-      },
-      messageDate: "2023-04-10",
-    },
-    {
-      messageId: 2,
-      messageContent: "Salut, comment ça va ?",
-      writer: {
-        pseudo: "bob",
-        wallet_address: "0x321",
-        id: 13,
-      },
-      messageDate: "2023-04-10",
-    },
-  ]);
+  const dispatch = useDispatch();
+  const [messages, setMessages] = useState();
   const [inputMessage, setInputMessage] = useState("");
 
   useEffect(() => {
+    if (!messages) { return }
     messages.forEach(async (message) => {
       if (!userAvatars[message.writer.id]) {
         await getAvatarUrl(message.writer);
@@ -84,6 +61,7 @@ const FriendMessage = () => {
       setMessages(formattedMessages);
     });
 
+
     socket.on("new-message", (message) => {
       const formattedMessage = {
         messageId: message.id,
@@ -103,6 +81,14 @@ const FriendMessage = () => {
       socket.off("new-message");
     };
   }, [friendId]);
+
+  useEffect(() => {
+    if (!messages) {
+      dispatch(setLoading(true));
+    } else {
+      dispatch(setLoading(false));
+    }
+  }, [messages]);
 
   const getAvatarUrl = async (writer) => {
     const userId = writer.id;
@@ -145,51 +131,56 @@ const FriendMessage = () => {
     }
   };
 
+  if (isLoading || !messages) {
+    return <LoadingPage />;
+  }
+
   return (
     <div className="h-screen w-screen bg-zinc-700 text-white flex">
       <SidebarServers />
       <SidebarFriend friendId={friendId} />
       <div className="flex-1 flex flex-col bg-zinc-700">
         <div className="flex-1 bg-zinc-700 px-4 py-2">
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              onMouseEnter={() => setHoveredMessage(index)}
-              onMouseLeave={() => setHoveredMessage(null)}
-            >
+          {messages &&
+            messages.map((message, index) => (
               <div
-                className={`${
-                  hoveredMessage === index ? "bg-zinc-600" : "bg-zinc-700"
-                } px-1 flex flex-col`}
+                key={index}
+                onMouseEnter={() => setHoveredMessage(index)}
+                onMouseLeave={() => setHoveredMessage(null)}
               >
-                {index === 0 ||
-                (messages[index - 1] &&
-                  messages[index - 1].writer.id !== message.writer.id) ? (
-                  <div className="flex items-center">
-                    <img
-                      src={userAvatars[message.writer.id] || ""}
-                      alt={`${message.writer.pseudo}'s avatar`}
-                      className="w-10 h-10 rounded-full mr-4 mt-4"
-                    />
-                    {message.writer.pseudo}
-                  </div>
-                ) : null}
                 <div
                   className={`${
                     hoveredMessage === index ? "bg-zinc-600" : "bg-zinc-700"
-                  } px-10 w-full relative text-gray-300 pl-14`}
+                  } px-1 flex flex-col`}
                 >
-                  {message.messageContent}
-                  {hoveredMessage === index && (
-                    <BsThreeDots
-                      className="absolute top-1 right-2 text-xl hover:border hover:border-gray-500 hover:bg-zinc-600 hover:shadow-xl rounded-full"
-                      onClick={() => setShowModal(true)}
-                    />
-                  )}
+                  {index === 0 ||
+                  (messages[index - 1] &&
+                    messages[index - 1].writer.id !== message.writer.id) ? (
+                    <div className="flex items-center">
+                      <img
+                        src={userAvatars[message.writer.id] || ""}
+                        alt={`${message.writer.pseudo}'s avatar`}
+                        className="w-10 h-10 rounded-full mr-4 mt-4"
+                      />
+                      {message.writer.pseudo}
+                    </div>
+                  ) : null}
+                  <div
+                    className={`${
+                      hoveredMessage === index ? "bg-zinc-600" : "bg-zinc-700"
+                    } px-10 w-full relative text-gray-300 pl-14`}
+                  >
+                    {message.messageContent}
+                    {hoveredMessage === index && (
+                      <BsThreeDots
+                        className="absolute top-1 right-2 text-xl hover:border hover:border-gray-500 hover:bg-zinc-600 hover:shadow-xl rounded-full"
+                        onClick={() => setShowModal(true)}
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
 
         <input

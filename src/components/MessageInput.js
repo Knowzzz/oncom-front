@@ -13,7 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const MessageInput = ({
   canWriteMessage,
-  socket,
+  socketMessages,
   daoId,
   channelId,
 }) => {
@@ -24,8 +24,8 @@ const [inputMessage, setInputMessage] = useState("");
 
   const handleSendMaticRequest = () => {
     try {
-      if (socket) {
-        socket.emit("new-message", {
+      if (socketMessages) {
+        socketMessages.emit("new-message", {
           userId: userId,
           channelId: channelId,
           content: "/MATIC-SHIPMENTS-REQUEST",
@@ -43,8 +43,8 @@ const [inputMessage, setInputMessage] = useState("");
     if (inputMessage.trim() === "") return;
 
     try {
-      if (socket) {
-        socket.emit("new-message", {
+      if (socketMessages) {
+        socketMessages.emit("new-message", {
           userId: userId,
           channelId: channelId,
           content: inputMessage,

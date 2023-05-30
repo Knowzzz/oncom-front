@@ -15,28 +15,38 @@ const baseURL = "http://localhost:8080";
 
 const FriendMessage = () => {
   const { friendId } = useParams();
+
   const userId = JSON.parse(localStorage.getItem("user")).id;
   const socket = io(`${baseURL}/friend-message`, {
     query: { userId, friendId },
   });
 
-  const isLoading = useSelector((state) => state.user.isLoading);
 
   const [currentFriendId, setCurrentFriendId] = useState(null);
   const [hoveredMessage, setHoveredMessage] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [userAvatars, setUserAvatars] = useState({});
-  const dispatch = useDispatch();
   const [messages, setMessages] = useState();
   const [inputMessage, setInputMessage] = useState("");
+  const [messagesLoading, setMessagesLoading] = useState(!messages);
 
   useEffect(() => {
-    if (!messages) { return }
+    if (!messages) {
+      return;
+    }
     messages.forEach(async (message) => {
       if (!userAvatars[message.writer.id]) {
         await getAvatarUrl(message.writer);
       }
     });
+  }, [messages]);
+
+  useEffect(() => { 
+    if (messages) {
+      setMessagesLoading(false);
+    } else {
+      setMessagesLoading(true);
+    }
   }, [messages]);
 
   useEffect(() => {
@@ -59,8 +69,8 @@ const FriendMessage = () => {
         },
       }));
       setMessages(formattedMessages);
+      setMessagesLoading(false);
     });
-
 
     socket.on("new-message", (message) => {
       const formattedMessage = {
@@ -81,14 +91,6 @@ const FriendMessage = () => {
       socket.off("new-message");
     };
   }, [friendId]);
-
-  useEffect(() => {
-    if (!messages) {
-      dispatch(setLoading(true));
-    } else {
-      dispatch(setLoading(false));
-    }
-  }, [messages]);
 
   const getAvatarUrl = async (writer) => {
     const userId = writer.id;
@@ -131,9 +133,25 @@ const FriendMessage = () => {
     }
   };
 
-  if (isLoading || !messages) {
-    return <LoadingPage />;
-  }
+  const LoadingSkeleton = () => {
+    return Array(5)
+      .fill()
+      .map((_, index) => (
+        <div
+          key={index}
+          className="flex items-start space-x-3 mt-4 animate-pulse"
+        >
+          <div className="w-12 h-12 bg-zinc-800 rounded-full"></div>
+          <div className="flex-1 space-y-2 py-1">
+            <div className="h-5 bg-zinc-800 rounded w-1/12"></div>
+            <div className="h-4 bg-zinc-800 rounded w-1/2"></div>
+            <div className="h-4 bg-zinc-800 rounded w-full"></div>
+          </div>
+        </div>
+      ));
+  };
+
+  console.log(messages)
 
   return (
     <div className="h-screen w-screen bg-zinc-700 text-white flex">
@@ -141,7 +159,9 @@ const FriendMessage = () => {
       <SidebarFriend friendId={friendId} />
       <div className="flex-1 flex flex-col bg-zinc-700">
         <div className="flex-1 bg-zinc-700 px-4 py-2">
-          {messages &&
+          {messagesLoading ? (
+            <LoadingSkeleton />
+          ) : (
             messages.map((message, index) => (
               <div
                 key={index}
@@ -180,7 +200,8 @@ const FriendMessage = () => {
                   </div>
                 </div>
               </div>
-            ))}
+            ))
+          )}
         </div>
 
         <input

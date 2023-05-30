@@ -16,6 +16,7 @@ import Modal from "react-modal";
 import MessageInput from "../../components/MessageInput";
 import SendMATICComponent from "../../components/SendMATICComponent";
 import LoadingPage from "../../components/Loading";
+import "../../components/style.css";
 
 const baseURL = "http://localhost:8080";
 
@@ -35,23 +36,26 @@ const Channel = () => {
   const [roles, setRoles] = useState();
 
   const [users, setUsers] = useState({});
-  const [isLoading, setLoading] = useState(true);
-  const [socketLoading, setSocketLoading] = useState(true);
+  const [messagesLoading, setMessagesLoading] = useState(!messages);
+
+  const socketMessages = io(`${baseURL}/channel-message`, {
+    query: { userId, channelId, daoId },
+  });
+
+  const socketUsers = io(`${baseURL}/server-users`, {
+    query: { daoId, userId: JSON.parse(localStorage.getItem("user")).id },
+  });
 
   useEffect(() => {
-    if (!daoData || !roles || !usersOffline || !users) {
-      setLoading(true);
+    if (messages) {
+      setMessagesLoading(false);
     } else {
-        setLoading(false);
-        setSocketLoading(false);
+      setMessagesLoading(true);
     }
-  }, [daoData, roles, usersOffline, users]);
-  
-  
+  }, [messages]);
 
   const fetchDao = async () => {
     try {
-      setLoading(true);
       const accessToken = localStorage.getItem("accessToken");
 
       const result = await axios.get(`${baseURL}/api/dao/getOne`, {
@@ -65,10 +69,8 @@ const Channel = () => {
       });
       setDaoData(result.data.dao);
       setIsOwner(result.data.dao.ownerId === userId);
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching DAO data:", error);
-      setLoading(false);
     }
   };
 
@@ -76,17 +78,10 @@ const Channel = () => {
     if (!daoId) {
       return;
     }
-
     fetchDao();
-  }, [daoId]);
+  }, [daoId, channelId]);
 
-  const socketMessages = io(`${baseURL}/channel-message`, {
-    query: { userId, channelId, daoId },
-  });
-
-  const socketUsers = io(`${baseURL}/server-users`, {
-    query: { daoId },
-  });
+  
 
   const deleteMessage = (messageId) => {
     const userId = JSON.parse(localStorage.getItem("user")).id;
@@ -98,16 +93,19 @@ const Channel = () => {
       return;
     }
 
+
     socketUsers.on("initial-users", (result) => {
       setUsersOffline(result.usersOffline);
       setUsers(result.users);
       setRoles(result.usersOnlineGroupedByRole);
     });
 
-
     socketMessages.on("initial-messages", ({ messages, canWriteMessage }) => {
-      setMessages(messages);
       setCanWriteMessage(canWriteMessage);
+      if (messages) {
+        setMessagesLoading(false);
+        setMessages(messages)
+      }
     });
 
     socketUsers.on("role-user-set", (result) => {
@@ -147,9 +145,13 @@ const Channel = () => {
         await getAvatarUrl(message.user.id, message.user.avatar);
       }
     });
+
   }, [messages]);
 
   const getAvatarUrl = async (userId, avatarPath) => {
+    if (!userId || !avatarPath) {
+      return null;
+    }
     if (userAvatars[userId]) {
       return userAvatars[userId];
     }
@@ -161,16 +163,29 @@ const Channel = () => {
         ...prevAvatars,
         [userId]: response.config.url,
       }));
-
+      console.log(response.config.url, "GOOD")
       return response.config.url;
     } catch (error) {
+      console.log(error);
       return null;
     }
   };
 
-  if (isLoading) {
-    return <LoadingPage />;
-  }
+  const LoadingSkeleton = () => {
+    return Array(5)
+      .fill()
+      .map((_, index) => (
+        <div key={index} className="flex items-start space-x-3 mt-4 animate-pulse">
+          <div className="w-12 h-12 bg-zinc-800 rounded-full"></div>
+          <div className="flex-1 space-y-2 py-1">
+            <div className="h-5 bg-zinc-800 rounded w-1/12"></div>
+            <div className="h-4 bg-zinc-800 rounded w-1/2"></div>
+            <div className="h-4 bg-zinc-800 rounded w-full"></div>
+          </div>
+        </div>
+      ));
+  };
+
   return (
     <div className="h-screen w-screen bg-zinc-700 text-white flex">
       <SidebarServers />
@@ -187,7 +202,9 @@ const Channel = () => {
       />
       <div className="flex-1 flex flex-col bg-zinc-700">
         <div className="flex-1 bg-zinc-700 px-4 py-2">
-          {messages &&
+          {messagesLoading ? (
+            <LoadingSkeleton />
+          ) : (
             messages.map((message, index) => (
               <div
                 key={index}
@@ -291,7 +308,8 @@ const Channel = () => {
                   </div>
                 </div>
               </div>
-            ))}
+            ))
+          )}
         </div>
 
         <MessageInput
@@ -301,7 +319,7 @@ const Channel = () => {
           channelId={channelId}
         />
       </div>
-      {isLoading ? <LoadingPage/> : <SidebarUserOnDao roles={roles} usersOffline={usersOffline} />}
+      <SidebarUserOnDao roles={roles} usersOffline={usersOffline} />
 
       {showModal && (
         <Modal onClose={() => setShowModal(false)}>

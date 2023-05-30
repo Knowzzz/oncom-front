@@ -177,7 +177,7 @@ const SidebarChannel = ({ daoId, channelId, users, daoData, setDaoData, isOwner,
   };
 
   return (
-    <div className="bg-zinc-800 text-white h-screen w-64">
+    <div className="bg-zinc-800 text-white h-screen w-64 overflow-y-auto custom-scrollbar">
       <div className="flex items-center justify-between py-3 px-4">
         <h1 className="text-xl font-semibold">{daoData.name}</h1>
         <button

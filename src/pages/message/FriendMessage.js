@@ -157,8 +157,8 @@ const FriendMessage = () => {
     <div className="h-screen w-screen bg-zinc-700 text-white flex">
       <SidebarServers />
       <SidebarFriend friendId={friendId} />
-      <div className="flex-1 flex flex-col bg-zinc-700">
-        <div className="flex-1 bg-zinc-700 px-4 py-2">
+      <div className="flex-1 flex flex-col bg-zinc-700 ">
+        <div className="flex-1 bg-zinc-700 px-4 py-2 overflow-y-auto custom-scrollbar">
           {messagesLoading ? (
             <LoadingSkeleton />
           ) : (

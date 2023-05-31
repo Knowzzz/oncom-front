@@ -200,8 +200,8 @@ const Channel = () => {
         isOwner={isOwner}
         setIsOwner={setIsOwner}
       />
-      <div className="flex-1 flex flex-col bg-zinc-700">
-        <div className="flex-1 bg-zinc-700 px-4 py-2">
+      <div className="flex-1 flex flex-col bg-zinc-700 ">
+        <div className="flex-1 bg-zinc-700 px-4 py-2 overflow-y-auto custom-scrollbar">
           {messagesLoading ? (
             <LoadingSkeleton />
           ) : (

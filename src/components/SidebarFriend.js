@@ -75,7 +75,7 @@ const SidebarFriend = ({ friendId }) => {
   }, [friendId]);
 
   return (
-    <div className="bg-zinc-800 w-64 flex flex-col py-4 border border-zinc-600">
+    <div className="bg-zinc-800 w-64 flex flex-col py-4 border border-zinc-600 overflow-y-auto custom-scrollbar">
       <div className="flex flex-col mb-4 space-y-1">
         <button
           className={`${

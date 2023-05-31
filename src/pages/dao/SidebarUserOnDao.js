@@ -6,8 +6,10 @@ const SidebarUserOnDao = ({ roles, usersOffline }) => {
   const [loading, setLoading] = useState(!roles);
 
   useEffect(() => {
-    if (roles) {setLoading(false)} else {
-      setLoading(true)
+    if (roles) {
+      setLoading(false);
+    } else {
+      setLoading(true);
     }
   }, [roles]);
 

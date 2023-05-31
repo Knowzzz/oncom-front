@@ -80,7 +80,6 @@ const Channel = () => {
     }
     fetchDao();
   }, [daoId, channelId]);
-
   
 
   const deleteMessage = (messageId) => {
@@ -92,7 +91,6 @@ const Channel = () => {
     if (!daoId || !channelId) {
       return;
     }
-
 
     socketUsers.on("initial-users", (result) => {
       setUsersOffline(result.usersOffline);
@@ -108,7 +106,7 @@ const Channel = () => {
       }
     });
 
-    socketUsers.on("role-user-set", (result) => {
+    socketUsers.on("user-details-changed", (result) => {
       setUsersOffline(result.usersOffline);
       setUsers(result.users);
       setRoles(result.usersOnlineGroupedByRole);
@@ -127,11 +125,12 @@ const Channel = () => {
     setCurrentDaoId(daoId);
 
     return () => {
-      if (socketMessages) {
+      if (socketMessages && socketUsers) {
         socketMessages.off("initial-messages");
         socketMessages.off("new-message");
         socketMessages.off("delete-message");
         socketUsers.off("initial-users");
+        socketUsers.off("user-details-changed");
       }
     };
   }, [channelId, dispatch, daoId]);
@@ -163,7 +162,6 @@ const Channel = () => {
         ...prevAvatars,
         [userId]: response.config.url,
       }));
-      console.log(response.config.url, "GOOD")
       return response.config.url;
     } catch (error) {
       console.log(error);
@@ -223,11 +221,11 @@ const Channel = () => {
                 >
                   {index === 0 ||
                   messages[index - 1].user.id !== message.user.id ? (
-                    <div className="flex items-center">
+                    <div className={`flex items-center`} style={{ color: `${message.highestRoleColor}` }}>
                       <img
                         src={userAvatars[message.user.id] || ""}
                         alt={`${message.user.pseudo}'s avatar`}
-                        className="w-10 h-10 rounded-full mr-4 mt-4"
+                        className={`w-10 h-10 rounded-full mr-4 mt-4`}
                       />
                       {message.user.pseudo}
                     </div>

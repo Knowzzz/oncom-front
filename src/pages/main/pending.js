@@ -89,7 +89,6 @@ const MainPage = () => {
     const fetchFriends = async () => {
       const accessToken = localStorage.getItem("accessToken");
       const user = JSON.parse(localStorage.getItem("user"));
-      console.log(user);
       try {
         const result = await axios.get(
           `${baseURL}/api/friend/getAllFriendRequest`,

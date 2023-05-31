@@ -54,21 +54,24 @@ const FriendMessage = () => {
     // Fetch messages for the friend
     socket.on("initial-messages", (data) => {
       const { messages, user1, user2 } = data;
+      if (messages && user1 && user2) {
+        const formattedMessages = messages.map((message) => ({
+          messageId: message.id,
+          messageContent: message.content,
+          writer: {
+            pseudo: message.userId === user1.id ? user1.pseudo : user2.pseudo,
+            wallet_address:
+              message.userId === user1.id
+                ? user1.wallet_address
+                : user2.wallet_address,
+            id: message.userId,
+            avatar: message.userId === user1.id ? user1.avatar : user2.avatar,
+          },
+        }));
+        setMessages(formattedMessages);
+      }
 
-      const formattedMessages = messages.map((message) => ({
-        messageId: message.id,
-        messageContent: message.content,
-        writer: {
-          pseudo: message.userId === user1.id ? user1.pseudo : user2.pseudo,
-          wallet_address:
-            message.userId === user1.id
-              ? user1.wallet_address
-              : user2.wallet_address,
-          id: message.userId,
-          avatar: message.userId === user1.id ? user1.avatar : user2.avatar,
-        },
-      }));
-      setMessages(formattedMessages);
+      
       setMessagesLoading(false);
     });
 
@@ -151,7 +154,6 @@ const FriendMessage = () => {
       ));
   };
 
-  console.log(messages)
 
   return (
     <div className="h-screen w-screen bg-zinc-700 text-white flex">

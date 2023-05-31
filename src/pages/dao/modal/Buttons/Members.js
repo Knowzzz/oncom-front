@@ -32,7 +32,7 @@ const MembersButton = ({
       const accessToken = localStorage.getItem("accessToken");
 
       if (socketUsers) {
-        socketUsers.emit("role-user-set", {
+        socketUsers.emit("role-user-remove", {
           userId: user.id,
           roleIds: [roleId],
           daoId: daoData.id,

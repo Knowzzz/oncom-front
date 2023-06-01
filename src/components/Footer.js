@@ -48,7 +48,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-[#213B74] text-white py-6 px-8">
+    <footer className="bg-zinc-900 text-white py-6 px-8">
       <div className="container mx-auto flex flex-col md:flex-row items-start justify-around">
         <div className="flex flex-col mb-6 md:mb-0">
           <h2 className="text-3xl mb-3">Similar</h2>
@@ -60,8 +60,8 @@ const Footer = () => {
             styles={{
               control: (provided) => ({
                 ...provided,
-                backgroundColor: "#213B74",
-                borderColor: "#213B74",
+                backgroundColor: "#18181b",
+                borderColor: "#18181b",
                 minHeight: "48px",
                 borderRadius: "4px",
               }),
@@ -73,18 +73,18 @@ const Footer = () => {
                 ...provided,
                 zIndex: 1000,
                 marginTop: 0,
-                backgroundColor: "#213B74",
+                backgroundColor: "#18181b",
               }),
               menuList: (provided) => ({
                 ...provided,
                 paddingTop: 0,
                 paddingBottom: "1rem",
-                backgroundColor: "#213B74",
+                backgroundColor: "#18181b",
               }),
               option: (provided, state) => ({
                 ...provided,
-                color: state.isSelected || state.isFocused ? "black" : "white",
-                backgroundColor: state.isFocused ? "#5360A6" : "#213B74",
+                color: "white",
+                backgroundColor: state.isFocused ? "#27272a" : "#18181b",
               }),
             }}
             menuPlacement="top"

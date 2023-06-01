@@ -5,11 +5,11 @@ import Modal from "react-modal";
 import "aos/dist/aos.css";
 import axios from "axios";
 import AOS from "aos";
+import Typewriter from "typewriter-effect";
 
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import ModalContent from "../../components/ModalContent";
-import "./home.css";
 
 const baseURL = "http://localhost:8080";
 
@@ -78,44 +78,59 @@ function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
     toggleModal(null);
     navigate("/");
   };
-
   return (
-    <div className="page-container min-h-screen bg-gray-900 text-white w-full">
-      <div className="rectangle relative w-full bg-gray-800 rounded-b-3xl lg:rounded-b-5xl overflow-hidden">
+    <div className="min-h-screen bg-zinc-800 text-white w-full">
+      <div className="relative w-full bg-zinc-900 rounded-b-3xl lg:rounded-b-5xl overflow-hidden">
         <Navbar />
         <div className="content-container flex flex-col md:flex-row items-center px-4 md:p-8">
-          <div className="text-container w-full md:w-1/2">
-            <h1
-              className="text-white text-2xl sm:text-3xl md:text-5xl font-bold mb-2 sm:mb-4 text-left"
-              data-aos="fade-left"
-            >
-              {t("empowering_daos")}
-            </h1>
-            <p
-              className="text-gray-300 text-base sm:text-lg md:text-2xl text-left"
-              data-aos="fade-left"
-            >
-              {t("similar_streamlines")}
-            </p>
-            <div className="mt-4 sm:mt-6 md:mt-8" data-aos="fade-right">
-              <Link
-                to="/signup"
-                className="text-gray-800 bg-white px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-lg rounded-full font-semibold transition-colors duration-300 hover:bg-gray-700 hover:text-white hover:border-white border"
+          {" "}
+          <div className="text-container w-full md:w-1/2 flex flex-col justify-center items-start md:items-center md:mr-8">
+            <div className="text-center md:text-left mx-auto md:mx-0 max-w-md">
+              <h1 className="leading-none text-2xl sm:text-3xl md:text-5xl font-bold mb-2 sm:mb-4 text-white">
+              <Typewriter
+                
+                options={{
+                  strings: `${t("empowering_daos")}`,
+                  autoStart: true,
+                  loop: true,
+                }}
+              />
+              </h1>
+              <p
+                className="text-zinc-300 text-base sm:text-lg md:text-2xl"
+                data-aos="fade-left"
               >
-                Start!
-              </Link>
+                {t("similar_streamlines")}
+              </p>
+              <div className="mt-4 sm:mt-6 md:mt-8" data-aos="fade-right">
+                <Link
+                  to="/signup"
+                  className="text-gray-800 bg-white px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-lg rounded-full font-semibold transition-colors duration-300 hover:bg-zinc-700 hover:text-white hover:border-white border"
+                >
+                  Start!
+                </Link>
+              </div>
             </div>
           </div>
           <img
-            className="image-container w-32 sm:w-48 md:w-96 h-auto mx-auto md:mx-0 md:ml-auto mt-4 sm:mt-6 md:mt-18"
+            className="image-container w-32 sm:w-48 md:w-96 h-auto mx-auto md:mx-0 md:ml-8 mt-4 sm:mt-6 md:mt-18"
             src="/images/dao_reu.png"
             alt="Image descriptive"
           />
         </div>
+        <div className="-mt-28">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 180">
+            <path
+              fill="#27272A"
+              fillOpacity="1"
+              d="M0,64L60,90.7C120,117,240,171,360,176C480,181,600,139,720,128C840,117,960,139,1080,149.3C1200,160,1320,160,1380,160L1440,160L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"
+            ></path>
+          </svg>
+        </div>
       </div>
 
       <div
-        className="flex flex-col md:flex-row items-start my-8"
+        className="flex flex-col md:flex-row items-start my-8 border-b border-zinc-600"
         data-aos="fade-up"
       >
         <img
@@ -127,19 +142,19 @@ function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
           <h2 className="text-3xl md:text-4xl font-bold mb-5">
             {t("web3_aspects")}
           </h2>
-          <p className="text-lg text-gray-700 w-full md:w-3/6">
+          <p className="text-lg text-zinc-300 w-full md:w-3/6">
             {t("web3_aspects_desc")}
           </p>
         </div>
       </div>
 
       <div
-        className="flex flex-col md:flex-row justify-center items-center my-8 bg-zinc"
+        className="flex flex-col md:flex-row justify-center items-center my-8 border-b border-zinc-600"
         data-aos="fade-up"
       >
         <div className="w-full md:w-3/6 flex flex-col items-center pb-20 mt-20 text-center md:text-left">
           <h2 className="text-4xl font-bold mb-5">{t("community_aspects")}</h2>
-          <p className="text-lg text-gray-700 md:w-3/6">
+          <p className="text-lg text-zinc-300 md:w-3/6">
             {t("community_aspects_desc")}
           </p>
         </div>
@@ -149,9 +164,12 @@ function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
           alt="Image"
         />
       </div>
-      <div className="flex flex-col items-center m-20" data-aos="fade-up">
+      <div
+        className="flex flex-col items-center m-20  border-b border-zinc-600 pb-8"
+        data-aos="fade-up"
+      >
         <h2 className="text-4xl font-bold mb-5"> {t("team")} </h2>
-        <p className="text-lg text-gray-700 mb-8">{t("team_desc")}</p>
+        <p className="text-lg text-zinc-300 mb-8">{t("team_desc")}</p>
 
         <div className="flex flex-wrap justify-center">
           <div className="flex items-center m-4">
@@ -186,37 +204,26 @@ function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
           </div>
         </div>
       </div>
-      <div className="bg-white">
+      <div className="">
         <div
-          className="bg-zinc w-full h-screen flex items-center justify-center"
+          className="bg-zinc w-full flex items-center justify-center"
           data-aos="fade-up"
         >
           <div className="w-full md:w-1/2 rounded-lg p-8">
             <h2 className="text-3xl font-bold mb-4">
               {t("similar_decentralized")}
             </h2>
-            <p className="text-lg text-gray-600 mb-8">
+            <p className="text-lg text-zinc-300 mb-8">
               {t("similar_decentralized_desc")}
             </p>
-            <img
-              src="/images/screen_similar3.png"
-              alt="Image descriptive"
-              className="w-full md:w-90 h-auto"
-            />
+            <a
+              href="/signup"
+              className="inline-block px-6 py-3 font-semibold text-white bg-zinc-700 rounded-full hover:bg-zinc-300 hover:text-zinc-700 transition-colors duration-300"
+              data-aos="fade-left"
+            >
+              Start now!
+            </a>
           </div>
-        </div>
-      </div>
-
-      <div className="bg-white py-8">
-        <div className="flex flex-col items-center">
-          <h3 className="text-2xl font-bold mb-4"> {t("create_dao")} </h3>
-          <a
-            href="/signup"
-            className="inline-block px-6 py-3 font-semibold text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-colors duration-300"
-            data-aos="fade-left"
-          >
-            Start now!
-          </a>
         </div>
       </div>
 

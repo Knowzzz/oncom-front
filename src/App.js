@@ -4,7 +4,7 @@ import { Form, Route, Routes } from "react-router-dom";
 import { useState } from "react";
 import { Provider } from "react-redux";
 
-import { createConfig, configureChains, WagmiConfig,  } from "wagmi";
+import { createConfig, configureChains, WagmiConfig } from "wagmi";
 import { mainnet, polygon, polygonMumbai } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 
@@ -21,18 +21,18 @@ import DaoWrapper from "./pages/dao/DaoWrapper";
 import JoinDaoPage from "./pages/JoinDao";
 
 import store from "./store";
+import AboutPage from "./pages/home/about";
 
 const { publicClient, webSocketPublicClient } = configureChains(
   [polygonMumbai],
-  [publicProvider()],
-)
+  [publicProvider()]
+);
 
 const config = createConfig({
   autoConnect: true,
   publicClient,
   webSocketPublicClient,
-})
-
+});
 
 function App() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -50,6 +50,7 @@ function App() {
               </AuthWrapper>
             }
           />
+          <Route path="/about" element={<AboutPage />} />
           <Route
             path="/friend/message/:friendId"
             element={

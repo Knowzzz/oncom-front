@@ -169,8 +169,8 @@ const Signup = () => {
     <div>
       <Navbar />
       <ToastContainer position="bottom-right" />
-      <div className="flex flex-col min-h-screen bg-zinc-100 items-center justify-center">
-        <h1 className="text-4xl mb-10 font-bold"> {t("signup")} </h1>
+      <div className="flex flex-col min-h-screen bg-zinc-100 items-center justify-center bg-zinc-800">
+        <h1 className="text-4xl mb-10 font-bold text-zinc-300"> {t("signup")} </h1>
         {isConnected ? (
           <>
             <input
@@ -261,7 +261,7 @@ const Signup = () => {
             </Transition>
           </div>
         )}
-        <p className="mt-4 text-gray-700">{t("already_account")}</p>
+        <p className="mt-4 text-zinc-300">{t("already_account")}</p>
         <button
           type="button"
           className="bg-blue-500 text-white px-4 py-2 rounded mt-2 w-64 focus:outline-none transition duration-300 ease-in-out transform hover:scale-105"

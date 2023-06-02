@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useDispatch, useSelector } from 'react-redux';
 
 const baseURL = "http://localhost:8080";
 
-const FriendProfile = ({ friendId }) => {
+const FriendProfile = ({ currentFriendId }) => {
   const [friend, setFriend] = useState({
     wallet_address: "",
     pseudo: "",
@@ -11,6 +12,7 @@ const FriendProfile = ({ friendId }) => {
   });
   const [avatarUrl, setAvatarUrl] = useState("");
   //const [sharedDaos, setSharedDaos] = useState([]);
+
 
   useEffect(() => {
     let isMounted = true;
@@ -20,7 +22,7 @@ const FriendProfile = ({ friendId }) => {
         const response = await axios.get(`${baseURL}/api/user/get/special`, {
           params: {
             userId: JSON.parse(localStorage.getItem("user")).id,
-            user_id: friendId,
+            user_id: currentFriendId,
           },
           headers: {
             "x-access-token": accessToken,
@@ -36,7 +38,7 @@ const FriendProfile = ({ friendId }) => {
       }
     };
     fetchFriendProfile();
-  }, [friendId]);
+  }, [currentFriendId]);
 
   if (!friend) {
     return <div>Loading...</div>;

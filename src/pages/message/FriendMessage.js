@@ -13,16 +13,13 @@ import { useSelector, useDispatch } from "react-redux";
 
 const baseURL = "http://localhost:8080";
 
-const FriendMessage = () => {
-  const { friendId } = useParams();
+const FriendMessage = ({ currentFriendId, setCurrentFriendId }) => {
 
   const userId = JSON.parse(localStorage.getItem("user")).id;
   const socket = io(`${baseURL}/friend-message`, {
-    query: { userId, friendId },
+    query: { userId, currentFriendId },
   });
 
-
-  const [currentFriendId, setCurrentFriendId] = useState(null);
   const [hoveredMessage, setHoveredMessage] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [userAvatars, setUserAvatars] = useState({});
@@ -41,6 +38,7 @@ const FriendMessage = () => {
     });
   }, [messages]);
 
+
   useEffect(() => { 
     if (messages) {
       setMessagesLoading(false);
@@ -50,10 +48,9 @@ const FriendMessage = () => {
   }, [messages]);
 
   useEffect(() => {
-    setCurrentFriendId(friendId);
-    // Fetch messages for the friend
     socket.on("initial-messages", (data) => {
       const { messages, user1, user2 } = data;
+      console.log(data)
       if (messages && user1 && user2) {
         const formattedMessages = messages.map((message) => ({
           messageId: message.id,
@@ -69,10 +66,10 @@ const FriendMessage = () => {
           },
         }));
         setMessages(formattedMessages);
+      setMessagesLoading(false);
       }
 
       
-      setMessagesLoading(false);
     });
 
     socket.on("new-message", (message) => {
@@ -93,7 +90,7 @@ const FriendMessage = () => {
       socket.off("initial-messages");
       socket.off("new-message");
     };
-  }, [friendId]);
+  }, [currentFriendId]);
 
   const getAvatarUrl = async (writer) => {
     const userId = writer.id;
@@ -125,7 +122,7 @@ const FriendMessage = () => {
       if (socket) {
         socket.emit("new-message", {
           userId: userId,
-          friendId: friendId,
+          friendId: currentFriendId,
           content: inputMessage,
         });
 
@@ -157,11 +154,9 @@ const FriendMessage = () => {
 
   return (
     <div className="h-screen w-screen bg-zinc-700 text-white flex">
-      <SidebarServers />
-      <SidebarFriend friendId={friendId} />
       <div className="flex-1 flex flex-col bg-zinc-700 ">
         <div className="flex-1 bg-zinc-700 px-4 py-2 overflow-y-auto custom-scrollbar">
-          {messagesLoading ? (
+          {messagesLoading && !messages ? (
             <LoadingSkeleton />
           ) : (
             messages.map((message, index) => (
@@ -220,7 +215,6 @@ const FriendMessage = () => {
           autoComplete="off"
         />
       </div>
-      <FriendProfile key={friendId} friendId={friendId} />
     </div>
   );
 };

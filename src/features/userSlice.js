@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   user: null,
   lastChannelId: {},
+  actualFriendMessageId: null,  // Nouveau champ
   isLoading: false,
 };
 
@@ -19,8 +20,11 @@ const userSlice = createSlice({
     setLoading: (state, action) => { 
       state.isLoading = action.payload;
     },
+    setActualFriendMessageId: (state, action) => {
+      state.actualFriendMessageId = action.payload;
+    },
   },
 });
 
-export const { setUser, setLastChannelId, setLoading } = userSlice.actions;
+export const { setUser, setLastChannelId, setLoading, setActualFriendMessageId } = userSlice.actions;
 export default userSlice.reducer;

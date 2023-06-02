@@ -11,11 +11,16 @@ import { baseURL } from "../../components/const";
 import "../../components/style.css";
 import {
   LoadingFriendsSkeleton,
+  LoadingSidebarFriendsSkeleton,
   LoadingUserProfileSkeleton,
 } from "../../components/LoadingSkeleton";
 import UserProfile from "../../components/UserProfile";
 import { ethers } from "ethers";
 import { JSON_RPC_URL } from "../../components/const";
+import FriendMessage from "../message/FriendMessage";
+import FriendProfile from "../message/FriendProfile";
+import { useDispatch, useSelector } from 'react-redux';
+import { setActualFriendMessageId } from '../../features/userSlice';
 
 const MainContent = ({
   activeContent,
@@ -26,7 +31,9 @@ const MainContent = ({
   setActualUserId,
   onlineFriends,
   pendingFriends,
-  blockedFriends
+  blockedFriends,
+  currentFriendId,
+  setCurrentFriendId
 }) => {
   switch (activeContent) {
     case "FriendOnline":
@@ -41,7 +48,9 @@ const MainContent = ({
     case "BlockFriend":
       return <Blockfriend blockedFriends={blockedFriends} />;
     case "Pending":
-      return <Pending pendingFriends={pendingFriends}/>;
+      return <Pending pendingFriends={pendingFriends} />;
+    case "Messages":
+      return <FriendMessage currentFriendId={currentFriendId} setCurrentFriendId={setCurrentFriendId} />
     default:
       return (
         <FriendOnline
@@ -67,10 +76,20 @@ const Main = () => {
   const [newAvatar, setNewAvatar] = useState(null);
   const [avatarUrl, setAvatarUrl] = useState("");
   const [user, setUser] = useState();
+  const friendId = useSelector(state => state.user.actualFriendMessageId);
+  const [currentFriendId, setCurrentFriendId] = useState(friendId);
+
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
+  const changeFriendId = (friendId) => {
+    setCurrentFriendId(friendId);
+    dispatch(setActualFriendMessageId(friendId));
+  }
+
   useEffect(() => {
+    setCurrentFriendId(friendId);
     const fetchUser = async () => {
       try {
         const accessToken = localStorage.getItem("accessToken");
@@ -106,6 +125,7 @@ const Main = () => {
     setIsModalOpen(!isModalOpen);
   };
 
+
   useEffect(() => {
     if (friendData) {
       setFriendsLoading(false);
@@ -137,28 +157,28 @@ const Main = () => {
 
 
         const fetchAvatars = async (friends) => {
-            return await Promise.all(
-              friends.map(async friend => {
-                const friendAvatarPath = actualUserId === friend.user.id 
-                  ? friend.user.avatar 
-                  : friend.friend.avatar;
-          
-                const response = await axios.get(`${baseURL}/static/${friendAvatarPath}`, {
-                  responseType: 'arraybuffer'
-                });
-          
-                const image = new Blob([response.data], { type: 'image/jpeg' });
-                const imageUrl = URL.createObjectURL(image);
-                
-                return {
-                  ...friend,
-                  user: { ...friend.user, avatar: actualUserId === friend.user.id ? imageUrl : friend.user.avatar },
-                  friend: { ...friend.friend, avatar: actualUserId === friend.user.id ? friend.friend.avatar : imageUrl }
-                };
-              })
-            );
-          };
-          
+          return await Promise.all(
+            friends.map(async friend => {
+              const friendAvatarPath = actualUserId === friend.user.id
+                ? friend.user.avatar
+                : friend.friend.avatar;
+
+              const response = await axios.get(`${baseURL}/static/${friendAvatarPath}`, {
+                responseType: 'arraybuffer'
+              });
+
+              const image = new Blob([response.data], { type: 'image/jpeg' });
+              const imageUrl = URL.createObjectURL(image);
+
+              return {
+                ...friend,
+                user: { ...friend.user, avatar: actualUserId === friend.user.id ? imageUrl : friend.user.avatar },
+                friend: { ...friend.friend, avatar: actualUserId === friend.user.id ? friend.friend.avatar : imageUrl }
+              };
+            })
+          );
+        };
+
         const onlineFriendsWithAvatars = await fetchAvatars(result.data.onlineFriends);
         const blockedFriendsWithAvatars = await fetchAvatars(result.data.blockedFriends);
         const friendRequestsWithAvatars = await fetchAvatars(result.data.friendRequests);
@@ -180,47 +200,52 @@ const Main = () => {
   return (
     <div className="bg-zinc-700 h-screen w-screen flex h-full">
       <SidebarServers />
-      <SidebarFriend />
-      <div className="bg-zinc-700 flex flex-col p-6 flex-grow">
-        <div className="flex items-center mb-4">
-          <div className="text-white text-2xl font-semibold">Friends</div>
-          <button
-              className="bg-green-500 text-white px-2 py-1 ml-2 rounded"
-              onClick={toggleModal}
-            >
-              Add
-            </button>
-          <button
-            className={`px-2 py-1 ml-2 rounded ${
-              activeContent === "FriendOnline"
-                ? "bg-zinc-800 text-gray-300"
-                : "bg-zinc-500 text-gray-300 hover:bg-zinc-600"
-            }`}
-            onClick={() => setActiveContent("FriendOnline")}
-          >
-            Online
-          </button>
-          <button
-            className={`px-2 py-1 ml-2 rounded ${
-              activeContent === "Pending"
-                ? "bg-zinc-800 text-gray-300"
-                : "bg-zinc-500 text-gray-300 hover:bg-zinc-600"
-            }`}
-            onClick={() => setActiveContent("Pending")}
-          >
-            Pending
-          </button>
-          <button
-            className={`px-2 py-1 ml-2 rounded ${
-              activeContent === "BlockFriend"
-                ? "bg-zinc-800 text-gray-300"
-                : "bg-zinc-500 text-gray-300 hover:bg-zinc-600"
-            }`}
-            onClick={() => setActiveContent("BlockFriend")}
-          >
-            Blocked
-          </button>
-        </div>
+      {!friendsLoading && friendOnlineData ? (
+        <SidebarFriend setCurrentFriendId={setCurrentFriendId} allFriends={friendOnlineData} setActiveContent={setActiveContent} currentFriendId={currentFriendId} />
+      ) : (
+        <LoadingSidebarFriendsSkeleton />
+      )}
+      <div className={`bg-zinc-700 flex flex-col flex-grow ${activeContent !== "Messages" && "p-6"}`}>
+        {activeContent === "Messages" ? (null)
+          : (
+            <div className="flex items-center mb-4">
+              <div className="text-white text-2xl font-semibold">Friends</div>
+              <button
+                className="bg-green-500 text-white px-2 py-1 ml-2 rounded"
+                onClick={toggleModal}
+              >
+                Add
+              </button>
+              <button
+                className={`px-2 py-1 ml-2 rounded ${activeContent === "FriendOnline"
+                  ? "bg-zinc-800 text-gray-300"
+                  : "bg-zinc-500 text-gray-300 hover:bg-zinc-600"
+                  }`}
+                onClick={() => setActiveContent("FriendOnline")}
+              >
+                Online
+              </button>
+              <button
+                className={`px-2 py-1 ml-2 rounded ${activeContent === "Pending"
+                  ? "bg-zinc-800 text-gray-300"
+                  : "bg-zinc-500 text-gray-300 hover:bg-zinc-600"
+                  }`}
+                onClick={() => setActiveContent("Pending")}
+              >
+                Pending
+              </button>
+              <button
+                className={`px-2 py-1 ml-2 rounded ${activeContent === "BlockFriend"
+                  ? "bg-zinc-800 text-gray-300"
+                  : "bg-zinc-500 text-gray-300 hover:bg-zinc-600"
+                  }`}
+                onClick={() => setActiveContent("BlockFriend")}
+              >
+                Blocked
+              </button>
+            </div>
+          )}
+
         {!friendsLoading && friendData && friendBlockedData && friendOnlineData && friendPendingData ? (
           <MainContent
             activeContent={activeContent}
@@ -230,6 +255,8 @@ const Main = () => {
             setActualUserId={setActualUserId}
             pendingFriends={friendPendingData}
             blockedFriends={friendBlockedData}
+            currentFriendId={currentFriendId}
+            setCurrentFriendId={changeFriendId}
           />
         ) : (
           <LoadingFriendsSkeleton />
@@ -237,17 +264,22 @@ const Main = () => {
 
         <SearchModal isOpen={isModalOpen} closeModal={toggleModal} />
       </div>
-      {!userProfileLoading && user ? (
-        <UserProfile
-          user={user}
-          avatarUrl={avatarUrl}
-          setNewAvatar={setNewAvatar}
-          setUser={setUser}
-          newAvatar={newAvatar}
-        />
-      ) : (
-        <LoadingUserProfileSkeleton />
+      {activeContent !== "Messages" && (
+        !userProfileLoading && user ? (
+          <UserProfile
+            user={user}
+            avatarUrl={avatarUrl}
+            setNewAvatar={setNewAvatar}
+            setUser={setUser}
+            newAvatar={newAvatar}
+          />
+        ) : (
+          <LoadingUserProfileSkeleton />
+        )
       )}
+      {activeContent == "Messages" ? (
+        <FriendProfile currentFriendId={currentFriendId} />
+      ) : null}
     </div>
   );
 };

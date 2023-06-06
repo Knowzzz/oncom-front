@@ -43,6 +43,8 @@ const MainContent = ({
           setFriendData={setFriendData}
           actualUserId={actualUserId}
           setActualUserId={setActualUserId}
+          setCurrentFriendId={setCurrentFriendId}
+          setActiveContent={setActiveContent}
         />
       );
     case "BlockFriend":

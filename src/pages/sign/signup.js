@@ -192,7 +192,7 @@ const Signup = () => {
           <div>
             <button
               type="button"
-              className="bg-blue-500 text-white px-4 py-2 rounded w-64 focus:outline-none transition duration-300 ease-in-out transform hover:scale-105"
+              className="bg-zinc-400 text-white px-4 py-2 rounded w-64 focus:outline-none transition duration-300 ease-in-out transform hover:scale-105"
               onClick={openModal}
             >
               Connect Wallet
@@ -264,7 +264,7 @@ const Signup = () => {
         <p className="mt-4 text-zinc-300">{t("already_account")}</p>
         <button
           type="button"
-          className="bg-blue-500 text-white px-4 py-2 rounded mt-2 w-64 focus:outline-none transition duration-300 ease-in-out transform hover:scale-105"
+          className="bg-zinc-500 text-white px-4 py-2 rounded mt-2 w-64 focus:outline-none transition duration-300 ease-in-out transform hover:scale-105"
           onClick={() => login()}
         >
           {t("signin")}

@@ -82,10 +82,9 @@ function Home({ modalIsOpen, setModalIsOpen, modalContent, setModalContent }) {
     <div className="min-h-screen bg-zinc-800 text-white w-full">
       <div className="relative w-full bg-zinc-900 rounded-b-3xl lg:rounded-b-5xl overflow-hidden">
         <Navbar />
-        <div className="content-container flex flex-col md:flex-row items-center px-4 md:p-8">
-          {" "}
-          <div className="text-container w-full md:w-1/2 flex flex-col justify-center items-start md:items-center md:mr-8">
-            <div className="text-center md:text-left mx-auto md:mx-0 max-w-md">
+        <div className="flex flex-col md:flex-row items-center px-4 md:p-8">
+          <div className="w-full md:w-1/2 flex flex-col justify-center items-start md:items-center md:mr-8">
+            <div className="text-center md:text-left mx-auto md:mx-0 max-w-lg">
               <h1 className="leading-none text-2xl sm:text-3xl md:text-5xl font-bold mb-2 sm:mb-4 text-white">
               <Typewriter
                 

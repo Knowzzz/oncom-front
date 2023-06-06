@@ -40,10 +40,10 @@ const Navbar = () => {
               {t("download")}
             </Link>
           </div>
-          <div className="ml-auto mt-4 md:mt-0">
+          <div className="ml-auto mt-4 md:mt-0 hover:scale-105 duration-300 ease-in-out ">
             <Link
               to="/signup"
-              className="text-zinc-600 bg-white px-4 py-2 rounded-full font-semibold transition-colors duration-300 ease-in-out hover:bg-zinc-600 hover:text-white border-2 border-transparent"
+              className="text-zinc-600 bg-white px-4 py-2 rounded-full font-semibold transition-colors ease-in-out hover:bg-zinc-200 border-2"
             >
               {t("signup")}
             </Link>

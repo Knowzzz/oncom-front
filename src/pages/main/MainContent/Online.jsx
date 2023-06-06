@@ -3,7 +3,7 @@ import { HiOutlineDotsVertical } from "react-icons/hi";
 import { useNavigate, Link } from "react-router-dom";
 import { Menu, Transition } from "@headlessui/react";
 import { TbMessageCircle2Filled } from "react-icons/tb";
-import {LoadingFriendsSkeleton} from "../../../components/LoadingSkeleton";
+import { LoadingFriendsSkeleton } from "../../../components/LoadingSkeleton";
 import { baseURL } from "../../../components/const";
 import { Fragment } from "react";
 import axios from "axios";
@@ -15,8 +15,9 @@ const FriendOnline = ({
   onlineFriends,
   actualUserId,
   setActualUserId,
+  setActiveContent,
+  setCurrentFriendId,
 }) => {
-
   const deleteFriend = async (friend_wallet_address) => {
     const accessToken = localStorage.getItem("accessToken");
     const user = JSON.parse(localStorage.getItem("user"));
@@ -66,7 +67,6 @@ const FriendOnline = ({
       return err;
     }
   };
-
 
   return (
     <div>
@@ -119,15 +119,18 @@ const FriendOnline = ({
                   <div className="ml-auto">
                     <Menu as="div" className="relative inline-block text-left">
                       <Menu.Button className="flex items-center justify-center w-full shadow-sm px-2 py-2 text-sm font-medium text-gray-700 focus:outline-none">
-                        <Link
-                          to={`/friend/message/${
-                            actualUserId == friendOnline.user.id
-                              ? friendOnline.friend.id
-                              : friendOnline.user.id
-                          }`}
+                        <button
+                          onClick={() => {
+                            setCurrentFriendId(
+                              actualUserId == friendOnline.user.id
+                                ? friendOnline.friend.id
+                                : friendOnline.user.id
+                            );
+                            setActiveContent("Messages");
+                          }}
                         >
                           <TbMessageCircle2Filled className="text-white w-8 h-8 p-1 rounded-full bg-zinc-700 mr-4" />
-                        </Link>
+                        </button>
                         <HiOutlineDotsVertical className="text-white w-8 h-8 p-1 rounded-full bg-zinc-700 hover:bg-zinc-600" />
                       </Menu.Button>
                       <Transition
@@ -194,7 +197,6 @@ const FriendOnline = ({
         <LoadingFriendsSkeleton />
       )}
     </div>
-    
   );
 };
 

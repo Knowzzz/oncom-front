@@ -232,9 +232,10 @@ const SidebarChannel = ({ daoId, channelId, users, daoData, setDaoData, isOwner,
               className="relative"
               onMouseEnter={() => setHoveringChannel(channel.id)}
               onMouseLeave={() => setHoveringChannel(null)}
+              key={channel.id}
             >
               <Link
-                key={channel.id}
+               
                 to={`/dao/${daoId}/${channel.id}`}
                 className={`block cursor-pointer py-2 hover:bg-zinc-600 flex items-center rounded-lg m-1 ${
                   channel.id == channelId
@@ -279,9 +280,10 @@ const SidebarChannel = ({ daoId, channelId, users, daoData, setDaoData, isOwner,
                 className="relative"
                 onMouseEnter={() => setHoveringChannel(channel.id)}
                 onMouseLeave={() => setHoveringChannel(null)}
+                key={channel.id}
               >
                 <Link
-                  key={channel.id}
+                  
                   to={`/dao/${daoId}/${channel.id}`}
                   className={`block cursor-pointer py-2 hover:bg-zinc-600 flex items-center rounded-lg m-1 ${
                     channel.id == channelId

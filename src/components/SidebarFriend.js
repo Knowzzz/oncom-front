@@ -34,7 +34,7 @@ const SidebarFriend = ({ friendId, allFriends, setActiveContent, currentFriendId
             } hover:bg-zinc-500 text-white font-semibold rounded-t w-full py-2 focus:outline-none flex items-center px-4`}
           onClick={() => {
             setCurrentFriendId(null);
-            navigate("/main");
+            setActiveContent("FriendOnline")
           }}
         >
           <FaUserPlus className="mr-2" />
@@ -57,9 +57,9 @@ const SidebarFriend = ({ friendId, allFriends, setActiveContent, currentFriendId
             actualUserId === friend.friend.id ? friend.user : friend.friend;
 
           return (
-            <button onClick={() => handleChangeFriendMessage()}>
+            <button onClick={() => handleChangeFriendMessage()} key={friend.id}>
               <div
-                key={friend.id}
+                
                 className={`${displayFriend.id == currentFriendId
                     ? "bg-zinc-600"
                     : "bg-zinc-800 hover:bg-zinc-700"

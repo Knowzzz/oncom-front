@@ -17,8 +17,9 @@ const FriendMessage = ({ currentFriendId, setCurrentFriendId }) => {
 
   const userId = JSON.parse(localStorage.getItem("user")).id;
   const socket = io(`${baseURL}/friend-message`, {
-    query: { userId, currentFriendId },
+    query: { userId, friendId: currentFriendId },
   });
+
 
   const [hoveredMessage, setHoveredMessage] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -153,7 +154,7 @@ const FriendMessage = ({ currentFriendId, setCurrentFriendId }) => {
 
 
   return (
-    <div className="h-screen w-screen bg-zinc-700 text-white flex">
+    <div className="h-screen bg-zinc-700 text-white flex">
       <div className="flex-1 flex flex-col bg-zinc-700 ">
         <div className="flex-1 bg-zinc-700 px-4 py-2 overflow-y-auto custom-scrollbar">
           {messagesLoading && !messages ? (

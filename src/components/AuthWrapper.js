@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { baseURL, FRONT_SITE_URL } from "./const";
 import axios from "axios";
-
-const baseURL = "http://localhost:8080";
 
 const isAuthenticated = async () => {
   const accessToken = localStorage.getItem("accessToken");
@@ -23,7 +22,7 @@ const isAuthenticated = async () => {
 const AuthWrapper = ({ children }) => {
   const navigate = useNavigate();
 
-  const [isAuthenticatedStatus, setIsAuthenticatedStatus] = useState(true);
+  const [isAuthenticatedStatus, setIsAuthenticatedStatus] = useState(false);
 
   useEffect(() => {
     const checkAuthentication = async () => {
@@ -41,7 +40,7 @@ const AuthWrapper = ({ children }) => {
 
   useEffect(() => {
     if (isAuthenticatedStatus === false) {
-      navigate("/");
+      navigate("/signup");
     }
   }, [isAuthenticatedStatus, navigate]);
 

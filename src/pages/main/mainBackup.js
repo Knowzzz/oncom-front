@@ -147,13 +147,13 @@ const MainPage = () => {
               Add
             </button>
             <button className="bg-zinc-800 text-gray-300 px-2 py-1 ml-2 rounded">
-              <Link to="/main">Online</Link>
+              <Link to="/">Online</Link>
             </button>
             <button className="bg-zinc-500 text-gray-300 px-2 py-1 ml-2 rounded hover:bg-zinc-600">
-              <Link to="/main/friend/pending">Pending</Link>
+              <Link to="/friend/pending">Pending</Link>
             </button>
             <button className="bg-zinc-500 text-gray-300 px-2 py-1 ml-2 rounded hover:bg-zinc-600">
-              <Link to="/main/friend/blocked">Blocked</Link>
+              <Link to="/friend/blocked">Blocked</Link>
             </button>
           </div>
           <div className="relative">

@@ -120,19 +120,19 @@ const Block = () => {
             </button>
             <Link
               className="bg-zinc-600 text-white px-2 py-1 ml-2 rounded hover:bg-zinc-500"
-              to="/main"
+              to="/"
             >
               Online
             </Link>
             <Link
               className="bg-zinc-600 text-gray-300 px-2 py-1 ml-2 rounded hover:bg-zinc-500"
-              to="/main/friend/pending"
+              to="/friend/pending"
             >
               Pending
             </Link>
             <Link
               className="bg-zinc-800 text-gray-300 px-2 py-1 ml-2 rounded hover:bg-zinc-400"
-              to="/main/friend/blocked"
+              to="/friend/blocked"
             >
               Blocked
             </Link>

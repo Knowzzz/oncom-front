@@ -8,7 +8,6 @@ import { createConfig, configureChains, WagmiConfig } from "wagmi";
 import { mainnet, polygon, polygonMumbai } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 
-import Home from "./pages/home/home";
 import NotFound from "./pages/NotFound";
 import Main from "./pages/main/main";
 import Signup from "./pages/sign/signup";
@@ -21,7 +20,6 @@ import DaoWrapper from "./pages/dao/DaoWrapper";
 import JoinDaoPage from "./pages/JoinDao";
 
 import store from "./store";
-import AboutPage from "./pages/home/about";
 
 const { publicClient, webSocketPublicClient } = configureChains(
   [polygonMumbai],
@@ -35,22 +33,19 @@ const config = createConfig({
 });
 
 function App() {
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [modalContent, setModalContent] = useState(null);
 
   return (
     <WagmiConfig config={config}>
       <Provider store={store}>
         <Routes>
           <Route
-            path="/main"
+            path="/"
             element={
               <AuthWrapper>
                 <Main />
               </AuthWrapper>
             }
           />
-          <Route path="/about" element={<AboutPage />} />
           <Route
             path="/friend/message/:friendId"
             element={
@@ -84,34 +79,7 @@ function App() {
               </AuthWrapper>
             }
           />
-          <Route
-            path="/main/friend/pending"
-            element={
-              <AuthWrapper>
-                <Pending />
-              </AuthWrapper>
-            }
-          />
-          <Route
-            path="/main/friend/blocked"
-            element={
-              <AuthWrapper>
-                <Block />
-              </AuthWrapper>
-            }
-          />
           <Route path="/signup" element={<Signup />} />
-          <Route
-            path="/"
-            element={
-              <Home
-                modalIsOpen={modalIsOpen}
-                setModalIsOpen={setModalIsOpen}
-                modalContent={modalContent}
-                setModalContent={setModalContent}
-              />
-            }
-          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Provider>

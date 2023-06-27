@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
 import { useTranslation } from "react-i18next";
+import { FRONT_SITE_URL } from "./const";
 import "./style.css";
 
 const Navbar = () => {
@@ -15,7 +16,7 @@ const Navbar = () => {
   return (
     <nav className="bg-zinc-900 py-1 h-full w-full border-b border-zinc-800">
       <div className="container mx-auto flex flex-wrap justify-between items-center px-2">
-        <Link to="/" className="text-white font-bold text-xl ml-10">
+        <Link to={FRONT_SITE_URL} className="text-white font-bold text-xl ml-10">
           <img
             src="/images/logo_similar.png"
             alt="Logo"
@@ -27,16 +28,16 @@ const Navbar = () => {
             }`}
         >
           <div className="ml-16 flex flex-col space-y-8 md:space-y-0 md:flex-row md:space-x-8">
-            <Link to="/about" className="text-white underline-from-center">
-              {t("about")}
+            <Link to={`${FRONT_SITE_URL}/docs`} className="text-white underline-from-center">
+              Docs
             </Link>
-            <Link to="/similar" className="text-white underline-from-center">
-              Similar+
+            <Link to={`${FRONT_SITE_URL}/oncompro`} className="text-white underline-from-center">
+              OnComPro
             </Link>
-            <Link to="/contact" className="text-white underline-from-center">
+            <Link to={`${FRONT_SITE_URL}/contact`} className="text-white underline-from-center">
               Contact
             </Link>
-            <Link to="/download" className="text-white underline-from-center">
+            <Link to={`${FRONT_SITE_URL}/download`} className="text-white underline-from-center">
               {t("download")}
             </Link>
           </div>

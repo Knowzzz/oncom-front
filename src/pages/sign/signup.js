@@ -63,7 +63,7 @@ const Signup = () => {
       );
 
       dispatch(setUser(user));
-      navigate("/main");
+      navigate("/");
     } catch (err) {
       toast.error(err);
       return err;
@@ -105,7 +105,7 @@ const Signup = () => {
 
       dispatch(setUser(user));
 
-      navigate("/main");
+      navigate("/");
     } catch (err) {
       toast.error("Cannot sign in");
       return err;

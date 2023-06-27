@@ -117,7 +117,7 @@ const OverviewButton = ({
 
       // Close the modal after successful deletion
       setDaoSettingsModalOpen(false);
-      navigate("/main");
+      navigate("/");
 
     } catch (err) {
       toast.error("Error deleting DAO", { position: "bottom-right" });

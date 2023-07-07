@@ -15,13 +15,12 @@ const isAuthenticated = async () => {
       "x-access-token": accessToken,
     },
   });
-  if (!result.data.success) return false;
   return result.data.success;
 };
 
 const AuthWrapper = ({ children }) => {
   const navigate = useNavigate();
-
+  const [loading, setLoading] = useState(true);
   const [isAuthenticatedStatus, setIsAuthenticatedStatus] = useState(false);
 
   useEffect(() => {
@@ -29,24 +28,25 @@ const AuthWrapper = ({ children }) => {
       try {
         const result = await isAuthenticated();
         setIsAuthenticatedStatus(result);
+        if (!result) {
+          navigate("/signup");
+        }
+        setLoading(false);
       } catch (error) {
         console.error('Error during authentication check:', error);
         setIsAuthenticatedStatus(false);
+        setLoading(false);
       }
     };
 
     checkAuthentication();
-  }, []);
+  }, [navigate]);
 
-  useEffect(() => {
-    if (isAuthenticatedStatus === false) {
-      navigate("/signup");
-    }
-  }, [isAuthenticatedStatus, navigate]);
-
-  return isAuthenticatedStatus
-    ? React.cloneElement(children)
-    : null;
+  if (loading) {
+    return <div>Loading...</div>;
+  } else {
+    return isAuthenticatedStatus ? React.cloneElement(children) : null;
+  }
 };
 
 export default AuthWrapper;

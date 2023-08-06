@@ -15,7 +15,7 @@ const Blockfriend = () => {
         <BsSearch className="absolute right-3 top-2 text-white" />
       </div>
       <div className="text-white font-semibold mt-4">
-        Blocked
+        Blocked - 0
       </div>
     </div>
   );

@@ -85,9 +85,11 @@ const Pending = ({ pendingFriends }) => {
         />
         <BsSearch className="absolute right-3 top-2 text-white" />
       </div>
-      <div className="text-white font-semibold mt-4">
-        Pending - {pendingFriends.length}
-      </div>
+      {pendingFriends ? (<div className="text-white font-semibold mt-4">
+            Pending - {pendingFriends.length}
+          </div>) : (<div className="text-white font-semibold mt-4">
+            Pending - 0
+          </div>)}
       <div className="flex flex-col mt-2">
         {pendingFriends
           ? pendingFriends.map((friendRequest) => (

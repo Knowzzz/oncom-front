@@ -200,10 +200,11 @@ const Main = () => {
     fetchFriends();
   }, []);
 
+
   return (
     <div className="bg-zinc-700 h-screen w-screen flex h-full">
       <SidebarServers />
-      {!friendsLoading && friendOnlineData ? (
+      {!friendsLoading !== null && friendOnlineData !== null ? (
         <SidebarFriend setCurrentFriendId={setCurrentFriendId} allFriends={friendOnlineData} setActiveContent={setActiveContent} currentFriendId={currentFriendId} />
       ) : (
         <LoadingSidebarFriendsSkeleton />
@@ -249,7 +250,7 @@ const Main = () => {
             </div>
           )}
 
-        {!friendsLoading && friendData && friendBlockedData && friendOnlineData && friendPendingData ? (
+        {!friendsLoading !== null && friendData !== null && friendBlockedData !== null && friendOnlineData !== null && friendPendingData !== null ? (
           <MainContent
             activeContent={activeContent}
             setActiveContent={setActiveContent}

@@ -333,6 +333,10 @@ const SidebarChannel = ({ daoId, channelId, users, daoData, setDaoData, isOwner,
       <UpdateChannelModal
         updateChannelModalOpen={updateChannelModalOpen}
         setUpdateChannelModalOpen={setUpdateChannelModalOpen}
+        daoData={daoData}
+        selectedCategoryId={selectedCategoryId}
+        setSelectedCategoryId={setSelectedCategoryId}
+        channelId={channelId}
       />
 
       <CreateCategorie

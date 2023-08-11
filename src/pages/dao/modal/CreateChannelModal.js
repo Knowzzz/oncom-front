@@ -1,78 +1,75 @@
-import React from "react";
-import { FiHash, FiSpeaker } from "react-icons/fi";
+import React, {useState, useEffect} from "react";
+import { FiHash, FiSpeaker, FiThumbsUp } from "react-icons/fi";
 import Modal from "react-modal";
+import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
+import { Switch } from "@headlessui/react";
+import { baseURL } from "../../../components/const";
+import { customRadioStyle } from "../../../components/ChannelType";
+import { ChannelType } from "../../../components/ChannelType";
 
 const CreateChannelModal = ({
   createChannelModalOpen,
   setCreateChannelModalOpen,
-  channelType,
-  handleChannelTypeChange,
   selectedCategoryId,
   setSelectedCategoryId,
   daoData,
-  inputChannelName,
-  setInputChannelName,
-  handleCreateChannel,
+  fetchDao
 }) => {
-  const customRadioStyle = `
-.custom-radio::-webkit-radio {
-  width: 20px;
-  height: 20px;
-}
+  const [isPrivate, setIsPrivate] = useState(false);
+  const [inputChannelName, setInputChannelName] = useState("");
+  const [channelType, setChannelType] = useState("TEXT");
 
-.custom-radio::-moz-radio {
-  width: 20px;
-  height: 20px;
-}
+  const handleChannelTypeChange = (e) => {
+    setChannelType(e.target.value);
+  };
 
-.custom-radio::before {
-  width: 20px;
-  height: 20px;
-}
-`;
+  const handleCreateChannel = async () => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const user = JSON.parse(localStorage.getItem("user"));
+      const response = await axios.post(
+        `${baseURL}/api/channel/create`,
+        {
+          daoId: daoData.id,
+          userId: user.id,
+          channelName: inputChannelName,
+          channelType: channelType,
+          categorieId: selectedCategoryId,
+          isPrivate: isPrivate
+        },
+        {
+          headers: {
+            "x-access-token": accessToken,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success("Le canal a été créé avec succès !");
+        setCreateChannelModalOpen(false);
+        fetchDao();
+      } else {
+        toast.error("Error while creating channel");
+      }
+    } catch (err) {
+      toast.error("Erreur lors de la création du canal.");
+    }
+  };
 
   return (
     <Modal
       isOpen={createChannelModalOpen}
       onRequestClose={() => setCreateChannelModalOpen(false)}
       contentLabel="Create Channel Modal"
-      className="m-auto w-1/3 p-6 bg-zinc-700 text-white border border-zinc-700 rounded-md"
+      className="m-auto w-1/2 p-6 bg-zinc-700 text-white border border-zinc-700 rounded-md overflow-y-auto max-h-screen"
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center transition-opacity duration-500 ease-in-out opacity-100"
       closeTimeoutMS={500}
     >
       <style>{customRadioStyle}</style>
       <h2 className="mb-4">Create Channel</h2>
-      <div className="mb-4">
-        <div className="grid gap-4">
-          {["TEXT", "VOCAL"].map((type) => (
-            <label
-              key={type}
-              className={`flex p-4 border border-gray-600 rounded ${
-                channelType === type ? "border-white" : "hover:border-zinc-400"
-              } cursor-pointer`}
-            >
-              {type === "text" ? <FiHash size={24} /> : <FiSpeaker size={24} />}
-              <div className="ml-4">
-                <div>{type === "TEXT" ? "Text" : "Vocal"}</div>
-                <small>
-                  {type === "TEXT"
-                    ? "Chat textuel pour échanger des messages."
-                    : "Salon vocal pour discuter à haute voix."}
-                </small>
-              </div>
+      <ChannelType handleChannelTypeChange={handleChannelTypeChange} channelType={channelType}/>
 
-              <input
-                type="radio"
-                name="channelType"
-                value={type}
-                checked={channelType === type}
-                onChange={handleChannelTypeChange}
-                className="custom-radio form-radio ml-auto"
-              />
-            </label>
-          ))}
-        </div>
-      </div>
       <div className="mb-4">
         <label className="block">Category</label>
         <select
@@ -105,6 +102,17 @@ const CreateChannelModal = ({
           />
         </div>
       </div>
+      <label className="block">Private Channel</label>
+        <Switch
+          checked={isPrivate}
+          onChange={setIsPrivate}
+          className={`${isPrivate ? 'bg-green-500' : 'bg-gray-500'} relative inline-flex items-center h-6 mt-2 rounded-full w-11`}
+        >
+          <span className="sr-only">Private</span>
+          <span
+            className={`${isPrivate ? 'translate-x-6' : 'translate-x-1'} inline-block w-4 h-4 transform bg-white rounded-full`}
+          />
+        </Switch>
       <div className="flex justify-end">
         <button
           className="bg-zinc-600 hover:bg-zinc-500 text-white px-4 py-2 rounded mr-2"

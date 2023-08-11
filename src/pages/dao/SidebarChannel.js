@@ -11,7 +11,6 @@ import DaoSettingsModal from "./modal/DaoSettingsModal";
 
 import "../../components/style.css";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 Modal.setAppElement("#root");
 
@@ -22,11 +21,10 @@ const SidebarChannel = ({ daoId, channelId, users, daoData, setDaoData, isOwner,
   const [createCategorieModalOpen, setCreateCategorieModalOpen] =
     useState(false);
   const [updateChannelModalOpen, setUpdateChannelModalOpen] = useState(false);
+  const [updateChannelId, setUpdateChannelId] = useState(channelId);
   const [collapsedCategories, setCollapsedCategories] = useState([]);
   const [hoveringChannel, setHoveringChannel] = useState(null);
-  const [channelType, setChannelType] = useState("TEXT");
   const [daoSettingsModalOpen, setDaoSettingsModalOpen] = useState(false);
-  const [inputChannelName, setInputChannelName] = useState("");
   const [inputCategorieName, setInputCategorieName] = useState("");
   const [daoMenuCollapsed, setDaoMenuCollapsed] = useState(true);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
@@ -47,9 +45,7 @@ const SidebarChannel = ({ daoId, channelId, users, daoData, setDaoData, isOwner,
     }
   };
 
-  const handleChannelTypeChange = (e) => {
-    setChannelType(e.target.value);
-  };
+  
 
   useEffect(() => {
     if (daoData && daoData.categories && daoData.categories.length > 0) {
@@ -108,37 +104,13 @@ const SidebarChannel = ({ daoId, channelId, users, daoData, setDaoData, isOwner,
     }
   };
 
-  const handleCreateChannel = async () => {
-    try {
-      const accessToken = localStorage.getItem("accessToken");
-      const user = JSON.parse(localStorage.getItem("user"));
-      const response = await axios.post(
-        `${baseURL}/api/channel/create`,
-        {
-          daoId: daoId,
-          userId: user.id,
-          channelName: inputChannelName,
-          channelType: channelType,
-          categorieId: selectedCategoryId,
-        },
-        {
-          headers: {
-            "x-access-token": accessToken,
-          },
-        }
-      );
+  const handleUpdateChannelModalOpen = (channelId) => {
+    setUpdateChannelId(channelId);
+    openModal(setUpdateChannelModalOpen);
+  }
+  
 
-      if (response.status === 200) {
-        toast.success("Le canal a été créé avec succès !");
-        setCreateChannelModalOpen(false);
-        fetchDao();
-      } else {
-        toast.error("Error while creating channel");
-      }
-    } catch (err) {
-      toast.error("Erreur lors de la création du canal.");
-    }
-  };
+  
 
   const handleCreateCategorie = async () => {
     try {
@@ -200,6 +172,8 @@ const SidebarChannel = ({ daoId, channelId, users, daoData, setDaoData, isOwner,
           >
             Invite user
           </button>
+          {isOwner && (
+            <div>
           <button
             className="block w-full text-left px-2 py-1 hover:bg-zinc-700 rounded"
             variant="contained"
@@ -218,7 +192,7 @@ const SidebarChannel = ({ daoId, channelId, users, daoData, setDaoData, isOwner,
             onClick={() => openModal(setCreateCategorieModalOpen)}
           >
             Create category
-          </button>
+          </button></div>)}
           <button className="block w-full text-left px-2 py-1 hover:bg-zinc-700 rounded text-red-500">
             Leave DAO
           </button>
@@ -246,14 +220,14 @@ const SidebarChannel = ({ daoId, channelId, users, daoData, setDaoData, isOwner,
                 <FiHash className="mx-1 mt-1" />
                 {channel.name}
               </Link>
-              {isOwner && hoveringChannel === channel.id && (
+              {isOwner && hoveringChannel === channel.id || isOwner && channelId == channel.id ? (
                 <button
                   className="absolute right-0 top-1/2 transform -translate-y-1/2 mr-2 text-gray-400 hover:text-white"
-                  onClick={() => openModal(setUpdateChannelModalOpen)}
+                  onClick={() => {handleUpdateChannelModalOpen(channel.id)}}
                 >
                   <FiSettings />
                 </button>
-              )}
+              ) : null}
             </div>
           ) : null
         )}
@@ -294,14 +268,14 @@ const SidebarChannel = ({ daoId, channelId, users, daoData, setDaoData, isOwner,
                   <FiHash className="mx-1 mt-1" />
                   {channel.name}
                 </Link>
-                {isOwner && hoveringChannel === channel.id && (
-                  <button
-                    className="absolute right-0 top-1/2 transform -translate-y-1/2 mr-2 text-gray-400 hover:text-white"
-                    onClick={() => openModal(setUpdateChannelModalOpen)}
-                  >
-                    <FiSettings />
-                  </button>
-                )}
+                {isOwner && hoveringChannel === channel.id || isOwner && channelId == channel.id ? (
+                <button
+                  className="absolute right-0 top-1/2 transform -translate-y-1/2 mr-2 text-gray-400 hover:text-white"
+                  onClick={() => {handleUpdateChannelModalOpen(channel.id)}}
+                >
+                  <FiSettings />
+                </button>
+              ) : null}
               </div>
             ))}
         </div>
@@ -320,14 +294,10 @@ const SidebarChannel = ({ daoId, channelId, users, daoData, setDaoData, isOwner,
       <CreateChannelModal
         createChannelModalOpen={createChannelModalOpen}
         setCreateChannelModalOpen={setCreateChannelModalOpen}
-        channelType={channelType}
-        handleChannelTypeChange={handleChannelTypeChange}
         selectedCategoryId={selectedCategoryId}
         setSelectedCategoryId={setSelectedCategoryId}
         daoData={daoData}
-        inputChannelName={inputChannelName}
-        setInputChannelName={setInputChannelName}
-        handleCreateChannel={handleCreateChannel}
+        fetchDao={fetchDao}
       />
 
       <UpdateChannelModal
@@ -336,7 +306,8 @@ const SidebarChannel = ({ daoId, channelId, users, daoData, setDaoData, isOwner,
         daoData={daoData}
         selectedCategoryId={selectedCategoryId}
         setSelectedCategoryId={setSelectedCategoryId}
-        channelId={channelId}
+        channelId={updateChannelId}
+        fetchDao={fetchDao}
       />
 
       <CreateCategorie

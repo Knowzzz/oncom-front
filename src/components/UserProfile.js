@@ -62,7 +62,7 @@ const UserProfile = ({
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
-    navigate("/");
+    navigate("/signup");
   };
 
   const handleChange = (event) => {

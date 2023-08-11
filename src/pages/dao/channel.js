@@ -17,8 +17,8 @@ import MessageInput from "../../components/MessageInput";
 import SendMATICComponent from "../../components/SendMATICComponent";
 import LoadingPage from "../../components/Loading";
 import "../../components/style.css";
+import { baseURL } from "../../components/const";
 
-const baseURL = "http://localhost:8080";
 
 const Channel = () => {
   const { daoId, channelId } = useParams();
@@ -43,8 +43,9 @@ const Channel = () => {
   });
 
   const socketUsers = io(`${baseURL}/server-users`, {
-    query: { daoId, userId: JSON.parse(localStorage.getItem("user")).id },
+    query: { daoId, userId: userId },
   });
+
 
   useEffect(() => {
     if (messages) {

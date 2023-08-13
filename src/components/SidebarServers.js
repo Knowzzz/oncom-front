@@ -34,36 +34,10 @@ const SidebarServers = () => {
             "x-access-token": accessToken,
           },
         });
-        const daoWithAvatars = await Promise.all(
-          result.data.daos.map(async (dao) => {
-            const daoAvatar = await getAvatar(dao);
-
-            return {
-              ...dao,
-              avatar: daoAvatar,
-            };
-          })
-        );
-        setServers(daoWithAvatars);
+        setServers(result.data.daos);
       } catch (err) {
         console.log(err);
         return err;
-      }
-    };
-
-    const getAvatar = async (dao) => {
-      try {
-        const avatarResponse = await axios.get(
-          `${baseURL}/static${dao.avatar}`,
-          {
-            responseType: "blob",
-          }
-        );
-        const avatarUrl = URL.createObjectURL(avatarResponse.data);
-        return avatarUrl;
-      } catch (err) {
-        console.log(err);
-        return "";
       }
     };
 
@@ -134,7 +108,7 @@ const SidebarServers = () => {
         servers.map((server, index) => (
           <Link key={index} to={`/dao/${server.id}`}>
             <img
-              src={server.avatar || "/image.png"}
+              src={`${baseURL}/static${server.avatar}`}
               alt={server.name}
               className="w-12 h-12 rounded-full my-4 hover:rounded-[14px]"
             />

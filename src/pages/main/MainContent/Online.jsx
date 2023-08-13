@@ -99,12 +99,8 @@ const FriendOnline = ({
                 <img
                   src={
                     actualUserId == friendOnline.user.id
-                      ? friendOnline.friend.avatar
-                        ? friendOnline.friend.avatar
-                        : "/image.jpg"
-                      : friendOnline.user.avatar
-                        ? friendOnline.user.avatar
-                        : "/image.jpg"
+                      ? `${baseURL}/static${friendOnline.friend.avatar}`
+                      : `${baseURL}/static${friendOnline.user.avatar}`
                   }
                   alt={
                     actualUserId == friendOnline.user.id

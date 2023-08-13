@@ -69,12 +69,8 @@ const SidebarFriend = ({ friendId, allFriends, setActiveContent, currentFriendId
                 <img
                   src={
                     actualUserId == friend.user.id
-                      ? friend.friend.avatar
-                        ? friend.friend.avatar
-                        : "/image.jpg"
-                      : friend.user.avatar
-                        ? friend.user.avatar
-                        : "/image.jpg"
+                      ? `${baseURL}/static${friend.friend.avatar}`
+                      : `${baseURL}/static${friend.user.avatar}`
                   }
                   alt={
                     actualUserId == friend.user.id

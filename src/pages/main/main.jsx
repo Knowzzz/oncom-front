@@ -158,37 +158,11 @@ const Main = () => {
           },
         });
 
+        
 
-        const fetchAvatars = async (friends) => {
-          return await Promise.all(
-            friends.map(async friend => {
-              const friendAvatarPath = actualUserId === friend.user.id
-                ? friend.user.avatar
-                : friend.friend.avatar;
-
-              const response = await axios.get(`${baseURL}/static/${friendAvatarPath}`, {
-                responseType: 'arraybuffer'
-              });
-
-              const image = new Blob([response.data], { type: 'image/jpeg' });
-              const imageUrl = URL.createObjectURL(image);
-
-              return {
-                ...friend,
-                user: { ...friend.user, avatar: actualUserId === friend.user.id ? imageUrl : friend.user.avatar },
-                friend: { ...friend.friend, avatar: actualUserId === friend.user.id ? friend.friend.avatar : imageUrl }
-              };
-            })
-          );
-        };
-
-        const onlineFriendsWithAvatars = await fetchAvatars(result.data.onlineFriends);
-        const blockedFriendsWithAvatars = await fetchAvatars(result.data.blockedFriends);
-        const friendRequestsWithAvatars = await fetchAvatars(result.data.friendRequests);
-
-        setFriendOnlineData(onlineFriendsWithAvatars);
-        setFriendPendingData(friendRequestsWithAvatars);
-        setFriendBlockedData(blockedFriendsWithAvatars);
+        setFriendOnlineData(result.data.onlineFriends);
+        setFriendPendingData(result.data.friendRequests);
+        setFriendBlockedData(result.data.blockedFriends);
         setFriendData(result.data);
         setFriendsLoading(false);
       } catch (err) {

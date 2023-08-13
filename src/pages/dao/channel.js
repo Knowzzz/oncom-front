@@ -28,7 +28,6 @@ const Channel = () => {
   const userId = JSON.parse(localStorage.getItem("user")).id;
   const [messages, setMessages] = useState([]);
   const [canWriteMessage, setCanWriteMessage] = useState(true);
-  const [userAvatars, setUserAvatars] = useState({});
   const [hoveredMessage, setHoveredMessage] = useState(null);
   const dispatch = useDispatch();
   const [showModal, setShowModal] = useState(false);
@@ -136,40 +135,6 @@ const Channel = () => {
     };
   }, [channelId, dispatch, daoId]);
 
-  useEffect(() => {
-    if (!messages) {
-      return;
-    }
-    messages.forEach(async (message) => {
-      if (!userAvatars[message.user.id]) {
-        await getAvatarUrl(message.user.id, message.user.avatar);
-      }
-    });
-
-  }, [messages]);
-
-  const getAvatarUrl = async (userId, avatarPath) => {
-    if (!userId || !avatarPath) {
-      return null;
-    }
-    if (userAvatars[userId]) {
-      return userAvatars[userId];
-    }
-
-    try {
-      const response = await axios.get(`${baseURL}/static/${avatarPath}`);
-
-      setUserAvatars((prevAvatars) => ({
-        ...prevAvatars,
-        [userId]: response.config.url,
-      }));
-      return response.config.url;
-    } catch (error) {
-      console.log(error);
-      return null;
-    }
-  };
-
   const LoadingSkeleton = () => {
     return Array(5)
       .fill()
@@ -224,7 +189,7 @@ const Channel = () => {
                   messages[index - 1].user.id !== message.user.id ? (
                     <div className={`flex items-center`} style={{ color: `${message.highestRoleColor}` }}>
                       <img
-                        src={userAvatars[message.user.id] || ""}
+                        src={`${baseURL}/static${message.user.avatar}` || `${baseURL}/static/images/user/image.png`}
                         alt={`${message.user.pseudo}'s avatar`}
                         className={`w-10 h-10 rounded-full mr-4 mt-4`}
                       />

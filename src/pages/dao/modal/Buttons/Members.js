@@ -14,17 +14,7 @@ const MembersButton = ({
   setUsers,
   socketUsers
 }) => {
-  const [imageUrls, setImageUrls] = useState({});
   const [roleMenus, setRoleMenus] = useState({});
-
-  useEffect(() => {
-    users.forEach(async (user) => {
-      const response = await fetch(`${baseURL}/static${user.avatar}`);
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      setImageUrls((prevUrls) => ({ ...prevUrls, [user.id]: url }));
-    });
-  }, [users]);
 
   const handleRoleRemove = async (user_wallet_address, roleId) => {
     try {
@@ -122,7 +112,7 @@ const MembersButton = ({
               <div className="flex flex-grow items-center justify-between">
                 <div className="flex items-center">
                   <img
-                    src={imageUrls[user.id]}
+                    src={`${baseURL}/static${user.avatar}`}
                     alt="avatar"
                     className="mr-4 rounded-full w-1/12"
                   />

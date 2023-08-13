@@ -99,9 +99,7 @@ const Pending = ({ pendingFriends }) => {
               >
                 <img
                   src={
-                    friendRequest.user.avatar
-                      ? friendRequest.user.avatar
-                      : "/image.jpg"
+                    `${baseURL}/static${friendRequest.user.avatar}`
                   }
                   alt={friendRequest.user.pseudo}
                   className="w-12 h-12 rounded-full mr-4"

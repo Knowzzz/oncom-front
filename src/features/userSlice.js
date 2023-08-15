@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   user: null,
   lastChannelId: {},
-  actualFriendMessageId: null,  // Nouveau champ
+  actualFriendMessageId: null,
   isLoading: false,
 };
 

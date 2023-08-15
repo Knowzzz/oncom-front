@@ -84,7 +84,6 @@ const Main = () => {
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
-  console.log("caca")
 
   const changeFriendId = (friendId) => {
     setCurrentFriendId(friendId);

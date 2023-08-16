@@ -1,5 +1,4 @@
 import { RiLogoutBoxLine } from "react-icons/ri";
-import { motion } from "framer-motion";
 import { Dialog, Transition } from "@headlessui/react";
 import React, { useState, useEffect, Fragment } from "react";
 import axios from "axios";
@@ -221,15 +220,13 @@ const UserProfile = ({
             </button>
           </form>
           <div className="fixed bottom-4 right-4">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+            <button
               className="flex items-center bg-red-500 text-white px-3 py-2 rounded-full"
               onClick={() => setIsLogoutModalOpen(true)}
             >
               <RiLogoutBoxLine className="mr-1" />
               <span>Déconnexion</span>
-            </motion.button>
+            </button>
           </div>
 
           <Transition show={isLogoutModalOpen} as={Fragment}>

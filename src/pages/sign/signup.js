@@ -9,9 +9,7 @@ import { signMessage } from "@wagmi/core";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { baseURL } from "../../components/const";
-import Modal from "react-modal";
 import { Transition, Dialog } from "@headlessui/react";
 
 const Signup = () => {

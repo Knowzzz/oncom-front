@@ -15,8 +15,6 @@ import {
   LoadingUserProfileSkeleton,
 } from "../../components/LoadingSkeleton";
 import UserProfile from "../../components/UserProfile";
-import { ethers } from "ethers";
-import { JSON_RPC_URL } from "../../components/const";
 import FriendMessage from "../message/FriendMessage";
 import FriendProfile from "../message/FriendProfile";
 import { useDispatch, useSelector } from 'react-redux';

@@ -104,6 +104,7 @@ const SearchModal = ({ isOpen, closeModal }) => {
         <h2 className="text-white text-2xl font-semibold mb-4">
           Recherchez un utilisateur par adresse de portefeuille
         </h2>
+        
         <input
           type="text"
           className="bg-zinc-500 text-white w-full h-10 pl-3 pr-10 rounded-md mb-4"

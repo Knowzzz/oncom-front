@@ -9,7 +9,6 @@ import { useState } from "react";
 import { TfiWallet } from "react-icons/tfi";
 import Tooltip from "@mui/material/Tooltip";
 import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 
 const MessageInput = ({
   canWriteMessage,

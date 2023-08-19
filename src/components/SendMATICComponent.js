@@ -65,7 +65,6 @@ const SendMATICComponent = ({ recipientPseudo, recipientAddress, daoId }) => {
               .wallet_address,
             recipientAddress: recipientAddress,
             amount,
-            amount,
           },
           userId: JSON.parse(localStorage.getItem("user")).id,
           daoId: daoId,

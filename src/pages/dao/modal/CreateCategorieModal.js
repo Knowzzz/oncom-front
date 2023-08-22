@@ -8,6 +8,10 @@ const CreateCategorie = ({
   inputCategorieName,
   handleCreateCategorie,
 }) => {
+
+
+
+
   return (
     <Modal
       isOpen={createCategorieModalOpen}
@@ -17,6 +21,8 @@ const CreateCategorie = ({
       overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center transition-opacity duration-500 ease-in-out opacity-100"
       closeTimeoutMS={500}
     >
+      
+
       <h2 className="mb-4">Create Categorie</h2>
       <input
         type="text"

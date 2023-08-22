@@ -95,8 +95,7 @@ const DaoSettingsModal = ({
       onRequestClose={() => setDaoSettingsModalOpen(false)}
       contentLabel="Dao Settings Modal"
       className="w-4/6 bg-zinc-700 text-white rounded-lg h-5/6 z-50"
-      overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center transition-opacity duration-500 ease-in-out opacity-100 z-50"
-      closeTimeoutMS={500}
+      overlayClassName="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center transition-opacityz-50"
     >
       <div className="flex relative h-full">
         <SidebarDaoSettings

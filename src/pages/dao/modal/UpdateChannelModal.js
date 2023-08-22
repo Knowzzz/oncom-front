@@ -80,7 +80,7 @@ const UpdateChannelModal = ({
     setChannelType(currentChannel.type);
     setIsPrivate(currentChannel.isPrivate);
     setSelectedCategoryId(currentCategoryId || '...');
-  }, [channelId, currentChannel])
+  }, [channelId, currentChannel]);
 
   const handleChannelTypeChange = (e) => {
     setChannelType(e.target.value);
@@ -114,7 +114,7 @@ const UpdateChannelModal = ({
       onRequestClose={() => setUpdateChannelModalOpen(false)}
       contentLabel="Update Channel Modal"
       className="m-auto w-1/2 z-1000 p-6 bg-zinc-700 text-white border border-zinc-700 rounded-md overflow-y-auto max-h-screen"
-      overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center transition-opacity duration-500 ease-in-out opacity-100"
+      overlayClassName="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center transition-opacity"
       closeTimeoutMS={500}
     >
       <style>{customRadioStyle}</style>

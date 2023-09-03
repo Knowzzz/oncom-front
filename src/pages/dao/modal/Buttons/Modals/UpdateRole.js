@@ -149,7 +149,6 @@ const UpdateRole = ({
   setDaoSettingsModalOpen,
   daoSettingsModalOpen,
   daoData,
-  activeContent,
   setActiveContent,
   setDaoData,
   roleId,

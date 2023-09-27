@@ -14,7 +14,6 @@ const MembersButton = ({
   setUsers,
   socketUsers
 }) => {
-  const [roleMenus, setRoleMenus] = useState({});
 
   const handleRoleRemove = async (user_wallet_address, roleId) => {
     try {
